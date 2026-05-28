@@ -1,186 +1,146 @@
 <svg width="2560" height="1440" viewBox="0 0 2560 1440" xmlns="http://www.w3.org/2000/svg">
   <defs>
 
-    <!-- Herringbone traction pattern texture -->
-    <pattern id="traction" x="0" y="0" width="48" height="48" patternUnits="userSpaceOnUse">
-      <rect width="48" height="48" fill="none"/>
-      <polyline points="0,24 12,0 24,24 36,0 48,24" fill="none" stroke="#2A2A2A" stroke-width="2.5" stroke-linejoin="round"/>
-      <polyline points="0,48 12,24 24,48 36,24 48,48" fill="none" stroke="#2A2A2A" stroke-width="2.5" stroke-linejoin="round"/>
+    <!-- Herringbone traction texture (Logo 2 DNA) -->
+    <pattern id="traction" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect width="40" height="40" fill="none"/>
+      <polyline points="0,20 10,0 20,20 30,0 40,20" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linejoin="round"/>
+      <polyline points="0,40 10,20 20,40 30,20 40,40" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linejoin="round"/>
     </pattern>
 
-    <!-- Background gradient: darkest at edges, richest at center -->
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%"   stop-color="#080808"/>
-      <stop offset="30%"  stop-color="#161616"/>
-      <stop offset="50%"  stop-color="#1E1E1E"/>
-      <stop offset="70%"  stop-color="#161616"/>
-      <stop offset="100%" stop-color="#080808"/>
-    </linearGradient>
-
-    <!-- Vertical gradient: darker top and bottom -->
-    <linearGradient id="vGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%"   stop-color="#000000" stop-opacity="0.6"/>
-      <stop offset="35%"  stop-color="#000000" stop-opacity="0"/>
-      <stop offset="65%"  stop-color="#000000" stop-opacity="0"/>
-      <stop offset="100%" stop-color="#000000" stop-opacity="0.6"/>
-    </linearGradient>
-
-    <!-- Orange heat glow — centered on safe zone -->
-    <radialGradient id="heatGlow" cx="50%" cy="50%" r="40%" fx="50%" fy="50%">
-      <stop offset="0%"   stop-color="#C4600A" stop-opacity="0.18"/>
-      <stop offset="60%"  stop-color="#C4600A" stop-opacity="0.04"/>
-      <stop offset="100%" stop-color="#C4600A" stop-opacity="0"/>
+    <!-- Deep orange glow (Logo 2 DNA — the ring warmth) -->
+    <radialGradient id="heatCore" cx="50%" cy="50%" r="35%">
+      <stop offset="0%"   stop-color="#C44000" stop-opacity="0.32"/>
+      <stop offset="50%"  stop-color="#C44000" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#C44000" stop-opacity="0"/>
     </radialGradient>
 
-    <!-- Gold shimmer on accent line -->
-    <linearGradient id="goldLine" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%"   stop-color="#C4933A" stop-opacity="0"/>
-      <stop offset="20%"  stop-color="#C4933A" stop-opacity="1"/>
-      <stop offset="50%"  stop-color="#F0C060" stop-opacity="1"/>
-      <stop offset="80%"  stop-color="#C4933A" stop-opacity="1"/>
-      <stop offset="100%" stop-color="#C4933A" stop-opacity="0"/>
+    <!-- Horizontal fade for edge bleed -->
+    <linearGradient id="edgeFade" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#000000" stop-opacity="1"/>
+      <stop offset="18%"  stop-color="#000000" stop-opacity="0"/>
+      <stop offset="82%"  stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
     </linearGradient>
 
-    <!-- Clip to safe zone for mobile-critical elements -->
-    <clipPath id="safeZone">
-      <rect x="507" y="509" width="1546" height="422"/>
-    </clipPath>
+    <!-- Orange accent line shimmer -->
+    <linearGradient id="orangeShimmer" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#E85D00" stop-opacity="0"/>
+      <stop offset="25%"  stop-color="#E85D00" stop-opacity="1"/>
+      <stop offset="50%"  stop-color="#FF8030" stop-opacity="1"/>
+      <stop offset="75%"  stop-color="#E85D00" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#E85D00" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Glow behind monogram -->
+    <radialGradient id="monoGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#C44000" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#C44000" stop-opacity="0"/>
+    </radialGradient>
 
   </defs>
 
-  <!-- ░░ LAYER 1 — BASE BACKGROUND ░░ -->
-  <rect width="2560" height="1440" fill="url(#bgGrad)"/>
+  <!-- ░░ BASE — Pure black (Logo 1 DNA) ░░ -->
+  <rect width="2560" height="1440" fill="#000000"/>
 
-  <!-- ░░ LAYER 2 — TRACTION TEXTURE (full canvas, very subtle) ░░ -->
-  <rect width="2560" height="1440" fill="url(#traction)" opacity="0.55"/>
+  <!-- ░░ HERRINGBONE TEXTURE — full canvas, very subtle (Logo 2 DNA) ░░ -->
+  <rect width="2560" height="1440" fill="url(#traction)" opacity="0.6"/>
 
-  <!-- ░░ LAYER 3 — HEAT GLOW centered on safe zone ░░ -->
-  <rect x="307" y="309" width="1946" height="822" fill="url(#heatGlow)"/>
+  <!-- ░░ HEAT GLOW — centered, Logo 2 orange ring warmth ░░ -->
+  <rect x="280" y="260" width="2000" height="920" fill="url(#heatCore)"/>
 
-  <!-- ░░ LAYER 4 — VERTICAL VIGNETTE ░░ -->
-  <rect width="2560" height="1440" fill="url(#vGrad)"/>
+  <!-- ░░ EDGE FADE — darkness at left/right for cinema feel ░░ -->
+  <rect width="2560" height="1440" fill="url(#edgeFade)"/>
 
-  <!-- ════════════════════════════════════════════ -->
-  <!--   MOBILE SAFE ZONE: x=507–2053, y=509–931   -->
-  <!--   Center: x=1280, y=720                     -->
-  <!-- ════════════════════════════════════════════ -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--  MOBILE SAFE ZONE: x=507–2053  y=509–931  cx=1280 cy=720 -->
+  <!-- ═══════════════════════════════════════════════════════ -->
 
-  <!-- SAFE ZONE GOLD BORDER LINES -->
-  <rect x="507" y="511" width="1546" height="2.5" fill="url(#goldLine)" opacity="0.9"/>
-  <rect x="507" y="926" width="1546" height="2.5" fill="url(#goldLine)" opacity="0.9"/>
+  <!-- Soft glow behind monogram area -->
+  <ellipse cx="1280" cy="660" rx="320" ry="200" fill="url(#monoGlow)"/>
 
-  <!-- Vertical accent ticks at corners of safe zone -->
-  <rect x="507"  y="511" width="2.5" height="30" fill="#C4933A" opacity="0.7"/>
-  <rect x="507"  y="899" width="2.5" height="30" fill="#C4933A" opacity="0.7"/>
-  <rect x="2050" y="511" width="2.5" height="30" fill="#C4933A" opacity="0.7"/>
-  <rect x="2050" y="899" width="2.5" height="30" fill="#C4933A" opacity="0.7"/>
-
-  <!-- ── TR BADGE — left anchor of safe zone ── -->
-  <!-- Outer ring -->
-  <circle cx="700" cy="720" r="148" fill="none" stroke="#C4933A" stroke-width="2.5" opacity="0.6"/>
-  <!-- Inner fill -->
-  <circle cx="700" cy="720" r="136" fill="#111111"/>
-  <!-- Inner ring -->
-  <circle cx="700" cy="720" r="130" fill="none" stroke="#C4933A" stroke-width="1" opacity="0.35"/>
-
-  <!-- Herringbone chevrons inside badge -->
-  <g opacity="0.25" clip-path="none">
-    <polyline points="620,740 700,620 780,740" fill="none" stroke="#C4933A" stroke-width="8" stroke-linejoin="round"/>
-    <polyline points="640,790 700,700 760,790" fill="none" stroke="#C4933A" stroke-width="5" stroke-linejoin="round"/>
-  </g>
-
-  <!-- TR text -->
-  <text x="700" y="746"
+  <!-- ── TR MONOGRAM (Logo 1 exact color language) ──────── -->
+  <!-- T — white, ultra-bold condensed -->
+  <text x="1148" y="730"
     font-family="Impact, Arial Black, sans-serif"
-    font-size="100"
+    font-size="220"
     font-weight="900"
-    fill="#F2F2F2"
-    text-anchor="middle"
-    letter-spacing="-4">TR</text>
+    fill="#FFFFFF"
+    text-anchor="end"
+    letter-spacing="-6">T</text>
 
-  <!-- Thin gold underline in badge -->
-  <rect x="638" y="760" width="124" height="2" fill="#C4933A" opacity="0.7"/>
-
-  <!-- ── MAIN TITLE ── -->
-  <text x="1320" y="693"
+  <!-- R — orange, ultra-bold condensed, tight against T -->
+  <text x="1160" y="730"
     font-family="Impact, Arial Black, sans-serif"
-    font-size="108"
+    font-size="220"
     font-weight="900"
-    fill="#F2F2F2"
+    fill="#E85D00"
+    text-anchor="start"
+    letter-spacing="-6">R</text>
+
+  <!-- ── WORDMARK — "TRACTION" (Logo 1 exact treatment) ─── -->
+  <text x="1280" y="810"
+    font-family="Impact, Arial Black, sans-serif"
+    font-size="78"
+    font-weight="900"
+    fill="#FFFFFF"
     text-anchor="middle"
-    letter-spacing="10">THE TRACTION REPORT</text>
+    letter-spacing="16">TRACTION</text>
 
-  <!-- Gold divider line under title -->
-  <rect x="940" y="710" width="760" height="2" fill="url(#goldLine)"/>
-
-  <!-- ── TAGLINE ── -->
-  <text x="1320" y="775"
-    font-family="Arial, Helvetica, sans-serif"
-    font-size="34"
-    font-weight="400"
-    fill="#C4933A"
+  <!-- ── "— REPORT —" with orange dashes (Logo 1 exact) ─── -->
+  <!-- Left dash -->
+  <rect x="878" y="833" width="80" height="4" fill="#E85D00"/>
+  <!-- REPORT text -->
+  <text x="1280" y="862"
+    font-family="Impact, Arial Black, sans-serif"
+    font-size="46"
+    font-weight="900"
+    fill="#E85D00"
     text-anchor="middle"
-    letter-spacing="14">TESTED UNDER PRESSURE</text>
+    letter-spacing="20">REPORT</text>
+  <!-- Right dash -->
+  <rect x="1602" y="833" width="80" height="4" fill="#E85D00"/>
 
-  <!-- ── SUB-LABEL ── -->
-  <text x="1320" y="828"
+  <!-- ── TAGLINE (Logo 1 small caps treatment) ────────────── -->
+  <text x="1280" y="898"
     font-family="Arial, Helvetica, sans-serif"
     font-size="22"
-    font-weight="300"
-    fill="#666666"
+    font-weight="400"
+    fill="#CCCCCC"
     text-anchor="middle"
-    letter-spacing="8">BASKETBALL MOVEMENT LAB</text>
+    letter-spacing="7">PERFORMANCE BASKETBALL REVIEWS  ·  TESTED UNDER PRESSURE.</text>
 
-  <!-- ── RIGHT SIDE DESCRIPTOR STACK ── -->
-  <!-- Vertical rule -->
-  <rect x="1890" y="600" width="1.5" height="240" fill="#C4933A" opacity="0.4"/>
+  <!-- ── BASKETBALL ICON (Logo 1 — simplified SVG) ────────── -->
+  <!-- Circle outline -->
+  <circle cx="1280" cy="927" r="16" fill="none" stroke="#E85D00" stroke-width="2.5" opacity="0.8"/>
+  <!-- Vertical seam -->
+  <line x1="1280" y1="911" x2="1280" y2="943" stroke="#E85D00" stroke-width="1.5" opacity="0.8"/>
+  <!-- Horizontal seam -->
+  <line x1="1264" y1="927" x2="1296" y2="927" stroke="#E85D00" stroke-width="1.5" opacity="0.8"/>
+  <!-- Left arc seam -->
+  <path d="M 1268,913 Q 1258,927 1268,941" fill="none" stroke="#E85D00" stroke-width="1.5" opacity="0.8"/>
+  <!-- Right arc seam -->
+  <path d="M 1292,913 Q 1302,927 1292,941" fill="none" stroke="#E85D00" stroke-width="1.5" opacity="0.8"/>
 
-  <text x="1918" y="643"
-    font-family="Arial, Helvetica, sans-serif"
-    font-size="19"
-    font-weight="700"
-    fill="#888888"
-    text-anchor="start"
-    letter-spacing="5">TRACTION</text>
+  <!-- ── DESKTOP EXTENDED ELEMENTS (outside safe zone) ───── -->
+  <!-- Left decorative herringbone accent block -->
+  <g opacity="0.18">
+    <polyline points="100,580 180,480 260,580 340,480 420,580" fill="none" stroke="#E85D00" stroke-width="6" stroke-linejoin="round"/>
+    <polyline points="100,680 180,580 260,680 340,580 420,680" fill="none" stroke="#E85D00" stroke-width="6" stroke-linejoin="round"/>
+    <polyline points="100,780 180,680 260,780 340,680 420,780" fill="none" stroke="#E85D00" stroke-width="6" stroke-linejoin="round"/>
+    <polyline points="100,880 180,780 260,880 340,780 420,880" fill="none" stroke="#E85D00" stroke-width="6" stroke-linejoin="round"/>
+  </g>
 
-  <text x="1918" y="678"
-    font-family="Arial, Helvetica, sans-serif"
-    font-size="19"
-    font-weight="700"
-    fill="#888888"
-    text-anchor="start"
-    letter-spacing="5">CUSHION</text>
+  <!-- Right decorative herringbone accent block -->
+  <g opacity="0.18">
+    <polyline points="2140,580 2220,480 2300,580 2380,480 2460,580" fill="none" stroke="#E85D00" stroke-width="6" stroke-linejoin="round"/>
+    <polyline points="2140,680 2220,580 2300,680 2380,580 2460,680" fill="none" stroke="#E85D00" stroke-width="6" stroke-linejoin="round"/>
+    <polyline points="2140,780 2220,680 2300,780 2380,680 2460,780" fill="none" stroke="#E85D00" stroke-width="6" stroke-linejoin="round"/>
+    <polyline points="2140,880 2220,780 2300,880 2380,780 2460,880" fill="none" stroke="#E85D00" stroke-width="6" stroke-linejoin="round"/>
+  </g>
 
-  <text x="1918" y="713"
-    font-family="Arial, Helvetica, sans-serif"
-    font-size="19"
-    font-weight="700"
-    fill="#888888"
-    text-anchor="start"
-    letter-spacing="5">CONTAINMENT</text>
-
-  <text x="1918" y="748"
-    font-family="Arial, Helvetica, sans-serif"
-    font-size="19"
-    font-weight="700"
-    fill="#888888"
-    text-anchor="start"
-    letter-spacing="5">COURT FEEL</text>
-
-  <text x="1918" y="783"
-    font-family="Arial, Helvetica, sans-serif"
-    font-size="19"
-    font-weight="700"
-    fill="#888888"
-    text-anchor="start"
-    letter-spacing="5">RECOVERY</text>
-
-  <text x="1918" y="818"
-    font-family="Arial, Helvetica, sans-serif"
-    font-size="19"
-    font-weight="700"
-    fill="#888888"
-    text-anchor="start"
-    letter-spacing="5">TRUST FACTOR</text>
+  <!-- Thin orange accent lines flanking safe zone — horizontal -->
+  <rect x="507" y="513" width="1546" height="2" fill="url(#orangeShimmer)" opacity="0.7"/>
+  <rect x="507" y="937" width="1546" height="2" fill="url(#orangeShimmer)" opacity="0.7"/>
 
 </svg>
