@@ -1,0 +1,146 @@
+<svg width="2560" height="1440" viewBox="0 0 2560 1440" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+
+    <!-- Herringbone traction texture (Logo 2 DNA) -->
+    <pattern id="traction" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect width="40" height="40" fill="none"/>
+      <polyline points="0,20 10,0 20,20 30,0 40,20" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linejoin="round"/>
+      <polyline points="0,40 10,20 20,40 30,20 40,40" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linejoin="round"/>
+    </pattern>
+
+    <!-- Deep orange glow (Logo 2 DNA — the ring warmth) -->
+    <radialGradient id="heatCore" cx="50%" cy="50%" r="35%">
+      <stop offset="0%"   stop-color="#C44000" stop-opacity="0.32"/>
+      <stop offset="50%"  stop-color="#C44000" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#C44000" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Horizontal fade for edge bleed -->
+    <linearGradient id="edgeFade" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#000000" stop-opacity="1"/>
+      <stop offset="18%"  stop-color="#000000" stop-opacity="0"/>
+      <stop offset="82%"  stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+    </linearGradient>
+
+    <!-- Orange accent line shimmer -->
+    <linearGradient id="orangeShimmer" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#E85D00" stop-opacity="0"/>
+      <stop offset="25%"  stop-color="#E85D00" stop-opacity="1"/>
+      <stop offset="50%"  stop-color="#FF8030" stop-opacity="1"/>
+      <stop offset="75%"  stop-color="#E85D00" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#E85D00" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Glow behind monogram -->
+    <radialGradient id="monoGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#C44000" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#C44000" stop-opacity="0"/>
+    </radialGradient>
+
+  </defs>
+
+  <!-- ░░ BASE — Pure black (Logo 1 DNA) ░░ -->
+  <rect width="2560" height="1440" fill="#000000"/>
+
+  <!-- ░░ HERRINGBONE TEXTURE — full canvas, very subtle (Logo 2 DNA) ░░ -->
+  <rect width="2560" height="1440" fill="url(#traction)" opacity="0.6"/>
+
+  <!-- ░░ HEAT GLOW — centered, Logo 2 orange ring warmth ░░ -->
+  <rect x="280" y="260" width="2000" height="920" fill="url(#heatCore)"/>
+
+  <!-- ░░ EDGE FADE — darkness at left/right for cinema feel ░░ -->
+  <rect width="2560" height="1440" fill="url(#edgeFade)"/>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--  MOBILE SAFE ZONE: x=507–2053  y=509–931  cx=1280 cy=720 -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+
+  <!-- Soft glow behind monogram area -->
+  <ellipse cx="1280" cy="660" rx="320" ry="200" fill="url(#monoGlow)"/>
+
+  <!-- ── TR MONOGRAM (Logo 1 exact color language) ──────── -->
+  <!-- T — white, ultra-bold condensed -->
+  <text x="1148" y="730"
+    font-family="Impact, Arial Black, sans-serif"
+    font-size="220"
+    font-weight="900"
+    fill="#FFFFFF"
+    text-anchor="end"
+    letter-spacing="-6">T</text>
+
+  <!-- R — orange, ultra-bold condensed, tight against T -->
+  <text x="1160" y="730"
+    font-family="Impact, Arial Black, sans-serif"
+    font-size="220"
+    font-weight="900"
+    fill="#E85D00"
+    text-anchor="start"
+    letter-spacing="-6">R</text>
+
+  <!-- ── WORDMARK — "TRACTION" (Logo 1 exact treatment) ─── -->
+  <text x="1280" y="810"
+    font-family="Impact, Arial Black, sans-serif"
+    font-size="78"
+    font-weight="900"
+    fill="#FFFFFF"
+    text-anchor="middle"
+    letter-spacing="16">TRACTION</text>
+
+  <!-- ── "— REPORT —" with orange dashes (Logo 1 exact) ─── -->
+  <!-- Left dash -->
+  <rect x="878" y="833" width="80" height="4" fill="#E85D00"/>
+  <!-- REPORT text -->
+  <text x="1280" y="862"
+    font-family="Impact, Arial Black, sans-serif"
+    font-size="46"
+    font-weight="900"
+    fill="#E85D00"
+    text-anchor="middle"
+    letter-spacing="20">REPORT</text>
+  <!-- Right dash -->
+  <rect x="1602" y="833" width="80" height="4" fill="#E85D00"/>
+
+  <!-- ── TAGLINE (Logo 1 small caps treatment) ────────────── -->
+  <text x="1280" y="898"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="22"
+    font-weight="400"
+    fill="#CCCCCC"
+    text-anchor="middle"
+    letter-spacing="7">PERFORMANCE BASKETBALL REVIEWS  ·  TESTED UNDER PRESSURE.</text>
+
+  <!-- ── BASKETBALL ICON (Logo 1 — simplified SVG) ────────── -->
+  <!-- Circle outline -->
+  <circle cx="1280" cy="927" r="16" fill="none" stroke="#E85D00" stroke-width="2.5" opacity="0.8"/>
+  <!-- Vertical seam -->
+  <line x1="1280" y1="911" x2="1280" y2="943" stroke="#E85D00" stroke-width="1.5" opacity="0.8"/>
+  <!-- Horizontal seam -->
+  <line x1="1264" y1="927" x2="1296" y2="927" stroke="#E85D00" stroke-width="1.5" opacity="0.8"/>
+  <!-- Left arc seam -->
+  <path d="M 1268,913 Q 1258,927 1268,941" fill="none" stroke="#E85D00" stroke-width="1.5" opacity="0.8"/>
+  <!-- Right arc seam -->
+  <path d="M 1292,913 Q 1302,927 1292,941" fill="none" stroke="#E85D00" stroke-width="1.5" opacity="0.8"/>
+
+  <!-- ── DESKTOP EXTENDED ELEMENTS (outside safe zone) ───── -->
+  <!-- Left decorative herringbone accent block -->
+  <g opacity="0.18">
+    <polyline points="100,580 180,480 260,580 340,480 420,580" fill="none" stroke="#E85D00" stroke-width="6" stroke-linejoin="round"/>
+    <polyline points="100,680 180,580 260,680 340,580 420,680" fill="none" stroke="#E85D00" stroke-width="6" stroke-linejoin="round"/>
+    <polyline points="100,780 180,680 260,780 340,680 420,780" fill="none" stroke="#E85D00" stroke-width="6" stroke-linejoin="round"/>
+    <polyline points="100,880 180,780 260,880 340,780 420,880" fill="none" stroke="#E85D00" stroke-width="6" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Right decorative herringbone accent block -->
+  <g opacity="0.18">
+    <polyline points="2140,580 2220,480 2300,580 2380,480 2460,580" fill="none" stroke="#E85D00" stroke-width="6" stroke-linejoin="round"/>
+    <polyline points="2140,680 2220,580 2300,680 2380,580 2460,680" fill="none" stroke="#E85D00" stroke-width="6" stroke-linejoin="round"/>
+    <polyline points="2140,780 2220,680 2300,780 2380,680 2460,780" fill="none" stroke="#E85D00" stroke-width="6" stroke-linejoin="round"/>
+    <polyline points="2140,880 2220,780 2300,880 2380,780 2460,880" fill="none" stroke="#E85D00" stroke-width="6" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Thin orange accent lines flanking safe zone — horizontal -->
+  <rect x="507" y="513" width="1546" height="2" fill="url(#orangeShimmer)" opacity="0.7"/>
+  <rect x="507" y="937" width="1546" height="2" fill="url(#orangeShimmer)" opacity="0.7"/>
+
+</svg>
