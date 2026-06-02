@@ -877,13 +877,13 @@
     </div>
 
     <div class="section-divider"><h2>Platform Strategy</h2></div>
-    <div class="platform-grid mb-16">
-      <div class="platform-card"><div class="platform-icon">🎵</div><div class="platform-name">TikTok</div><div class="platform-format">15–60 sec vertical</div><div class="platform-tip">Hook in 2 sec. Progress reveals. Raw &gt; polished. 6–9 PM post time.</div></div>
-      <div class="platform-card"><div class="platform-icon">📸</div><div class="platform-name">Instagram Reels</div><div class="platform-format">15–90 sec</div><div class="platform-tip">More polish. Before/after dunk progress. Aesthetic matters. 5–7 PM.</div></div>
-      <div class="platform-card"><div class="platform-icon">▶️</div><div class="platform-name">YouTube Shorts</div><div class="platform-format">Up to 60 sec</div><div class="platform-tip">Educational. "Training at 42 to dunk again" = high search value.</div></div>
-      <div class="platform-card"><div class="platform-icon">📱</div><div class="platform-name">Stories</div><div class="platform-format">15 sec real-time</div><div class="platform-tip">BTS, shoe unboxings, daily check-ins. Raw + authentic.</div></div>
-      <div class="platform-card"><div class="platform-icon">🧵</div><div class="platform-name">Threads / X</div><div class="platform-format">Text + media</div><div class="platform-tip">Dunk data logs, training science. Build authority + brand.</div></div>
+    <div class="platform-tabs mb-0">
+      <button class="platform-tab-btn active" onclick="showPlatform('tiktok', this)">🎵 TikTok</button>
+      <button class="platform-tab-btn" onclick="showPlatform('instagram', this)">📸 Instagram Reels</button>
+      <button class="platform-tab-btn" onclick="showPlatform('youtube', this)">▶️ YouTube Shorts</button>
+      <button class="platform-tab-btn" onclick="showPlatform('threads', this)">🧵 Threads</button>
     </div>
+    <div id="platformDetail" class="mb-16"></div>
   </div>
 
   <!-- ② SCRIPT LIBRARY -->

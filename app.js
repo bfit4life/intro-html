@@ -344,10 +344,10 @@ function showDayDetail(i) {
 // ── Meal Plan Data ────────────────────────────────────────────────────────────
 const MEALS = {
   training: {
-    kcal: 2900, protein: 165, carbs: 330, fat: 103,
+    kcal: 3150, protein: 175, carbs: 410, fat: 88,
     label: 'Training Day',
     meals: [
-      { time: '6:30 AM', kcal: 480, name: 'Pre-Training Fuel', foods: '1 cup oats (dry 50g) · 1 scoop whey protein · 1 banana · 1 tbsp honey · 12 oz black coffee', p: 32, c: 72, f: 6 },
+      { time: '6:30 AM', kcal: 440, name: 'Pre-Training Fuel', foods: '1 cup oats (dry 50g) · 1 scoop whey protein · 1 banana · 1 tbsp honey · 16 oz water with electrolytes', p: 32, c: 72, f: 6 },
       { time: '9:00 AM', kcal: 520, name: 'Post-Workout Recovery', foods: '3 whole eggs + 2 whites scrambled · 1 cup low-fat Greek yogurt · 1 cup mixed berries · 1 slice Ezekiel bread', p: 48, c: 42, f: 14 },
       { time: '12:30 PM', kcal: 640, name: 'Performance Lunch', foods: '6 oz grilled chicken breast · 1.5 cups cooked brown rice · 2 cups mixed greens · ½ avocado · olive oil + lemon dressing', p: 52, c: 68, f: 18 },
       { time: '3:30 PM', kcal: 320, name: 'Athletic Snack', foods: '1 cup low-fat cottage cheese · ½ cup blueberries · 1 oz almonds', p: 28, c: 24, f: 10 },
@@ -356,7 +356,7 @@ const MEALS = {
     ]
   },
   basketball: {
-    kcal: 2700, protein: 160, carbs: 305, fat: 90,
+    kcal: 2950, protein: 168, carbs: 380, fat: 80,
     label: 'Basketball Day',
     meals: [
       { time: '6:30 AM', kcal: 420, name: 'Morning Fuel', foods: '1 cup oats · 1 scoop whey protein · 1 banana · 8 oz orange juice (fast carbs for court)', p: 30, c: 68, f: 5 },
@@ -368,10 +368,10 @@ const MEALS = {
     ]
   },
   recovery: {
-    kcal: 2300, protein: 155, carbs: 235, fat: 82,
+    kcal: 2350, protein: 155, carbs: 265, fat: 72,
     label: 'Recovery Day',
     meals: [
-      { time: '7:00 AM', kcal: 380, name: 'Relaxed Morning', foods: '2 eggs + 2 whites any style · 2 slices Ezekiel toast · ½ avocado · coffee or green tea', p: 28, c: 36, f: 16 },
+      { time: '7:00 AM', kcal: 380, name: 'Relaxed Morning', foods: '2 eggs + 2 whites any style · 2 slices Ezekiel toast · ½ avocado · green tea', p: 28, c: 36, f: 16 },
       { time: '10:00 AM', kcal: 260, name: 'Light Snack', foods: '1 cup Greek yogurt · ½ cup granola · 1 tsp honey', p: 16, c: 38, f: 6 },
       { time: '1:00 PM', kcal: 560, name: 'Anti-Inflammatory Lunch', foods: '6 oz wild salmon · 1 cup cooked lentils · 2 cups spinach salad · olive oil + apple cider vinegar dressing · lemon', p: 48, c: 48, f: 18 },
       { time: '4:00 PM', kcal: 220, name: 'Recovery Snack', foods: '1 oz mixed nuts · 1 apple · tart cherry juice (4 oz) — reduces DOMS significantly', p: 5, c: 36, f: 12 },
@@ -717,11 +717,31 @@ function renderWeeklyPlanner() {
   document.getElementById('dayContentBrief').style.display = 'none';
 }
 
+const CLIP_SYSTEM = [
+  { num: '01', name: 'The Arrival', icon: '🎬', desc: 'Capture your arrival / session start. Show the environment, the gear, the mindset. No talking needed — just the atmosphere.', angle: 'Wide angle, tripod, capture you walking in or setting up. 5–8 sec.', platform: 'Story / B-roll for any edit' },
+  { num: '02', name: 'The Movement Demo', icon: '📹', desc: 'Film the key exercise or skill of the day. This is your primary clip. Slow-mo at 60fps. Show form clearly.', angle: 'Side angle for lower body. Front angle for jumps. Get close enough to see the details.', platform: 'TikTok / IG Reels main content' },
+  { num: '03', name: 'The Grind Moment', icon: '💪', desc: 'Catch one raw, unscripted moment — a tough set, a failed rep, a reaction. Authenticity beats polish every time.', angle: 'Handheld or tripod wide. Let it be imperfect. 10–20 sec raw clip.', platform: 'TikTok hook or IG Story' },
+  { num: '04', name: 'The Measure', icon: '📏', desc: 'Record your data point of the day — vertical jump on wall, tape measure, weight on bar, shoe sole. Show the numbers.', angle: 'Close-up on measurement. Tape measure visible. Text overlay the number in edit.', platform: 'YouTube Shorts / Dunk Data Log' },
+  { num: '05', name: 'The Lesson', icon: '🎤', desc: 'Talking head: 1 thing you learned, noticed, or want to share. 15–30 seconds. No script — just be honest.', angle: 'Portrait, phone at eye level, good light (ring light or window). Background = gym.', platform: 'Threads / YouTube / Caption story' },
+];
+
 function showDayBrief(idx) {
   const d = WEEKLY_PLAN[idx];
   const brief = document.getElementById('dayContentBrief');
   const week = document.getElementById('plannerWeek')?.value || '?';
   brief.style.display = 'block';
+
+  const clipCards = CLIP_SYSTEM.map((clip, i) => {
+    const filmNote = d.filmList[i] || clip.desc;
+    return `<div class="clip-card">
+      <div class="clip-num">${clip.num}</div>
+      <div class="clip-title">${clip.icon} ${clip.name}</div>
+      <div class="clip-desc">${filmNote}</div>
+      <div class="clip-angle">📐 ${clip.angle}</div>
+      <div class="clip-angle" style="color:var(--blue);margin-top:3px">📲 ${clip.platform}</div>
+    </div>`;
+  }).join('');
+
   brief.innerHTML = `
     <div style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
       <div><span class="brief-tag">📅 ${d.day} — Week ${week}</span>
@@ -729,15 +749,30 @@ function showDayBrief(idx) {
       <div style="font-size:12px;color:var(--text-muted)">Post at <strong style="color:var(--orange)">${d.postTime}</strong> · ${d.platforms.map(p=>`<span class="tag tag-blue" style="margin:1px">${p}</span>`).join('')}</div>
     </div>
     <div class="brief-hook">"${d.hook}"</div>
+
+    <div class="card-title mb-8" style="margin-top:16px">📹 5-CLIP SYSTEM — 1 Workout = 5 Pieces of Content</div>
+    <div class="five-clips-grid">${clipCards}</div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;padding:10px 12px;background:var(--bg-card-2);border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--text-secondary);margin-bottom:16px">
+      <span>📱 Phone tripod ✓</span>
+      <span>🎥 60fps slo-mo on ✓</span>
+      <span>💡 Ring light optional ✓</span>
+      <span>📏 Tape measure ready ✓</span>
+    </div>
+
     <div class="grid-2">
-      <div>
-        <div class="card-title mb-8">📹 What to Film Today</div>
-        <ul class="recovery-items">${d.filmList.map(f=>`<li>${f}</li>`).join('')}</ul>
-      </div>
       <div>
         <div class="card-title mb-8">📋 Ready-to-Post Caption</div>
         <div style="background:var(--bg-card-2);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:12px;color:var(--text-secondary);white-space:pre-wrap;line-height:1.7">${d.caption}</div>
         <div style="margin-top:8px;font-size:11px;color:var(--text-muted)">${d.hashtags}</div>
+      </div>
+      <div>
+        <div class="card-title mb-8">🎯 Today's Content Goal</div>
+        <div style="background:var(--bg-card-2);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:12px;color:var(--text-secondary);line-height:1.7">
+          <div style="margin-bottom:8px"><strong style="color:var(--orange)">Type:</strong> ${d.type}</div>
+          <div style="margin-bottom:8px"><strong style="color:var(--orange)">Platforms:</strong> ${d.platforms.join(', ')}</div>
+          <div style="margin-bottom:8px"><strong style="color:var(--orange)">Post time:</strong> ${d.postTime}</div>
+          <div><strong style="color:var(--orange)">Hook:</strong> ${d.hook}</div>
+        </div>
       </div>
     </div>`;
   brief.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
