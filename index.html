@@ -4,8 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Traction Report | Performance OS</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=3">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* Mobile bottom nav — inline to bypass cache */
+    .mobile-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#12121c;border-top:2px solid #ff6b00;padding:6px 0 env(safe-area-inset-bottom,6px);flex-direction:row;justify-content:space-around;align-items:stretch;}
+    .mob-nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;background:none;border:none;color:#888;font-size:9px;font-weight:700;letter-spacing:.04em;padding:6px 2px;cursor:pointer;-webkit-tap-highlight-color:transparent;text-transform:uppercase;}
+    .mob-nav-item .mob-icon{font-size:22px;line-height:1.2;}
+    .mob-nav-item.active{color:#ff6b00;}
+    @media(max-width:900px){.mobile-bottom-nav{display:flex!important;} .main-content{padding-bottom:90px!important;}}
+  </style>
 </head>
 <body>
 <button class="menu-btn" id="menuBtn">☰</button>
@@ -1102,7 +1110,7 @@
 
 </div>
 
-<script src="app.js"></script>
+<script src="app.js?v=3"></script>
 
 <!-- ══ MOBILE BOTTOM NAV ════════════════════════════════ -->
 <nav class="mobile-bottom-nav" id="mobileBottomNav">
