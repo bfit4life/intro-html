@@ -35,9 +35,10 @@
     <button class="nav-item" data-section="sleep"><span class="nav-icon">🌙</span><span>Sleep Protocol</span></button>
     <button class="nav-item" data-section="recovery"><span class="nav-icon">🔄</span><span>Recovery System</span></button>
     <div class="nav-group-label">Brand</div>
-    <button class="nav-item" data-section="content"><span class="nav-icon">🎬</span><span>Content Creator</span></button>
+    <button class="nav-item" data-section="content"><span class="nav-icon">🎬</span><span>Content Studio</span></button>
     <button class="nav-item" data-section="calendar"><span class="nav-icon">📆</span><span>Calendar Export</span></button>
   </nav>
+  <button class="help-btn" onclick="openHowTo()">❓ How to Use This App</button>
 </aside>
 
 <!-- ══ MAIN CONTENT ══════════════════════════════════════ -->
@@ -831,118 +832,114 @@
   </div>
 </section>
 
-<!-- ──────────────────── CONTENT CREATOR ──────────────── -->
+<!-- ──────────────────── CONTENT STUDIO ──────────────────── -->
 <section id="section-content" class="section">
   <div class="page-header">
-    <div class="badge">🎬 Traction Report · Content Engine</div>
-    <h1>Content <span>Creator System</span></h1>
-    <p>Every workout = 5+ pieces of content · Auto-capture · Dunk data series</p>
+    <div class="badge">🎬 Traction Report · Content Studio</div>
+    <h1>Content <span>Studio</span></h1>
+    <p>Plan · Script · Post · Analyze · Review — one system, every week</p>
   </div>
 
-  <div class="section-divider"><h2>Platform Strategy</h2></div>
-  <div class="platform-grid mb-24">
-    <div class="platform-card">
-      <div class="platform-icon">🎵</div>
-      <div class="platform-name">TikTok</div>
-      <div class="platform-format">15–60 sec vertical</div>
-      <div class="platform-tip">Dunk attempt clips + trending audio. Hook in first 2 sec. Progress reveal format wins.</div>
-    </div>
-    <div class="platform-card">
-      <div class="platform-icon">📸</div>
-      <div class="platform-name">Instagram Reels</div>
-      <div class="platform-format">15–90 sec vertical</div>
-      <div class="platform-tip">Polish over raw. Before/after dunk progress. Shoe testing visuals. Aesthetic matters more here.</div>
-    </div>
-    <div class="platform-card">
-      <div class="platform-icon">▶️</div>
-      <div class="platform-name">YouTube Shorts</div>
-      <div class="platform-format">Up to 60 sec vertical</div>
-      <div class="platform-tip">Educational angle + training clips. "How I'm training at 42 to dunk again" — high search value.</div>
-    </div>
-    <div class="platform-card">
-      <div class="platform-icon">📱</div>
-      <div class="platform-name">Stories</div>
-      <div class="platform-format">Real-time 15 sec</div>
-      <div class="platform-tip">BTS training, daily logs, polls, shoe unboxings. Raw authenticity. Don't overthink.</div>
-    </div>
-    <div class="platform-card">
-      <div class="platform-icon">🧵</div>
-      <div class="platform-name">Threads / X</div>
-      <div class="platform-format">Text + media</div>
-      <div class="platform-tip">Dunk data logs, training insights, shoe science. Your expertise builds trust = brand authority.</div>
-    </div>
+  <div class="studio-tabs mb-0">
+    <button class="studio-tab active" onclick="switchStudioTab('planner',this)">📅 Weekly Planner</button>
+    <button class="studio-tab" onclick="switchStudioTab('scripts',this)">📝 Script Library</button>
+    <button class="studio-tab" onclick="switchStudioTab('analytics',this)">📊 Analytics</button>
+    <button class="studio-tab" onclick="switchStudioTab('review',this)">✍️ Weekly Review</button>
   </div>
 
-  <div class="section-divider"><h2>One Workout → 5 Content Pieces</h2></div>
-  <div class="content-pipeline mb-24">
-    <div class="pipeline-step"><div class="pipeline-icon">🏋️</div><div class="pipeline-label">Train</div></div>
-    <div class="pipeline-step"><div class="pipeline-icon">📹</div><div class="pipeline-label">Capture</div></div>
-    <div class="pipeline-step"><div class="pipeline-icon">✂️</div><div class="pipeline-label">Clip</div></div>
-    <div class="pipeline-step"><div class="pipeline-icon">📲</div><div class="pipeline-label">Post</div></div>
-    <div class="pipeline-step"><div class="pipeline-icon">📊</div><div class="pipeline-label">Analyze</div></div>
-  </div>
-
-  <div class="grid-2 mb-24">
-    <div class="card">
-      <div class="card-title">Shot List — Every HPT Session</div>
-      <ul class="recovery-items">
-        <li><strong>Talking head intro</strong> — "Today's session goal" (30 sec pre-session)</li>
-        <li><strong>Slant board squats</strong> — close angle showing knee tracking</li>
-        <li><strong>Pogo jump set</strong> — slow-mo at 60fps or higher</li>
-        <li><strong>Band assisted dunk attempt</strong> — front + side angles</li>
-        <li><strong>Depth drop landing</strong> — slo-mo landing mechanics</li>
-        <li><strong>Vertical jump measurement</strong> — tape measure or jump mat</li>
-        <li><strong>Shoe worn today</strong> — 5-sec grip/sole shot = Traction Report content</li>
-        <li><strong>Post-session reaction</strong> — talking head "here's what happened"</li>
-      </ul>
+  <!-- ① WEEKLY PLANNER -->
+  <div id="studio-planner" class="studio-panel">
+    <div class="flex-between mb-16">
+      <h2 style="font-size:16px;font-weight:800">This Week's Content Calendar</h2>
+      <div class="flex gap-8" style="align-items:flex-end">
+        <div><div style="font-size:10px;color:var(--text-muted);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px">WEEK #</div>
+        <input type="number" id="plannerWeek" min="1" max="16" value="1" style="width:70px;padding:7px 10px;font-size:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);outline:none;font-weight:800" oninput="renderWeeklyPlanner()"></div>
+      </div>
     </div>
-    <div class="card">
-      <div class="card-title">Shot List — Basketball Sessions</div>
-      <ul class="recovery-items">
-        <li><strong>Ball handling drill clips</strong> — low angle, 2× speed</li>
-        <li><strong>Dunk approach breakdown</strong> — side view for footwork analysis</li>
-        <li><strong>Pull-up jumper slow-mo</strong> — release point analysis</li>
-        <li><strong>Shoe traction test</strong> — slide test, cut test on court</li>
-        <li><strong>Court shoe comparison</strong> — sole shots of current test shoe</li>
-        <li><strong>3-point make streak</strong> — if good shooting day, capture it</li>
-        <li><strong>Conditioning drill</strong> — shows athleticism + work ethic</li>
-        <li><strong>Talking head ending</strong> — "Shoe verdict of the day" for Traction Report</li>
-      </ul>
+    <div id="weeklyPlannerGrid" class="planner-grid mb-16"></div>
+    <div id="dayContentBrief" style="display:none"></div>
+
+    <div class="section-divider mt-16"><h2>One Workout → 5 Pieces</h2></div>
+    <div class="content-pipeline mb-20">
+      <div class="pipeline-step"><div class="pipeline-icon">🏋️</div><div class="pipeline-label">Train</div></div>
+      <div class="pipeline-step"><div class="pipeline-icon">📹</div><div class="pipeline-label">Capture</div></div>
+      <div class="pipeline-step"><div class="pipeline-icon">✂️</div><div class="pipeline-label">Clip</div></div>
+      <div class="pipeline-step"><div class="pipeline-icon">📲</div><div class="pipeline-label">Post</div></div>
+      <div class="pipeline-step"><div class="pipeline-icon">📊</div><div class="pipeline-label">Analyze</div></div>
+    </div>
+
+    <div class="section-divider"><h2>Platform Strategy</h2></div>
+    <div class="platform-grid mb-16">
+      <div class="platform-card"><div class="platform-icon">🎵</div><div class="platform-name">TikTok</div><div class="platform-format">15–60 sec vertical</div><div class="platform-tip">Hook in 2 sec. Progress reveals. Raw &gt; polished. 6–9 PM post time.</div></div>
+      <div class="platform-card"><div class="platform-icon">📸</div><div class="platform-name">Instagram Reels</div><div class="platform-format">15–90 sec</div><div class="platform-tip">More polish. Before/after dunk progress. Aesthetic matters. 5–7 PM.</div></div>
+      <div class="platform-card"><div class="platform-icon">▶️</div><div class="platform-name">YouTube Shorts</div><div class="platform-format">Up to 60 sec</div><div class="platform-tip">Educational. "Training at 42 to dunk again" = high search value.</div></div>
+      <div class="platform-card"><div class="platform-icon">📱</div><div class="platform-name">Stories</div><div class="platform-format">15 sec real-time</div><div class="platform-tip">BTS, shoe unboxings, daily check-ins. Raw + authentic.</div></div>
+      <div class="platform-card"><div class="platform-icon">🧵</div><div class="platform-name">Threads / X</div><div class="platform-format">Text + media</div><div class="platform-tip">Dunk data logs, training science. Build authority + brand.</div></div>
     </div>
   </div>
 
-  <div class="section-divider"><h2>Traction Report Integration Series</h2></div>
-  <div class="grid-3 mb-24">
-    <div class="card" style="border-color:var(--orange)">
-      <div class="card-title" style="color:var(--orange)">📊 Dunk Data Log</div>
-      <p class="text-sm mb-8">Weekly upload: vertical jump number, max reach, dunk stage achieved, shoe worn. Show the data. "Week 7: +3.5 inches. Tennis ball confirmed." Audience loves the numbers.</p>
-      <div class="tag tag-orange">Weekly Series</div>
+  <!-- ② SCRIPT LIBRARY -->
+  <div id="studio-scripts" class="studio-panel" style="display:none">
+    <div class="highlight-box mb-20">
+      <p><strong>How to use these scripts:</strong> Replace <strong>[brackets]</strong> with your real numbers. Read each out loud before filming. Your authentic delivery beats a perfect script every time.</p>
     </div>
-    <div class="card" style="border-color:var(--blue)">
-      <div class="card-title" style="color:var(--blue)">🏀 Shoe Testing During Vertical Training</div>
-      <p class="text-sm mb-8">Wear a different shoe every Friday Dunk Session. Rate traction, lockdown, ankle support, and responsiveness FOR JUMPING specifically. First-ever "dunk shoe" traction rating system.</p>
-      <div class="tag tag-blue">Dunk Lab Series</div>
+    <div id="scriptLibrary"></div>
+  </div>
+
+  <!-- ③ ANALYTICS TRACKER -->
+  <div id="studio-analytics" class="studio-panel" style="display:none">
+    <div class="flex-between mb-20">
+      <h2 style="font-size:16px;font-weight:800">Weekly Analytics Entry</h2>
+      <div class="flex gap-8">
+        <input type="number" id="analyticsWeek" min="1" max="16" placeholder="Wk #" style="width:70px;padding:7px 10px;font-size:13px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);outline:none">
+        <button class="btn btn-primary" onclick="saveAnalytics()" style="padding:8px 16px;font-size:12px">Save Week</button>
+      </div>
     </div>
-    <div class="card" style="border-color:var(--gold)">
-      <div class="card-title" style="color:var(--gold)">🎾 Road to Dunking Again</div>
-      <p class="text-sm mb-8">Long-form YouTube: Week 1 → Week 16 journey. 42-year-old, former trainer, content creator, training like an NBA athlete. The story IS the content. Film everything.</p>
-      <div class="tag tag-gold">Long-Form Series</div>
+    <div class="analytics-platforms" id="analyticsInputs"></div>
+    <div class="review-field mb-20">
+      <label>🏆 Best Performing Post This Week</label>
+      <input type="text" id="bestPost" placeholder="e.g. Friday dunk attempt clip — 24k views on TikTok">
+    </div>
+    <div class="card mb-20">
+      <div class="card-title">Platform Performance Trends (by week)</div>
+      <div class="chart-wrap"><canvas id="analyticsChart"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-title">🏋️ Science of the Slant Board</div>
-      <p class="text-sm mb-8">Educational series breaking down WHY slant board training works. Tendon science, quad activation research, isometric protocol. Position as expert. Drives brand credibility.</p>
-      <div class="tag tag-green">Educational Series</div>
+      <div class="card-title">Analytics History</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Wk</th><th>TikTok Views</th><th>IG Reach</th><th>YT Views</th><th>Threads</th><th>Followers+</th><th>Best Post</th></tr></thead>
+          <tbody id="analyticsBody"><tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px">No analytics saved yet. Enter week data above.</td></tr></tbody>
+        </table>
+      </div>
     </div>
-    <div class="card">
-      <div class="card-title">⚡ 42 and Explosive</div>
-      <p class="text-sm mb-8">Target: every athlete over 35 who thinks their best days are behind them. Document every performance metric. Be the proof it's possible. Massive underserved audience.</p>
-      <div class="tag tag-purple">Brand Series</div>
+  </div>
+
+  <!-- ④ WEEKLY REVIEW -->
+  <div id="studio-review" class="studio-panel" style="display:none">
+    <div class="highlight-box mb-20">
+      <p><strong>Weekly Review = Content Intelligence.</strong> The creators who grow fastest aren't the ones who post the most — they're the ones who <strong>learn the fastest</strong>. 10 minutes every Sunday. Compounds every week.</p>
     </div>
-    <div class="card">
-      <div class="card-title">🔬 Basketball Performance Experiments</div>
-      <p class="text-sm mb-8">A/B test different protocols: pogo jumps vs depth jumps, pre-workout nutrition, different shoe soles on traction. Position Traction Report as the data-driven basketball brand.</p>
-      <div class="tag tag-orange">Experiment Series</div>
+    <div class="tracker-form mb-24">
+      <div class="flex-between mb-16">
+        <h3 style="font-weight:800;font-size:16px">Write This Week's Review</h3>
+        <div class="flex gap-8">
+          <input type="number" id="reviewWeek" min="1" max="16" placeholder="Wk" style="width:58px;padding:7px 10px;font-size:13px;background:var(--bg-card-2);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);outline:none">
+          <input type="date" id="reviewDate" style="padding:7px 10px;font-size:13px;background:var(--bg-card-2);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);outline:none">
+        </div>
+      </div>
+      <div class="review-field"><label>📈 Best performing content this week</label><textarea id="rv1" rows="2" placeholder="Platform + why it worked. What was the hook? What got the most engagement?"></textarea></div>
+      <div class="review-field"><label>📉 Worst performing content (what flopped and why)</label><textarea id="rv2" rows="2" placeholder="Be honest. What didn't work? Static post? Bad hook? Wrong time?"></textarea></div>
+      <div class="review-field"><label>💬 Audience response — what are people saying in comments/DMs?</label><textarea id="rv3" rows="2" placeholder="Questions asked, requests for more content, shoe brands reaching out, etc."></textarea></div>
+      <div class="review-field"><label>🔁 What to repeat next week</label><input id="rv4" type="text" placeholder="e.g. Raw dunk attempts with real-time measurements on screen"></div>
+      <div class="review-field"><label>🚫 What to stop or change</label><input id="rv5" type="text" placeholder="e.g. Stop posting static images — video only going forward."></div>
+      <div class="review-field"><label>👟 Traction Report notes (brand interest, DMs, shoe opportunities)</label><textarea id="rv6" rows="2" placeholder="Brand outreach, affiliate opportunities, shoes to test next, partnership conversations."></textarea></div>
+      <div class="review-field"><label>🎯 3 specific content goals for next week</label><textarea id="rv7" rows="3" placeholder="1. Dunk Data Log — Week [X] measurements with on-screen overlay&#10;2. Slant board science explainer — 45 sec educational&#10;3. Shoe test — [Brand] on [surface]"></textarea></div>
+      <div class="review-field"><label>📋 Overall summary (2–3 honest sentences)</label><textarea id="rv8" rows="3" placeholder="How was the week overall? What story are you telling? What momentum are you building?"></textarea></div>
+      <button class="btn btn-primary" onclick="saveReview()">Save Weekly Review</button>
     </div>
+    <div class="section-divider"><h2>Review History</h2></div>
+    <div id="reviewHistory"><p class="text-sm text-muted" style="padding:10px 0">No reviews saved yet. Write your first review above.</p></div>
   </div>
 </section>
 
@@ -1027,6 +1024,82 @@
 </section>
 
 </main>
+
+<!-- ══ HOW-TO MODAL ═════════════════════════════════════ -->
+<div class="modal-overlay" id="howToModal" onclick="closeHowTo(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeHowTo()">✕</button>
+    <div class="badge mb-12">🏀 Traction Report Performance OS</div>
+    <h2 style="font-size:22px;font-weight:900;margin-bottom:6px">How to Use This App</h2>
+    <p class="text-sm text-muted mb-20">Your complete 16-week performance system. Here's exactly how to engage with each part.</p>
+
+    <div class="how-to-step">
+      <div class="how-to-num">1</div>
+      <div class="how-to-content">
+        <h4>📊 Dashboard — Your Mission Control</h4>
+        <p>Start here every day. Check your current week &amp; phase. The KPI cards update automatically once you log sessions in the Dunk Lab. The charts show your projected vertical gains and training load by phase. Bookmark this page — open it every morning.</p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">2</div>
+      <div class="how-to-content">
+        <h4>📅 Weekly Schedule — Click Your Day</h4>
+        <p>Go to Weekly Schedule and click today's day card (MON–SUN). The full session plan appears below with every exercise, set, rep, and coaching note. <strong>Check off each exercise as you complete it</strong> — the checkboxes track your progress during the session.</p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">3</div>
+      <div class="how-to-content">
+        <h4>⚡ Training Program — Your 16-Week Blueprint</h4>
+        <p>Go to 16-Week Program to see your current phase. Click each phase accordion to expand it. <strong>Phase 1 is already open.</strong> The slant board science section at the top tells you exactly how to set up and execute every slant board exercise safely.</p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">4</div>
+      <div class="how-to-content">
+        <h4>🏀 Dunk Lab — Log Every Friday Session</h4>
+        <p>After every Friday Dunk Session, go to Dunk Lab and fill in the form: standing reach, max jump reach, vertical jump (in inches), and your best dunk stage achieved. Hit <strong>+ Log Session</strong>. Your vertical jump progress chart updates instantly. This is your Dunk Data Log — it also feeds your Traction Report content.</p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">5</div>
+      <div class="how-to-content">
+        <h4>🥗 Nutrition &amp; Meals — Toggle Your Day Type</h4>
+        <p>Click the three buttons at the top: <strong>⚡ Training Day</strong>, <strong>🏀 Basketball Day</strong>, or <strong>🔄 Recovery Day</strong>. The full meal plan for that day type appears — including every meal with foods, calories, and macros (P/C/F). Scroll down to see the micronutrient protocol and hydration targets.</p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">6</div>
+      <div class="how-to-content">
+        <h4>🎬 Content Studio — 4 Tabs, Weekly Workflow</h4>
+        <p><strong>📅 Weekly Planner:</strong> Set your week number, click each day card to see your content brief for that day.<br>
+        <strong>📝 Script Library:</strong> Click any script to expand it. Copy sections with one click. Fill in [brackets] with real data.<br>
+        <strong>📊 Analytics:</strong> After each week, enter your platform numbers and save. Track growth over all 16 weeks.<br>
+        <strong>✍️ Weekly Review:</strong> Every Sunday, fill in the 8 review questions and save. This is your content learning engine.</p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">7</div>
+      <div class="how-to-content">
+        <h4>📆 Calendar Export — Import to Google Calendar</h4>
+        <p>Set your program start date (next Monday works). Click <strong>Download 16-Week .ics</strong>. Open Google Calendar on desktop → Settings → Import &amp; Export → Import. All 112 training sessions (+ daily morning routine and sleep wind-down reminders) are already in your calendar from the initial setup.</p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">8</div>
+      <div class="how-to-content">
+        <h4>🌙 Sleep &amp; 🔄 Recovery — Daily Non-Negotiables</h4>
+        <p>Check the Sleep Protocol for your nightly wind-down routine (9 PM start, lights out 10:15 PM). The Recovery System tab has your Thursday active recovery protocol and the deload schedule. <strong>Tibialis raises and soleus raises are daily exercises</strong> — they're in every session for a reason.</p>
+      </div>
+    </div>
+
+    <div style="background:var(--orange-glow);border:1px solid var(--orange);border-radius:var(--radius);padding:14px;margin-top:16px">
+      <p style="font-size:13px"><strong style="color:var(--orange)">The Loop:</strong> Train → Film → Log in Dunk Lab → Write Script → Post Content → Enter Analytics → Write Sunday Review → Repeat. That's the full system. Everything connects.</p>
+    </div>
+    <button class="btn btn-primary mt-16" onclick="closeHowTo()" style="width:100%;justify-content:center">Let's Go 🏀</button>
+  </div>
+</div>
+
 </div>
 
 <script src="app.js"></script>

@@ -361,14 +361,11 @@ function switchMealPlan(type, btn) {
 function renderMealPlan(type) {
   const d = MEALS[type];
   const kcalColor = type === 'training' ? 'var(--orange)' : type === 'basketball' ? 'var(--blue)' : 'var(--green)';
-  let html = `<div class="macro-grid mb-16">
-    <div class="macro-card"><div class="macro-num" style="color:${kcalColor}">${d.kcal}<span class="macro-unit"> kcal</span></div><div class="macro-label">Daily Calories</div></div>
+  let html = `<div class="macro-grid-4 mb-20">
+    <div class="macro-card"><div class="macro-num" style="color:${kcalColor}">${d.kcal}<span class="macro-unit" style="font-size:13px"> kcal</span></div><div class="macro-label">Daily Calories</div></div>
     <div class="macro-card"><div class="macro-num" style="color:var(--blue)">${d.protein}<span class="macro-unit">g</span></div><div class="macro-label">Protein</div></div>
     <div class="macro-card"><div class="macro-num" style="color:var(--gold)">${d.carbs}<span class="macro-unit">g</span></div><div class="macro-label">Carbohydrates</div></div>
-  </div>
-  <div class="grid-2 mb-16" style="grid-template-columns:1fr auto">
-    <div></div>
-    <div class="macro-card" style="text-align:center;min-width:120px"><div class="macro-num" style="color:var(--green)">${d.fat}<span class="macro-unit">g</span></div><div class="macro-label">Total Fat</div></div>
+    <div class="macro-card"><div class="macro-num" style="color:var(--green)">${d.fat}<span class="macro-unit">g</span></div><div class="macro-label">Total Fat</div></div>
   </div>
   <div class="card mb-16">
     <div class="card-title">${d.label} — Full Meal Plan</div>
@@ -605,6 +602,11 @@ document.addEventListener('DOMContentLoaded', () => {
   updateDunkChart();
   updateKPIs();
   updateWeekKPIs();
+  renderScriptLibrary();
+  renderAnalyticsInputs();
+  renderAnalyticsHistory();
+  renderReviewHistory();
+  renderWeeklyPlanner();
 
   // Pre-fill calendar start date to next Monday
   const today = new Date();
@@ -614,4 +616,353 @@ document.addEventListener('DOMContentLoaded', () => {
   const isoDate = nextMon.toISOString().split('T')[0];
   document.getElementById('calStartDate').value = isoDate;
   document.getElementById('logDate').value = today.toISOString().split('T')[0];
+  document.getElementById('reviewDate').value = today.toISOString().split('T')[0];
+
+  // Show how-to on very first visit
+  if (!localStorage.getItem('trOnboarded')) {
+    setTimeout(() => openHowTo(), 600);
+  }
 });
+
+// ── Content Studio ────────────────────────────────────────────────────────────
+
+const WEEKLY_PLAN = [
+  { day: 'MON', session: 'HPT 1', platforms: ['TikTok'], type: 'Training Clip', postTime: '7:00 PM',
+    hook: '"I\'m 42 and training like an NBA athlete. Here\'s my Monday session."',
+    filmList: ['Slant board squats (close angle — knee tracking)', 'Pogo jumps slo-mo at 60fps', 'Trap bar deadlift from side angle', '10-sec talking head intro pre-session', 'Post-session reaction: what you felt'],
+    caption: 'NBA-style training at 42. Not bodybuilding — explosiveness.\n\nSlant board → trap bar → plyos → basketball transfer.\n\nWeek [#] / Phase [#]. The journey is the content. 🏀\n#VerticalJump #NBATraining #Dunking #TractionReport #MasterAthlete',
+    hashtags: '#VerticalJump #NBATraining #Dunking #TractionReport #42AndFit' },
+
+  { day: 'TUE', session: 'Basketball Skills', platforms: ['Instagram Reels'], type: 'Finishing Drill',  postTime: '6:00 PM',
+    hook: '"Still finishing at 42. The one drill that never leaves my session."',
+    filmList: ['Mikan drill close-up (both hands)', 'Euro-step at game speed from side angle', 'Dunk approach footwork breakdown (overhead or side)', 'Shoe sole/grip close-up for Traction Report', 'Talking head: shoe verdict of the day'],
+    caption: 'Finishing at the rim never gets old. 42 and still going up.\n\nThis week I\'m testing [shoe name] on court. Full traction breakdown on the way.\n\n#Basketball #Finishing #Layup #42AndFit #TractionReport',
+    hashtags: '#Basketball #Finishing #42AndFit #TractionReport #CourtShoes' },
+
+  { day: 'WED', session: 'HPT 2 — Jump Day', platforms: ['YouTube Shorts'], type: 'Jump Data Reveal', postTime: '7:00 PM',
+    hook: '"I measured my vertical jump today. Here\'s the data."',
+    filmList: ['Vertical jump measurement on wall (tape measure visible)', 'Band assisted jump slo-mo — front angle', 'Single-leg pogo jumps', 'First-step acceleration drill', '30-sec talking head: "Here\'s what the numbers mean"'],
+    caption: 'Week [#] jump data:\n→ Vertical: [X]"\n→ Max reach: [X]"\n→ Change from Week 1: [+/-X]"\n\nThe numbers tell the story. Follow the Road to Dunking Again.\n#VerticalJump #JumpTraining #Dunking #RoadToDunking #TractionReport',
+    hashtags: '#VerticalJump #JumpTraining #Dunking #RoadToDunking #TractionReport' },
+
+  { day: 'THU', session: 'Active Recovery', platforms: ['Threads / X'], type: 'Educational Thread', postTime: '12:00 PM',
+    hook: '"Why I take a full recovery day even at peak training phase (thread 🧵)"',
+    filmList: ['No filming needed — written post', 'Optional: short walking clip for Stories', 'Optional: foam roll / mobility clip (30 sec)'],
+    caption: 'Recovery day thread:\n\n1/ Most athletes skip recovery days. I protect mine.\n2/ Your tendons adapt slower than your muscles. Skip recovery = injury at 42.\n3/ Zone 2 walk, foam roll, mobility. That\'s it. Sleep 8+ hrs.\n4/ The athletes explosive at 50 made recovery non-negotiable at 42.\n\n#Recovery #AthleteLife #TrainingScience #TractionReport #42AndFit',
+    hashtags: '#Recovery #TrainingScience #42AndFit #TractionReport #AthleteLife' },
+
+  { day: 'FRI', session: '🔥 DUNK SESSION', platforms: ['TikTok', 'Instagram Reels'], type: 'Dunk Data Log', postTime: '8:00 PM',
+    hook: '"Week [#]. The data." — Start mid-action at the rim. No intro.',
+    filmList: ['PRIORITY: Dunk attempts — FRONT and SIDE angles', 'Standing reach measurement (tape measure on wall)', 'Max jump reach measurement', 'Band-assisted dunk attempt (show the above-rim feel)', 'Film review reaction (talking head after watching back)'],
+    caption: 'Week [#] Dunk Data Log 📊\n\nVertical: [X]" | Max reach: [X]" | Stage: [X]\n\nThe journey continues.\n\n#RoadToDunking #DunkDataLog #42AndFit #TractionReport #VerticalJump',
+    hashtags: '#RoadToDunking #DunkDataLog #42AndFit #TractionReport #VerticalJump' },
+
+  { day: 'SAT', session: 'Basketball Skills 2', platforms: ['TikTok'], type: 'Shoe Traction Test', postTime: '6:00 PM',
+    hook: '"Testing [shoe name] court traction. Real cuts. Real data. Traction Report."',
+    filmList: ['Shoe sole close-up / herringbone pattern', 'Lateral cut test (slow-mo)', 'First-step acceleration with shoe (slow-mo)', 'Pull-up jumper from side angle', 'Talking head: "Traction verdict — [X]/10"'],
+    caption: '🔬 Traction Report: [Shoe Name]\n\nLateral: [X]/10 | First step: [X]/10 | Overall: [X]/10\n\nVerdict: [one sentence]\n\nWhat shoe should I test next? 👇\n#TractionReport #BasketballShoes #CourtTraction #ShoeReview #Basketball',
+    hashtags: '#TractionReport #BasketballShoes #CourtTraction #ShoeReview #Basketball' },
+
+  { day: 'SUN', session: 'HPT 4 + Recap', platforms: ['YouTube Shorts', 'Stories'], type: 'Weekly Recap', postTime: '7:00 PM',
+    hook: '"Week [#] of 16 is done. Here\'s what happened."',
+    filmList: ['Post-session talking head (keep it honest and data-driven)', 'Best clips from the week (compile Mon–Sat)', 'Vertical jump from this week vs last week', 'Shoe tested this week (quick hold-up shot)', 'End card: "Week [X+1] starts Monday"'],
+    caption: 'Week [#]/16 Complete 📊\n\nSessions: [#]/6 | Vertical: [X]" | Dunk stage: [X]\nShoe of the week: [Name]\n\n[Honest 2-sentence reflection]\n\n#WeeklyRecap #TractionReport #RoadToDunking #VerticalJump #42AndFit',
+    hashtags: '#WeeklyRecap #TractionReport #RoadToDunking #VerticalJump #42AndFit' },
+];
+
+function renderWeeklyPlanner() {
+  const week = parseInt(document.getElementById('plannerWeek')?.value || 1);
+  const phase = week <= 4 ? 1 : week <= 8 ? 2 : week <= 12 ? 3 : 4;
+  const phaseLabel = ['Foundation','Build','Peak','Express'][phase - 1];
+  const grid = document.getElementById('weeklyPlannerGrid');
+  if (!grid) return;
+  grid.innerHTML = WEEKLY_PLAN.map((d, i) => {
+    const isFri = d.day === 'FRI';
+    return `<div class="planner-day ${isFri ? 'active' : ''}" onclick="showDayBrief(${i})">
+      <div class="planner-day-name">${d.day}</div>
+      <div class="planner-platform">${d.platforms[0]}</div>
+      <div class="planner-type">${d.type}</div>
+      <div class="planner-time">${d.postTime}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('dayContentBrief').style.display = 'none';
+}
+
+function showDayBrief(idx) {
+  const d = WEEKLY_PLAN[idx];
+  const brief = document.getElementById('dayContentBrief');
+  const week = document.getElementById('plannerWeek')?.value || '?';
+  brief.style.display = 'block';
+  brief.innerHTML = `
+    <div style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <div><span class="brief-tag">📅 ${d.day} — Week ${week}</span>
+      <h3 style="font-size:18px;font-weight:800;margin-top:4px">${d.session} &nbsp; <span class="tag tag-orange">${d.type}</span></h3></div>
+      <div style="font-size:12px;color:var(--text-muted)">Post at <strong style="color:var(--orange)">${d.postTime}</strong> · ${d.platforms.map(p=>`<span class="tag tag-blue" style="margin:1px">${p}</span>`).join('')}</div>
+    </div>
+    <div class="brief-hook">"${d.hook}"</div>
+    <div class="grid-2">
+      <div>
+        <div class="card-title mb-8">📹 What to Film Today</div>
+        <ul class="recovery-items">${d.filmList.map(f=>`<li>${f}</li>`).join('')}</ul>
+      </div>
+      <div>
+        <div class="card-title mb-8">📋 Ready-to-Post Caption</div>
+        <div style="background:var(--bg-card-2);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:12px;color:var(--text-secondary);white-space:pre-wrap;line-height:1.7">${d.caption}</div>
+        <div style="margin-top:8px;font-size:11px;color:var(--text-muted)">${d.hashtags}</div>
+      </div>
+    </div>`;
+  brief.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ── Script Library ────────────────────────────────────────────────────────────
+const SCRIPTS = [
+  { id: 'dunk-data', title: '📊 Dunk Data Log', platform: 'TikTok / Instagram Reels', dur: '20–35 sec', color: 'orange',
+    sections: [
+      { label: 'HOOK (0–2 sec)', text: '[Grab rim or throw ball hard at backboard] "Week [#]. The data." — NO intro. Start mid-action.' },
+      { label: 'DATA REVEAL (2–20 sec)', text: '"Standing reach: [X] inches.\nMax jump reach: [X] inches.\nVertical jump: [X] inches.\nThat\'s [+/-X] inches from Week 1."\n\nShow tape measure on wall. Text overlay each number as you say it.' },
+      { label: 'DUNK STAGE (20–28 sec)', text: '"Dunk stage today: [Rim Touch / Tennis Ball / Volleyball / Regulation Ball]"\n\n[Cut to the attempt — success OR fail. Both work. The struggle gets MORE engagement.]' },
+      { label: 'CTA (28–35 sec)', text: '"Follow the Road to Dunking Again. New data every Friday." — Point at camera. Drop ball.' },
+      { label: 'CAPTION', text: 'Week [#] Dunk Data Log 📊\n\nVertical: [X]" | Max reach: [X]" | Stage: [X]\n[+X]" gained since Week 1.\n\nThe journey continues.\n\n#RoadToDunking #DunkDataLog #42AndFit #TractionReport #VerticalJump' },
+    ]},
+  { id: 'training-breakdown', title: '🏋️ Training Breakdown', platform: 'TikTok / YouTube Shorts', dur: '30–60 sec', color: 'blue',
+    sections: [
+      { label: 'HOOK (0–3 sec)', text: '"I\'m 42 and training like an NBA athlete. This is my [Monday / Wednesday / Sunday] session." — Say it confident. Mid-rep preferred.' },
+      { label: 'MONTAGE (3–40 sec)', text: 'Show 3–4 exercises with TEXT overlays:\n① [Exercise] — [sets × reps]\n② Slant Board Squats — [sets × reps] — text: "Quad overload for jumping"\n③ Trap Bar Deadlift — [weight]lbs — text: "Power base"\n④ Pogo Jumps — text: "Elastic ankle stiffness"\n\nClips 3–5 sec each. Upbeat music. Text pops on each cut.' },
+      { label: 'HOOK CLOSE (40–55 sec)', text: '"This is Phase [X] of 16. The goal: dunk a regulation ball by Week 14. Follow to see if it happens." — Confident. Hold ball.' },
+      { label: 'CAPTION', text: 'NBA-style training at 42. Not bodybuilding — explosiveness. 🏀\n\nPhase [#] | Week [#] of 16\n\nSlant board → trap bar → plyos → court work.\n\n#NBATraining #VerticalJump #Dunking #TractionReport #42AndFit' },
+    ]},
+  { id: 'shoe-test', title: '👟 Shoe Traction Test', platform: 'TikTok / Instagram Reels', dur: '30–45 sec', color: 'gold',
+    sections: [
+      { label: 'HOOK (0–2 sec)', text: '"Testing [Shoe Name] on court. The traction test nobody else is doing." — Hold shoe up to camera. Close-up on sole.' },
+      { label: 'TEST SEQUENCE (2–30 sec)', text: 'CUT 1: Sole close-up → zoom on pattern. Text: "[Pattern Type] Outsole"\nCUT 2: Lateral cut test (slow-mo) → Text: "Lateral grip: [X]/10"\nCUT 3: First-step explosion (slow-mo) → Text: "First-step stick: [X]/10"\nCUT 4: Stop + pivot → Text: "Pivot control: [X]/10"' },
+      { label: 'VERDICT (30–40 sec)', text: '"Overall court traction: [X]/10. Best for: [outdoor / indoor / both]. [One strength]. [One weakness]."' },
+      { label: 'CTA (40–45 sec)', text: '"Full Traction Report review — link in bio. Drop the shoe you want tested next." — Show shoe profile.' },
+      { label: 'CAPTION', text: '🔬 Traction Report: [Shoe Name] Court Test\n\nLateral: [X]/10 | First step: [X]/10 | Pivot: [X]/10\n\nVerdict: [one sentence]\n\nWhat shoe should I test next? 👇\n#TractionReport #BasketballShoes #CourtTraction #ShoeReview' },
+    ]},
+  { id: 'slant-board-edu', title: '🛹 Slant Board Science', platform: 'YouTube Shorts / TikTok', dur: '45–60 sec', color: 'green',
+    sections: [
+      { label: 'HOOK (0–3 sec)', text: '"The slant board is the most underrated dunking tool nobody talks about." — Stand on board, look at camera.' },
+      { label: 'POINT 1 (3–15 sec)', text: '"A 15-25° board elevates your heel, forces your knee forward, and activates your quad 20-30% more than a flat squat." — Show the movement. Text overlay: "+20-30% quad activation"' },
+      { label: 'POINT 2 (15–30 sec)', text: '"Isometrics at this angle directly load your patellar tendon — the tendon that LAUNCHES you. Hold 45 seconds." — Show the hold position. Text overlay: "5 × 45 seconds"' },
+      { label: 'POINT 3 (30–45 sec)', text: '"For athletes over 35, this is tendon armor. Keeps your knees explosive AND pain-free. I do this every session." — Show board from side angle.' },
+      { label: 'CTA (45–60 sec)', text: '"Follow for more training science from a 42-year-old performance athlete. Road to dunking again — Week [#]."' },
+      { label: 'CAPTION', text: 'The slant board secret for vertical jump 🔬\n\n→ +20-30% quad activation\n→ Tendon loading at the right angle\n→ Non-negotiable for athletes 35+\n\n#SlantBoard #VerticalJump #JumpScience #TractionReport #KneeHealth' },
+    ]},
+  { id: '42-explosive', title: '💥 42 & Explosive (Brand)', platform: 'Instagram Reels / TikTok', dur: '30–60 sec', color: 'purple',
+    sections: [
+      { label: 'HOOK (0–3 sec)', text: '"People tell me at 42 my best athletic days are behind me. This is my response." — Jump to rim or show approach, confident.' },
+      { label: 'DATA STORY (3–45 sec)', text: '"I\'m [X] weeks into a 16-week program to dunk again.\n\nMy vertical at Week 1: [X] inches.\nMy vertical today: [X] inches.\nThat\'s [+X] inches in [X] weeks.\n\nI train 6 days a week. I eat for performance. I sleep 8-9 hours.\nThis isn\'t motivation content — this is data."' },
+      { label: 'CTA (45–60 sec)', text: '"If you\'re over 35 and think your athletic prime is over — follow this page. I\'m proving it isn\'t." — Serious. No hype. Data wins.' },
+      { label: 'CAPTION', text: 'Age is a variable, not a verdict. 📊\n\nWeek [#] data:\n→ Vertical: [X]" (+[X]" from start)\n→ Max reach: [X]"\n→ Dunk stage: [X]\n\n16 weeks. 42 years old. Regulation dunk. Watch.\n#42AndFit #MasterAthlete #NeverTooOld #TractionReport' },
+    ]},
+  { id: 'weekly-recap', title: '📋 Weekly Recap (Sunday)', platform: 'YouTube Shorts + Stories', dur: '45–60 sec', color: 'green',
+    sections: [
+      { label: 'OPEN (0–5 sec)', text: '"Week [#] of 16 is done. Here\'s what happened." — No music intro. Simple. Direct.' },
+      { label: 'DATA (5–35 sec)', text: '"Sessions completed: [#]/6\nBest jump this week: [X]"\nDunk stage: [X]\nShoe tested: [Name] — [X]/10 traction\nPhase [#] focus: [one sentence]\nKey win this week: [something specific]"' },
+      { label: 'HONEST REFLECTION (35–50 sec)', text: '"What worked: [honest]\nWhat I\'m adjusting: [honest]\nNext week\'s focus: [one clear goal]"' },
+      { label: 'CLOSE (50–60 sec)', text: '"Follow the Road to Dunking Again. New data every Friday. Week [X+1] starts Monday." — Hold ball up.' },
+      { label: 'CAPTION', text: 'Week [#]/16 Complete 📊\n\nSessions: [#]/6 | Vertical: [X]" | Stage: [X]\nShoe of the week: [Name]\n\n[Honest 2-sentence reflection]\n\n#WeeklyRecap #TractionReport #RoadToDunking #VerticalJump' },
+    ]},
+];
+
+function renderScriptLibrary() {
+  const container = document.getElementById('scriptLibrary');
+  if (!container) return;
+  const colorMap = { orange:'var(--orange)', blue:'var(--blue)', gold:'var(--gold)', green:'var(--green)', purple:'var(--purple)' };
+  container.innerHTML = SCRIPTS.map(s => `
+    <div class="script-card">
+      <div class="script-header" onclick="toggleScript('${s.id}')">
+        <div class="script-meta">
+          <div style="width:4px;height:36px;background:${colorMap[s.color]};border-radius:2px;flex-shrink:0"></div>
+          <div><div style="font-size:14px;font-weight:800">${s.title}</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${s.platform}</div></div>
+          <div class="script-dur">${s.dur}</div>
+        </div>
+        <span style="color:var(--text-muted);font-size:18px" id="arr-${s.id}">▾</span>
+      </div>
+      <div class="script-body" id="body-${s.id}">
+        ${s.sections.map((sec, i) => `
+          <div class="script-section-block">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+              <div class="script-section-label">${sec.label}</div>
+              <button class="copy-btn" onclick="copyScript(this,'${s.id}-${i}')">Copy</button>
+            </div>
+            <div class="script-section-text" id="st-${s.id}-${i}">${sec.text}</div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function toggleScript(id) {
+  const body = document.getElementById('body-' + id);
+  const arr = document.getElementById('arr-' + id);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  arr.textContent = isOpen ? '▾' : '▴';
+}
+
+function copyScript(btn, id) {
+  const text = document.getElementById('st-' + id)?.textContent || '';
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── Analytics Tracker ─────────────────────────────────────────────────────────
+const PLATFORMS_DEF = [
+  { id: 'tiktok', icon: '🎵', name: 'TikTok', fields: [{ id: 'views', label: 'Total Views' }, { id: 'likes', label: 'Likes' }, { id: 'followers', label: 'New Followers' }] },
+  { id: 'instagram', icon: '📸', name: 'Instagram', fields: [{ id: 'reach', label: 'Reach' }, { id: 'impressions', label: 'Impressions' }, { id: 'followers', label: 'New Followers' }] },
+  { id: 'youtube', icon: '▶️', name: 'YouTube Shorts', fields: [{ id: 'views', label: 'Views' }, { id: 'watchtime', label: 'Watch Time (hrs)' }, { id: 'subscribers', label: 'New Subscribers' }] },
+  { id: 'threads', icon: '🧵', name: 'Threads / X', fields: [{ id: 'impressions', label: 'Impressions' }, { id: 'engagements', label: 'Engagements' }, { id: 'followers', label: 'New Followers' }] },
+];
+
+let analyticsLog = JSON.parse(localStorage.getItem('trAnalytics') || '[]');
+
+function renderAnalyticsInputs() {
+  const c = document.getElementById('analyticsInputs');
+  if (!c) return;
+  c.innerHTML = PLATFORMS_DEF.map(p => `
+    <div class="analytics-platform-card">
+      <div class="analytics-platform-header">
+        <span class="analytics-platform-icon">${p.icon}</span>
+        <span class="analytics-platform-name">${p.name}</span>
+      </div>
+      ${p.fields.map(f => `
+        <div class="analytics-input-row">
+          <label>${f.label}</label>
+          <input type="number" id="a-${p.id}-${f.id}" placeholder="0" min="0">
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+function saveAnalytics() {
+  const week = document.getElementById('analyticsWeek')?.value;
+  if (!week) { alert('Enter a week number first.'); return; }
+  const entry = { week: parseInt(week), bestPost: document.getElementById('bestPost')?.value || '' };
+  PLATFORMS_DEF.forEach(p => {
+    entry[p.id] = {};
+    p.fields.forEach(f => { entry[p.id][f.id] = parseInt(document.getElementById(`a-${p.id}-${f.id}`)?.value || 0); });
+  });
+  analyticsLog = analyticsLog.filter(e => e.week !== parseInt(week));
+  analyticsLog.push(entry);
+  analyticsLog.sort((a, b) => a.week - b.week);
+  localStorage.setItem('trAnalytics', JSON.stringify(analyticsLog));
+  renderAnalyticsHistory();
+  renderAnalyticsChartFn();
+  PLATFORMS_DEF.forEach(p => p.fields.forEach(f => { const el = document.getElementById(`a-${p.id}-${f.id}`); if (el) el.value = ''; }));
+  document.getElementById('bestPost').value = '';
+  alert(`Week ${week} analytics saved!`);
+}
+
+function renderAnalyticsHistory() {
+  const tbody = document.getElementById('analyticsBody');
+  if (!tbody) return;
+  if (!analyticsLog.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px">No analytics saved yet.</td></tr>'; return; }
+  const totalFollowers = e => (e.tiktok?.followers||0) + (e.instagram?.followers||0) + (e.youtube?.subscribers||0) + (e.threads?.followers||0);
+  tbody.innerHTML = [...analyticsLog].reverse().map(e => `<tr>
+    <td style="font-weight:800;color:var(--orange)">Wk ${e.week}</td>
+    <td>${(e.tiktok?.views||0).toLocaleString()}</td>
+    <td>${(e.instagram?.reach||0).toLocaleString()}</td>
+    <td>${(e.youtube?.views||0).toLocaleString()}</td>
+    <td>${(e.threads?.impressions||0).toLocaleString()}</td>
+    <td style="color:var(--green);font-weight:700">+${totalFollowers(e)}</td>
+    <td class="text-sm text-muted">${e.bestPost||'—'}</td>
+  </tr>`).join('');
+}
+
+let analyticsChartInst;
+function renderAnalyticsChartFn() {
+  const ctx = document.getElementById('analyticsChart');
+  if (!ctx || !analyticsLog.length) return;
+  const labels = analyticsLog.map(e => `Wk${e.week}`);
+  if (analyticsChartInst) analyticsChartInst.destroy();
+  analyticsChartInst = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'TikTok Views', data: analyticsLog.map(e => e.tiktok?.views||0), backgroundColor: 'rgba(255,107,0,0.6)', borderColor: '#ff6b00', borderWidth: 1 },
+        { label: 'IG Reach', data: analyticsLog.map(e => e.instagram?.reach||0), backgroundColor: 'rgba(168,85,247,0.5)', borderColor: '#a855f7', borderWidth: 1 },
+        { label: 'YT Views', data: analyticsLog.map(e => e.youtube?.views||0), backgroundColor: 'rgba(68,136,255,0.5)', borderColor: '#4488ff', borderWidth: 1 },
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+}
+
+function switchStudioTab(tab, btn) {
+  document.querySelectorAll('.studio-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.studio-panel').forEach(p => p.style.display = 'none');
+  btn.classList.add('active');
+  document.getElementById('studio-' + tab).style.display = 'block';
+  if (tab === 'analytics') renderAnalyticsChartFn();
+}
+
+// ── Weekly Review ─────────────────────────────────────────────────────────────
+let reviewLog = JSON.parse(localStorage.getItem('trReviews') || '[]');
+
+function saveReview() {
+  const week = document.getElementById('reviewWeek')?.value;
+  const date = document.getElementById('reviewDate')?.value;
+  if (!week) { alert('Enter a week number first.'); return; }
+  const entry = {
+    week: parseInt(week), date,
+    rv1: document.getElementById('rv1')?.value || '',
+    rv2: document.getElementById('rv2')?.value || '',
+    rv3: document.getElementById('rv3')?.value || '',
+    rv4: document.getElementById('rv4')?.value || '',
+    rv5: document.getElementById('rv5')?.value || '',
+    rv6: document.getElementById('rv6')?.value || '',
+    rv7: document.getElementById('rv7')?.value || '',
+    rv8: document.getElementById('rv8')?.value || '',
+  };
+  reviewLog = reviewLog.filter(r => r.week !== parseInt(week));
+  reviewLog.unshift(entry);
+  localStorage.setItem('trReviews', JSON.stringify(reviewLog));
+  renderReviewHistory();
+  ['rv1','rv2','rv3','rv4','rv5','rv6','rv7','rv8'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('reviewWeek').value = '';
+}
+
+const REVIEW_LABELS = {
+  rv1: '📈 Best performing content',
+  rv2: '📉 What flopped',
+  rv3: '💬 Audience feedback',
+  rv4: '🔁 Repeat next week',
+  rv5: '🚫 Stop / change',
+  rv6: '👟 Traction Report notes',
+  rv7: '🎯 Next week goals',
+  rv8: '📋 Overall summary',
+};
+
+function renderReviewHistory() {
+  const container = document.getElementById('reviewHistory');
+  if (!container) return;
+  if (!reviewLog.length) { container.innerHTML = '<p class="text-sm text-muted" style="padding:10px 0">No reviews saved yet.</p>'; return; }
+  container.innerHTML = reviewLog.map(r => `
+    <div class="review-card">
+      <div class="review-card-header">
+        <div class="review-card-title">Week ${r.week} Review</div>
+        <div class="review-card-date">${r.date || ''}</div>
+      </div>
+      ${Object.entries(REVIEW_LABELS).map(([key, label]) => r[key] ? `
+        <div class="review-q">${label}</div>
+        <div class="review-a">${r[key]}</div>` : '').join('')}
+    </div>`).join('');
+}
+
+// ── How-To Modal ──────────────────────────────────────────────────────────────
+function openHowTo() {
+  document.getElementById('howToModal').classList.add('open');
+  localStorage.setItem('trOnboarded', '1');
+}
+function closeHowTo(e) {
+  if (!e || e.target === document.getElementById('howToModal') || e.currentTarget?.classList?.contains('modal-close') || e.currentTarget?.classList?.contains('btn')) {
+    document.getElementById('howToModal').classList.remove('open');
+  }
+}
