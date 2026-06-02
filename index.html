@@ -936,18 +936,28 @@
           <input type="date" id="reviewDate" style="padding:7px 10px;font-size:13px;background:var(--bg-card-2);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);outline:none">
         </div>
       </div>
-      <div class="review-field"><label>📈 Best performing content this week</label><textarea id="rv1" rows="2" placeholder="Platform + why it worked. What was the hook? What got the most engagement?"></textarea></div>
-      <div class="review-field"><label>📉 Worst performing content (what flopped and why)</label><textarea id="rv2" rows="2" placeholder="Be honest. What didn't work? Static post? Bad hook? Wrong time?"></textarea></div>
-      <div class="review-field"><label>💬 Audience response — what are people saying in comments/DMs?</label><textarea id="rv3" rows="2" placeholder="Questions asked, requests for more content, shoe brands reaching out, etc."></textarea></div>
-      <div class="review-field"><label>🔁 What to repeat next week</label><input id="rv4" type="text" placeholder="e.g. Raw dunk attempts with real-time measurements on screen"></div>
-      <div class="review-field"><label>🚫 What to stop or change</label><input id="rv5" type="text" placeholder="e.g. Stop posting static images — video only going forward."></div>
-      <div class="review-field"><label>👟 Traction Report notes (brand interest, DMs, shoe opportunities)</label><textarea id="rv6" rows="2" placeholder="Brand outreach, affiliate opportunities, shoes to test next, partnership conversations."></textarea></div>
-      <div class="review-field"><label>🎯 3 specific content goals for next week</label><textarea id="rv7" rows="3" placeholder="1. Dunk Data Log — Week [X] measurements with on-screen overlay&#10;2. Slant board science explainer — 45 sec educational&#10;3. Shoe test — [Brand] on [surface]"></textarea></div>
-      <div class="review-field"><label>📋 Overall summary (2–3 honest sentences)</label><textarea id="rv8" rows="3" placeholder="How was the week overall? What story are you telling? What momentum are you building?"></textarea></div>
-      <button class="btn btn-primary" onclick="saveReview()">Save Weekly Review</button>
+      <div class="review-field"><label>⚡ Training performance (sessions hit, energy, PRs broken)</label><textarea id="rv1" rows="2" placeholder="How many sessions did you hit? Any PRs? Energy levels high or low?"></textarea></div>
+      <div class="review-field"><label>📏 Vertical jump measurement this week (in inches)</label><input id="rv2" type="text" placeholder="e.g. 28.5 inches — up 0.5 from last week"></div>
+      <div class="review-field"><label>🥗 Nutrition adherence (% of meals on plan, any deviations)</label><textarea id="rv3" rows="2" placeholder="e.g. 90% on plan. Missed post-workout meal twice. No major deviations."></textarea></div>
+      <div class="review-field"><label>😴 Sleep compliance (avg hours, nights below target)</label><input id="rv4" type="text" placeholder="e.g. Avg 7.2 hrs. 2 nights under 7. Need to fix Thursday nights."></div>
+      <div class="review-field"><label>📈 Best performing content (platform + why it worked)</label><textarea id="rv5" rows="2" placeholder="Platform + why it worked. What was the hook? What got the most engagement?"></textarea></div>
+      <div class="review-field"><label>📉 What flopped (be specific — hook? timing? topic?)</label><textarea id="rv6" rows="2" placeholder="Be honest. What didn't work? Static post? Bad hook? Wrong time?"></textarea></div>
+      <div class="review-field"><label>💬 Audience signals (comments, DMs, requests, brand interest)</label><textarea id="rv7" rows="2" placeholder="Questions asked, requests for more content, shoe brands reaching out, etc."></textarea></div>
+      <div class="review-field"><label>🔁 Double down next week (content format that worked)</label><input id="rv8" type="text" placeholder="e.g. Raw dunk attempts with real-time measurements on screen"></div>
+      <div class="review-field"><label>🚫 Stop or change (what wasted your time)</label><input id="rv9" type="text" placeholder="e.g. Stop posting static images — video only going forward."></div>
+      <div class="review-field"><label>👟 Traction Report notes (brands, opportunities, shoes to test)</label><textarea id="rv10" rows="2" placeholder="Brand outreach, affiliate opportunities, shoes to test next, partnership conversations."></textarea></div>
+      <div class="review-field"><label>🎯 3 specific goals for next week</label><textarea id="rv11" rows="3" placeholder="1. Dunk Data Log — Week [X] measurements with on-screen overlay&#10;2. Slant board science explainer — 45 sec educational&#10;3. Shoe test — [Brand] on [surface]"></textarea></div>
+      <div class="review-field"><label>📋 Overall honest summary (2-3 sentences)</label><textarea id="rv12" rows="3" placeholder="How was the week overall? What story are you telling? What momentum are you building?"></textarea></div>
+      <div class="flex gap-8" style="flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="saveReview()">Save Weekly Review</button>
+        <button class="btn btn-secondary" onclick="exportReviewToNotion()">📋 Copy to Notion</button>
+      </div>
     </div>
     <div class="section-divider"><h2>Review History</h2></div>
     <div id="reviewHistory"><p class="text-sm text-muted" style="padding:10px 0">No reviews saved yet. Write your first review above.</p></div>
+    <div class="highlight-box mt-20" style="border-color:var(--blue)">
+      <p><strong>📱 Where is this saved?</strong> All your reviews, analytics, and dunk logs are saved to your browser's <strong>localStorage</strong> — they persist between visits on the same device and browser. Use <strong>"Copy to Notion"</strong> to back up your reviews. <em>Tip: If you clear your browser data, this data clears too. Export regularly.</em></p>
+    </div>
   </div>
 </section>
 

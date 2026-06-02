@@ -636,6 +636,9 @@ document.addEventListener('DOMContentLoaded', () => {
   renderAnalyticsHistory();
   renderReviewHistory();
   renderWeeklyPlanner();
+  // Show default platform guide
+  const defaultPlatBtn = document.querySelector('.platform-tab-btn');
+  if (defaultPlatBtn) showPlatform('tiktok', defaultPlatBtn);
 
   // Pre-fill calendar start date to next Monday
   const today = new Date();
@@ -984,24 +987,32 @@ function saveReview() {
     rv6: document.getElementById('rv6')?.value || '',
     rv7: document.getElementById('rv7')?.value || '',
     rv8: document.getElementById('rv8')?.value || '',
+    rv9: document.getElementById('rv9')?.value || '',
+    rv10: document.getElementById('rv10')?.value || '',
+    rv11: document.getElementById('rv11')?.value || '',
+    rv12: document.getElementById('rv12')?.value || '',
   };
   reviewLog = reviewLog.filter(r => r.week !== parseInt(week));
   reviewLog.unshift(entry);
   localStorage.setItem('trReviews', JSON.stringify(reviewLog));
   renderReviewHistory();
-  ['rv1','rv2','rv3','rv4','rv5','rv6','rv7','rv8'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  ['rv1','rv2','rv3','rv4','rv5','rv6','rv7','rv8','rv9','rv10','rv11','rv12'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
   document.getElementById('reviewWeek').value = '';
 }
 
 const REVIEW_LABELS = {
-  rv1: '📈 Best performing content',
-  rv2: '📉 What flopped',
-  rv3: '💬 Audience feedback',
-  rv4: '🔁 Repeat next week',
-  rv5: '🚫 Stop / change',
-  rv6: '👟 Traction Report notes',
-  rv7: '🎯 Next week goals',
-  rv8: '📋 Overall summary',
+  rv1: '⚡ Training performance (sessions hit, energy, PRs broken)',
+  rv2: '📏 Vertical jump measurement this week (in inches)',
+  rv3: '🥗 Nutrition adherence (% of meals on plan, any deviations)',
+  rv4: '😴 Sleep compliance (avg hours, nights below target)',
+  rv5: '📈 Best performing content (platform + why it worked)',
+  rv6: '📉 What flopped (be specific — hook? timing? topic?)',
+  rv7: '💬 Audience signals (comments, DMs, requests, brand interest)',
+  rv8: '🔁 Double down next week (content format that worked)',
+  rv9: '🚫 Stop or change (what wasted your time)',
+  rv10: '👟 Traction Report notes (brands, opportunities, shoes to test)',
+  rv11: '🎯 3 specific goals for next week',
+  rv12: '📋 Overall honest summary (2-3 sentences)',
 };
 
 function renderReviewHistory() {
@@ -1018,6 +1029,100 @@ function renderReviewHistory() {
         <div class="review-q">${label}</div>
         <div class="review-a">${r[key]}</div>` : '').join('')}
     </div>`).join('');
+}
+
+// ── Platform Strategy ─────────────────────────────────────────────────────────
+const PLATFORM_GUIDES = {
+  tiktok: {
+    title: '🎵 TikTok — Algorithm & Strategy',
+    rules: [
+      { icon: '⚡', label: 'Algorithm Priority', text: 'Watch time > completion rate > shares > comments > likes. If they finish the video, TikTok pushes it. Everything else is secondary.' },
+      { icon: '🎯', label: 'Best Content Types for This Brand', text: 'Dunk Data Log (Fridays), Training breakdowns (Mon/Wed), Raw athletic moments, Shoe traction tests (Sat). Authentic > polished.' },
+      { icon: '🎬', label: 'Hook Formula', text: 'Start mid-action. First word should be a number: "Week 8." / "42 years old." / "The data." — No intro. No "Hey guys." Grab in 0–2 sec.' },
+      { icon: '⏱', label: 'Optimal Length', text: '21–34 seconds. 90%+ completion rate triggers algorithm boost. Keep it tight. If it\'s over 45 sec, you better have a payoff.' },
+      { icon: '🕐', label: 'Best Posting Times', text: '6–9 PM weekdays · 10 AM–12 PM weekends. Post when your audience is scrolling, not when it\'s convenient for you.' },
+      { icon: '#️⃣', label: 'Hashtag Strategy', text: '3–5 niche tags + 2 broad (never 30 hashtags). Use: #VerticalJump #RoadToDunking #42AndFit #TractionReport + 1 broad like #Basketball.' },
+      { icon: '💬', label: 'Growth Hack', text: 'Reply to EVERY comment in the first 30 minutes after posting. TikTok\'s algorithm rewards creator engagement velocity. This alone can 2–3x reach.' },
+      { icon: '🚫', label: 'What NOT to Do', text: 'Long intros, "Like and subscribe", static images, posting at midnight, using trending sounds that don\'t fit your content, ignoring comments.' },
+    ]
+  },
+  instagram: {
+    title: '📸 Instagram Reels — Algorithm & Strategy',
+    rules: [
+      { icon: '⚡', label: 'Algorithm Priority', text: 'Shares to non-followers is the #1 signal. Saves = interest. Comments = community. Likes alone don\'t move the needle anymore.' },
+      { icon: '🎯', label: 'Best Content for This Brand', text: 'More polished than TikTok. Before/after dunk progress. Aesthetic lighting helps. Shoe aesthetics perform well. Training form breakdowns.' },
+      { icon: '🎬', label: 'Hook', text: 'Text overlay in the first frame. Use contrasting color. Make them stop scrolling. "42. Still going up." over a dunk attempt = perfect opener.' },
+      { icon: '⏱', label: 'Optimal Length', text: '7–15 seconds (meme/clip format) or 30–60 seconds (story format). Match length to content depth.' },
+      { icon: '🕐', label: 'Best Times', text: '8–9 AM · 12 PM · 5–7 PM. Consistency beats perfection — same days, same times, every week.' },
+      { icon: '📖', label: 'Stories Strategy', text: 'Use Stories for daily BTS, polls ("Rate my form 1–10"), shoe unboxings. Stories keep you top-of-feed without burning your main content.' },
+      { icon: '🎠', label: 'Carousels', text: 'Use for data reveals — Week X stats as swipeable slides. Saves are extremely high on carousels. Algorithm gold for reach to new followers.' },
+    ]
+  },
+  youtube: {
+    title: '▶️ YouTube Shorts — Algorithm & Strategy',
+    rules: [
+      { icon: '⚡', label: 'Algorithm Priority', text: 'Click-through rate on thumbnail (even in Shorts feed), then watch time. A great first frame IS your thumbnail.' },
+      { icon: '🔍', label: 'SEO Value', text: '"42 year old dunking", "vertical jump training over 40" — high search volume, low competition. YouTube Shorts feed into long-term discoverability unlike TikTok.' },
+      { icon: '📝', label: 'Title Formula', text: '"[Number] [Promise] [Curiosity gap]" — e.g. "42 Year Old Adds 3 Inches To His Vertical In 8 Weeks". Make the number and transformation the headline.' },
+      { icon: '📋', label: 'Description', text: 'Always include a full description with timestamps even for Shorts. This feeds search indexing. Include links to your TikTok and Instagram.' },
+      { icon: '📅', label: 'Consistency', text: 'YouTube rewards weekly cadence more than TikTok. Post same day every week (Sunday recap ideal). Algorithm favors reliable publishers over viral-chasers.' },
+      { icon: '🎓', label: 'Best For', text: 'Educational content (slant board science, training science explained, vertical jump protocols), weekly recaps, long-form companion content for TikTok hooks.' },
+    ]
+  },
+  threads: {
+    title: '🧵 Threads — Authority & Thought Leadership',
+    rules: [
+      { icon: '🎯', label: 'Strategy', text: 'Threads is your authority/thought leadership channel. This is where you become the expert on vertical jump training at 42. Build credibility, not just clips.' },
+      { icon: '📝', label: 'Content Types', text: 'Training science threads, dunk data threads, shoe industry commentary, behind-the-numbers analysis. What TikTok shows, Threads explains.' },
+      { icon: '🔑', label: 'Thread Format', text: 'Thread opener must be a bold claim + data. Then expand in replies. Each reply should be able to stand alone as a quote.' },
+      { icon: '💡', label: 'Example Opener', text: '"42 years old. 6 days/week training. My vertical is up 4 inches. Here\'s the exact protocol:" — Then break it down over 5–8 replies with real specifics.' },
+      { icon: '🕐', label: 'Algorithm', text: 'No algorithm — chronological + engagement. Post in the morning (7–9 AM) when your audience is checking phones before work. Stay consistent.' },
+      { icon: '🔗', label: 'Cross-Promote', text: 'Always link to your latest YouTube or TikTok in Threads. Use Threads to drive depth — "The full breakdown is in today\'s Short. Link in bio."' },
+    ]
+  }
+};
+
+function showPlatform(id, btn) {
+  document.querySelectorAll('.platform-tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const g = PLATFORM_GUIDES[id];
+  if (!g) return;
+  const detail = document.getElementById('platformDetail');
+  if (!detail) return;
+  detail.innerHTML = `<div class="platform-guide">
+    <div class="platform-guide-title">${g.title}</div>
+    ${g.rules.map(r => `<div class="platform-rule">
+      <div class="platform-rule-icon">${r.icon}</div>
+      <div class="platform-rule-body">
+        <div class="platform-rule-label">${r.label}</div>
+        <div class="platform-rule-text">${r.text}</div>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+// ── Notion Export ─────────────────────────────────────────────────────────────
+function exportReviewToNotion() {
+  if (!reviewLog.length) { alert('No reviews saved yet. Save a review first.'); return; }
+  const r = reviewLog[0]; // most recent
+  let md = `# Week ${r.week} Review — Traction Report Performance OS\n`;
+  md += `Date: ${r.date || 'Not set'}\n\n`;
+  Object.entries(REVIEW_LABELS).forEach(([key, label]) => {
+    if (r[key]) md += `## ${label}\n${r[key]}\n\n`;
+  });
+  md += `---\n*Exported from Traction Report Performance OS*\n`;
+  navigator.clipboard.writeText(md).then(() => {
+    alert('✅ Review copied to clipboard! Paste directly into Notion (it supports markdown).');
+  }).catch(() => {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = md;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    alert('✅ Review copied! Paste into Notion.');
+  });
 }
 
 // ── How-To Modal ──────────────────────────────────────────────────────────────
