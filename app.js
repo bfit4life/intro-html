@@ -7,7 +7,9 @@ document.querySelectorAll('.nav-item').forEach(btn => {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('section-' + btn.dataset.section).classList.add('active');
+    syncMobileNav(btn.dataset.section);
     if (window.innerWidth < 768) closeSidebar();
+    window.scrollTo(0, 0);
   });
 });
 
@@ -15,6 +17,33 @@ document.getElementById('menuBtn').addEventListener('click', () => {
   document.getElementById('sidebar').classList.toggle('open');
 });
 function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
+
+// ── Mobile Bottom Nav ─────────────────────────────────────────────────────────
+const MOB_SECTIONS = ['dashboard','schedule','training','dunk'];
+function mobileNav(section, btn) {
+  if (section === 'more') {
+    document.getElementById('sidebar').classList.toggle('open');
+    return;
+  }
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const navItem = document.querySelector('[data-section="' + section + '"]');
+  if (navItem) navItem.classList.add('active');
+  const sectionEl = document.getElementById('section-' + section);
+  if (sectionEl) sectionEl.classList.add('active');
+  document.querySelectorAll('.mob-nav-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  closeSidebar();
+  window.scrollTo(0, 0);
+}
+function syncMobileNav(section) {
+  document.querySelectorAll('.mob-nav-item').forEach(b => b.classList.remove('active'));
+  if (MOB_SECTIONS.includes(section)) {
+    const idx = MOB_SECTIONS.indexOf(section);
+    const btns = document.querySelectorAll('.mob-nav-item');
+    if (btns[idx]) btns[idx].classList.add('active');
+  }
+}
 
 // ── Phase Accordion ───────────────────────────────────────────────────────────
 function togglePhase(header) {
@@ -962,7 +991,9 @@ function openHowTo() {
   localStorage.setItem('trOnboarded', '1');
 }
 function closeHowTo(e) {
-  if (!e || e.target === document.getElementById('howToModal') || e.currentTarget?.classList?.contains('modal-close') || e.currentTarget?.classList?.contains('btn')) {
+  if (!e) { document.getElementById('howToModal').classList.remove('open'); return; }
+  const box = document.querySelector('#howToModal .modal-box');
+  if (!box || !box.contains(e.target) || e.currentTarget?.classList?.contains('modal-close') || e.currentTarget?.classList?.contains('btn')) {
     document.getElementById('howToModal').classList.remove('open');
   }
 }

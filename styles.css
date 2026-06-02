@@ -652,12 +652,13 @@ tbody td:first-child { color: var(--text-primary); font-weight: 600; }
   :root { --sidebar-w: 0px; }
   .sidebar { transform: translateX(-264px); }
   .sidebar.open { transform: translateX(0); width: 264px; }
-  .main-content { margin-left: 0; padding: 20px 16px; max-width: 100vw; }
+  .main-content { margin-left: 0; padding: 20px 16px 100px; max-width: 100vw; }
   .week-grid { grid-template-columns: repeat(4, 1fr); }
   .grid-2, .grid-3, .macro-grid { grid-template-columns: 1fr; }
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .content-pipeline { grid-template-columns: repeat(2, 1fr); }
-  .menu-btn { display: flex; }
+  .menu-btn { display: none; }
+  .mobile-bottom-nav { display: flex; }
 }
 
 /* Mobile Menu Button */
@@ -666,16 +667,51 @@ tbody td:first-child { color: var(--text-primary); font-weight: 600; }
   position: fixed;
   top: 14px; left: 14px;
   z-index: 200;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: var(--orange);
+  border: none;
   border-radius: var(--radius-sm);
-  padding: 8px;
+  padding: 10px 12px;
   cursor: pointer;
   align-items: center;
   justify-content: center;
-  color: var(--text-primary);
+  color: #fff;
   font-size: 18px;
 }
+
+/* ── Mobile Bottom Navigation ─────────────────────────────── */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 300;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  padding: 6px 0 env(safe-area-inset-bottom, 6px);
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: stretch;
+}
+.mob-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 6px 4px;
+  cursor: pointer;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  text-transform: uppercase;
+}
+.mob-nav-item .mob-icon { font-size: 22px; line-height: 1.2; }
+.mob-nav-item.active { color: var(--orange); }
+.mob-nav-item:active { color: var(--orange); }
 
 /* ── Utils ──────────────────────────────────────────── */
 .mb-0 { margin-bottom: 0; }
