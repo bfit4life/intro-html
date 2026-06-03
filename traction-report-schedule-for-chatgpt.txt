@@ -1,0 +1,331 @@
+====================================================================
+INSTRUCTIONS FOR CHATGPT
+====================================================================
+
+I need you to help me set up my Google Calendar based on the weekly
+schedule below. This is a repeating 7-day training and lifestyle
+schedule from my basketball performance program.
+
+Please do the following:
+1. Create a list of Google Calendar events for one full week
+   (Monday through Sunday) that I can add as recurring weekly events.
+2. For each event give me: Title, Day, Start Time, End Time, Color
+   suggestion, and whether it repeats weekly.
+3. Group them into these calendars: TRAINING, NUTRITION, RECOVERY,
+   CONTENT, LIFESTYLE.
+4. Flag any time conflicts you notice.
+5. At the end, give me a summary of total committed hours per day.
+
+My program start date is the next upcoming Monday.
+
+====================================================================
+MY WEEKLY SCHEDULE — TRACTION REPORT PERFORMANCE OS
+====================================================================
+
+--------------------------------------------------------------------
+MONDAY — HPT 1 (Strength + Lower Power)
+--------------------------------------------------------------------
+
+6:30 AM    Wake — no snooze. 16 oz water + electrolytes
+6:35 AM    5–10 min morning sunlight (outside)
+6:45 AM    10 min mobility flow (hips, ankles, thoracic)
+6:55 AM    Pre-training fuel — oats + whey protein + banana + honey
+7:00 AM    Mental prep — review today's training goals
+
+7:30–9:00 AM   HIGH PERFORMANCE TRAINING — HPT 1 (90 min)
+               Session 1: Movement Prep (10 min)
+               Session 2: Mobility (10 min)
+               Session 3: Jump Development — Pogo Jumps, Depth Drops, Broad Jumps (15 min)
+               Session 4: Strength — Trap Bar Deadlift, Slant Board Squat, Single-Leg RDL (30 min)
+               Session 5: Athletic Development — Acceleration Runs, 5-10-5, Lateral Slides (12 min)
+               Session 6: Basketball Transfer — Approach Jumps, Jump Stop + Explode (8 min)
+               Session 7: Recovery Protocol — Tibialis Raises, Soleus Raises, Foam Roll (10 min)
+
+JUMP SCIENCE FOCUS (during training):
+               Reactive Stiffness cues — stiff ankles, pogo technique
+               Penultimate Step work — consciously extend 2nd-to-last step 10–15%
+               Arm Load drill — arms load back behind hips, drive up at takeoff
+
+MEALS:
+6:55 AM    Pre-Training Fuel (440 kcal) — oats, whey, banana, honey, electrolytes
+9:00 AM    Post-Workout Recovery (520 kcal) — eggs, Greek yogurt, berries, Ezekiel bread
+12:30 PM   Performance Lunch (640 kcal) — chicken breast, brown rice, greens, avocado
+3:30 PM    Athletic Snack (320 kcal) — cottage cheese, blueberries, almonds
+7:00 PM    Recovery Dinner (720 kcal) — salmon, sweet potato, broccoli, olive oil
+9:00 PM    Overnight Recovery (220 kcal) — cottage cheese or casein, dark cherries
+
+9:00 PM    Wind-down begins — dim all lights
+9:10 PM    No screens (phone + TV off or Night Shift/warm light only)
+9:20 PM    Light stretch or yoga (10 min)
+9:30 PM    Read (physical book) or journal
+9:45 PM    Tart cherry juice (4 oz) + magnesium glycinate (400mg)
+10:00 PM   Final bathroom/hygiene — no bright lights
+10:15 PM   Lights out — target 8 hrs 15 min sleep
+
+RECOVERY (every day):
+           10 min post-meal walk after dinner
+           Tibialis raises 3×20 (daily tendon maintenance)
+           Tart cherry juice 4 oz × 2/day
+           Electrolytes 16 oz morning
+           Foam roll lower body (at least 5 min)
+
+--------------------------------------------------------------------
+TUESDAY — Basketball Skill Day 1 (Ball Handling + Finishing + Shooting)
+--------------------------------------------------------------------
+
+6:30 AM    Wake — no snooze. 16 oz water + electrolytes
+6:35 AM    5–10 min morning sunlight (outside)
+6:45 AM    10 min mobility flow (hips, ankles, thoracic)
+6:55 AM    Pre-training fuel — oats + whey protein + banana + OJ
+7:00 AM    Mental prep — review today's training goals
+
+7:30–8:45 AM   BASKETBALL SKILL SESSION — Day 1 (75 min)
+               Session 1: Court Warm-Up (8 min)
+               Session 2: Ball Handling — two-ball dribbling, figure-8, full-court combos (15 min)
+               Session 3: Finishing — Mikan drill, euro-step, floater, power layup (15 min)
+               Session 4: Footwork — drop-step, step-back, transition run (10 min)
+               Session 5: Basketball Conditioning — suicides, slides, transition drills (15 min)
+
+SHOOTING & FINISHING SESSION (after skill session or separate block):
+               Form Shooting — 5 feet, FT line, elbows (10 min)
+               Spot Shooting — 5-Spot Foundation (15 min)
+               Finishing Tier 1 — Power layup, finger roll, reverse layup (15 min)
+               Competitive: Game of 21 — 7 spots × 3 shots, target 14+/21 (10 min)
+
+MEALS:
+6:30 AM    Morning Fuel (420 kcal) — oats, whey, banana, OJ
+9:30 AM    Mid-Morning Meal (480 kcal) — chicken breast, white rice, steamed veg, olive oil
+12:30 PM   Pre-Court Meal (600 kcal) — turkey breast, quinoa, greens, cherry tomatoes
+3:30 PM    Pre-Game Snack (180 kcal) — 2 dates, peanut butter, half banana, electrolytes
+7:00 PM    Post-Court Recovery (680 kcal) — chicken thighs, roasted potatoes, asparagus
+9:00 PM    Night Recovery (200 kcal) — Greek yogurt or casein, berries, magnesium
+
+9:00 PM    Wind-down begins — dim all lights
+9:10 PM    No screens
+9:20 PM    Light stretch
+9:45 PM    Tart cherry juice + magnesium
+10:15 PM   Lights out
+
+--------------------------------------------------------------------
+WEDNESDAY — HPT 2 (Speed + Jump Development)
+--------------------------------------------------------------------
+
+6:30 AM    Wake — no snooze. 16 oz water + electrolytes
+6:35 AM    5–10 min morning sunlight
+6:45 AM    10 min mobility flow
+6:55 AM    Pre-training fuel
+7:00 AM    Mental prep
+
+7:30–9:00 AM   HIGH PERFORMANCE TRAINING — HPT 2 (90 min)
+               Session 1: Movement Prep — dynamic warm-up, hip activation (10 min)
+               Session 2: Mobility — world greatest stretch, ankle band, pigeon pose (8 min)
+               Session 3: Jump Development — band-assisted jumps, pogo, reactive bounds, max VJ (20 min)
+               Session 4: Speed Development — first step, flying 20m, T-drill, decel-reaccel (20 min)
+               Session 5: Strength Supplemental — slant board squat, tibialis, soleus, foot work (15 min)
+               Session 6+7: Transfer + Recovery — dunk footwork, foam roll, hip flexor stretch (15 min)
+
+JUMP SCIENCE FOCUS (during training):
+               Arm Swing Activation — wall arm swing 3×20 before approach jumps
+               Reactive Bounds — lateral bounds <0.3 sec contact, arms cross and up
+               Film 3 approach jumps from the side — check arm peak timing
+
+MEALS: (same as Monday training day meals)
+6:55 AM    Pre-Training Fuel (440 kcal)
+9:00 AM    Post-Workout Recovery (520 kcal)
+12:30 PM   Performance Lunch (640 kcal)
+3:30 PM    Athletic Snack (320 kcal)
+7:00 PM    Recovery Dinner (720 kcal)
+9:00 PM    Overnight Recovery (220 kcal)
+
+9:00 PM    Wind-down — same as Monday
+10:15 PM   Lights out
+
+--------------------------------------------------------------------
+THURSDAY — Active Recovery Day + WEEKLY GROCERY SHOP
+--------------------------------------------------------------------
+
+7:00 AM    Wake — no alarm pressure. 16 oz water + electrolytes
+7:05 AM    Morning sun walk (barefoot if possible)
+7:20 AM    Full-body mobility flow (20 min — hip, ankle, thoracic)
+7:40 AM    Slant board mobility — NOT strength (2×10 controlled, no load)
+7:50 AM    Foot massage — lacrosse ball (3 min each foot)
+
+7:00–8:30 AM   ACTIVE RECOVERY SESSION (90 min)
+               Morning Flow — sun walk, mobility flow, foot massage (30 min)
+               Tissue Work — foam roll calves/quads/IT/glutes, hip flexor trigger point (20 min)
+               Zone 2 Walk — easy talking-pace walk, target 8,000–10,000 steps total (25–35 min)
+               Evening Recovery — light yoga, contrast shower, recovery stack (20 min)
+
+10:00–11:30 AM  WEEKLY GROCERY SHOP (main shop)
+               Stores: Walmart/ALDI (primary) + Costco on monthly bulk run
+               Items: proteins, produce, carbs, pantry restocks, hydration supplies
+
+MEALS: (recovery day — 2,350 kcal)
+7:00 AM    Relaxed Morning (380 kcal) — eggs, Ezekiel toast, avocado, green tea
+10:00 AM   Light Snack (260 kcal) — Greek yogurt, granola, honey
+1:00 PM    Anti-Inflammatory Lunch (560 kcal) — wild salmon, lentils, spinach salad, ACV dressing
+4:00 PM    Recovery Snack (220 kcal) — mixed nuts, apple, tart cherry juice (4 oz)
+7:00 PM    Repair Dinner (680 kcal) — chicken breast, sweet potato, broccoli with garlic, olive oil
+9:00 PM    Overnight Repair (200 kcal) — cottage cheese, blueberries, magnesium glycinate 400mg
+
+Evening:
+           Zone 2 walk 25–35 min (talking pace)
+           Light yoga or hip stretching (15 min — yin style)
+           Contrast shower — 3 min hot / 1 min cold × 3 rounds
+           Epsom salt bath (weekly, optional)
+
+9:00 PM    Wind-down — dim lights
+10:15 PM   Lights out
+
+--------------------------------------------------------------------
+FRIDAY — HPT 3 + Weekly Dunk Session
+--------------------------------------------------------------------
+
+6:30 AM    Wake — no snooze. 16 oz water + electrolytes
+6:35 AM    5–10 min morning sunlight
+6:45 AM    10 min mobility flow
+6:55 AM    Pre-training fuel
+7:00 AM    Mental prep
+
+7:30–9:30 AM   HIGH PERFORMANCE TRAINING — HPT 3 + DUNK SESSION (120 min)
+               Session 1: CNS Warm-Up — mini trampoline/pogo jumps, ankle + hip circuit (12 min)
+               Session 2: DUNK SESSION (weekly) — standing reach, max jump, 1/2/3-step approach,
+                          band-assisted dunks, max dunk attempts, film review (25 min)
+               Session 3: Power Strength — trap bar deadlift, jump squat, depth drop → jump (20 min)
+               Session 4: Rotational Athleticism — med ball throws, hip-driven bounds, single-leg land (12 min)
+               Session 5+6: Shoe Testing + Recovery — traction test, tibialis/soleus raises, foam roll,
+                            log session in Dunk Lab (15 min)
+
+JUMP SCIENCE FOCUS (during dunk session):
+               Penultimate Step — LONG penultimate, hips drop 4–6", short explosive jump step
+               Ground Contact Assessment — film at 60fps, count frames, log in tracker
+               Arm Sync Check — arms still traveling up at moment of takeoff
+
+POST-SESSION (required):
+               Log in Dunk Lab — standing reach, max jump, vertical, dunk stage, notes
+               Log in Jump Science Ground Contact tracker
+
+MEALS: (same as Monday training day meals)
+6:55 AM    Pre-Training Fuel (440 kcal)
+9:00 AM    Post-Workout Recovery (520 kcal)
+12:30 PM   Performance Lunch (640 kcal)
+3:30 PM    Athletic Snack (320 kcal)
+7:00 PM    Recovery Dinner (720 kcal)
+9:00 PM    Overnight Recovery (220 kcal)
+
+9:00 PM    Wind-down
+10:15 PM   Lights out
+
+--------------------------------------------------------------------
+SATURDAY — Basketball Skill Day 2 (Shooting + Game Speed)
+--------------------------------------------------------------------
+
+6:30 AM    Wake — no snooze. 16 oz water + electrolytes
+6:35 AM    5–10 min morning sunlight
+6:45 AM    10 min mobility flow
+6:55 AM    Pre-training fuel
+7:00 AM    Mental prep
+
+7:30–8:45 AM   BASKETBALL SKILL SESSION — Day 2 (75 min)
+               Session 1: Court Warm-Up — layup series, form shooting, court dynamic warm-up (8 min)
+               Session 2: Catch & Shoot — corner catch + shoot, wing relocate, transition 3 (15 min)
+               Session 3: Pull-Up Game — elbow pull-ups, step-back 3, midrange pull-up (15 min)
+               Session 4: Finishing — dunk approach, off-two-feet, power layup game speed (15 min)
+               Session 5: Competitive Shooting — spot shooting challenges (12 min)
+               Session 6: Basketball Conditioning — full-court sprints, slides, transition work (10 min)
+
+SHOOTING & FINISHING SESSION:
+               Corner 3 Machine — right/left corner catch + 1-dribble (12 min)
+               Off-Dribble: Elbow Pull-Ups + Step-Back (15 min)
+               Finishing Tier 2 — Euro-step, running floater, contact layup (10 min)
+               Competitive: Beat the Pro — 5 spots × 2 shots, beat 7/10 (10 min)
+
+8:00–8:30 AM   QUICK GROCERY REFRESH (before court if needed)
+               20-min stop: fresh salmon, avocados, bananas, berries top-up
+
+MEALS: (same as Tuesday basketball day meals)
+6:30 AM    Morning Fuel (420 kcal)
+9:30 AM    Mid-Morning Meal (480 kcal)
+12:30 PM   Pre-Court Meal (600 kcal)
+3:30 PM    Pre-Game Snack (180 kcal)
+7:00 PM    Post-Court Recovery (680 kcal)
+9:00 PM    Night Recovery (200 kcal)
+
+9:00 PM    Wind-down
+10:15 PM   Lights out
+
+--------------------------------------------------------------------
+SUNDAY — HPT 4 + Weekly Meal Prep
+--------------------------------------------------------------------
+
+6:30 AM    Wake — no snooze. 16 oz water + electrolytes
+6:35 AM    5–10 min morning sunlight
+6:45 AM    10 min mobility flow
+6:55 AM    Pre-training fuel
+7:00 AM    Mental prep
+
+7:30–9:00 AM   HIGH PERFORMANCE TRAINING — HPT 4 (90 min)
+               Session 1: Movement Prep — dynamic warm-up circuit (10 min)
+               Session 2: Mobility — hip, ankle, thoracic (10 min)
+               Session 3: Jump Development — approach jumps, pogo progressions (15 min)
+               Session 4: Strength Development — trap bar DL, slant board, RDL (30 min)
+               Session 5: Athletic Development — acceleration, COD, lateral (12 min)
+               Session 6+7: Basketball Transfer + Recovery — approach jumps, tissue work (13 min)
+
+JUMP SCIENCE FOCUS:
+               Reactive Activation — fast pogos 2×10 before every plyometric set
+               Arm Sync Test — 3 jumps minimal arm swing then 3 full swing, feel the difference
+               Weekly Vertical Check — mark the wall, 3 max jumps, record best, log in Dunk Lab
+
+4:00–5:30 PM   MEAL PREP (sets up Mon–Wed on autopilot)
+               Grill/air-fry 3–4 lbs chicken breast — portion into 6 oz containers
+               Cook large batch brown rice (4–6 servings)
+               Roast 4–5 sweet potatoes at 400°F for 45 min
+               Hard-boil 8 eggs
+               Pre-wash and dry salad greens
+               Measure and bag oat portions for Mon–Wed (50g each)
+
+CONTENT (post-training):
+               Review week's footage
+               Script next week's content
+               Post Sunday review video or progress update
+
+MEALS: (same as Mon/Wed/Fri training day meals)
+6:55 AM    Pre-Training Fuel (440 kcal)
+9:00 AM    Post-Workout Recovery (520 kcal)
+12:30 PM   Performance Lunch (640 kcal)
+3:30 PM    Athletic Snack (320 kcal)
+7:00 PM    Recovery Dinner (720 kcal)
+9:00 PM    Overnight Recovery (220 kcal)
+
+9:00 PM    Wind-down
+10:15 PM   Lights out
+
+====================================================================
+DAILY NON-NEGOTIABLES (apply every single day)
+====================================================================
+
+- 16 oz water + electrolytes immediately on waking
+- 5–10 min morning sunlight within 30 min of waking
+- 10 min post-dinner walk
+- Tibialis raises 3×20 (tendon maintenance — daily)
+- Tart cherry juice 4 oz × 2 per day (morning + pre-sleep)
+- Magnesium glycinate 400mg at 9:00 PM
+- Lights out by 10:15 PM — 8 hrs 15 min target sleep
+
+====================================================================
+WEEKLY SUMMARY FOR CALENDAR SETUP
+====================================================================
+
+MON  — HPT 1 · 7:30–9:00 AM training · 3,150 kcal
+TUE  — Skill Day 1 · 7:30–8:45 AM training + shooting · 2,950 kcal
+WED  — HPT 2 · 7:30–9:00 AM training · 3,150 kcal
+THU  — Recovery · 7:00–8:30 AM recovery session · Grocery shop 10–11:30 AM · 2,350 kcal
+FRI  — HPT 3 + Dunk · 7:30–9:30 AM training · 3,150 kcal
+SAT  — Skill Day 2 · 7:30–8:45 AM training + shooting · 2,950 kcal
+SUN  — HPT 4 + Meal Prep · 7:30–9:00 AM training · Prep 4:00–5:30 PM · 3,150 kcal
+
+Total training hours per week: ~9.5 hrs
+Total committed lifestyle hours per week: ~14 hrs (training + shopping + prep + recovery sessions)
+
+====================================================================
