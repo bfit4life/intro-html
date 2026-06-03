@@ -526,6 +526,7 @@ function showDayDetail(i) {
       <div style="font-size:11px;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:.05em">Full daily plan · Training · Nutrition · Content · Recovery · Sleep</div>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0">
+      <button class="btn btn-primary" style="font-size:11px;padding:8px 14px" onclick="openNotionLog(${i})">🚀 Log to Notion</button>
       <button class="btn btn-secondary" style="font-size:11px;padding:8px 12px" onclick="exportDayWorkout(${i})">📥 Export Day</button>
       <button class="btn btn-secondary" style="font-size:11px;padding:8px 12px" onclick="exportWeekWorkout()">📥 Export Week</button>
     </div>
@@ -3305,4 +3306,252 @@ function buildSupplementCard(supp) {
     <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px"><strong style="color:${supp.color}">Brands:</strong> ${supp.brands}</div>
     <div style="font-size:11px;color:var(--text-muted)"><strong style="color:var(--text-secondary)">Where:</strong> ${supp.where}</div>
   </div>`;
+}
+
+// ── Notion Integration ────────────────────────────────────────────────────────
+const NOTION_DB_ID = '0e55762148e94d0f981c31d8bde78e40';
+const NOTION_DAY_MAP = [
+  'D1 Force Day',         // MON
+  'D6 Athletic Movement', // TUE
+  'D5 Power Day',         // WED
+  'D7 Restoration',       // THU
+  'D4 Max Jump Day',      // FRI
+  'D6 Athletic Movement', // SAT
+  'D1 Force Day',         // SUN
+];
+let notionToken = localStorage.getItem('trNotionToken') || '';
+let _notionDayIdx = 0;
+
+function openNotionLog(dayIdx) {
+  _notionDayIdx = dayIdx;
+  closeNotionModal();
+  const overlay = document.createElement('div');
+  overlay.id = 'notionModal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto';
+  overlay.innerHTML = notionToken ? buildNotionLogForm(dayIdx) : buildNotionSetupForm();
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeNotionModal(); });
+}
+
+function closeNotionModal() {
+  const el = document.getElementById('notionModal');
+  if (el) el.remove();
+}
+
+function buildNotionSetupForm() {
+  return `<div style="background:var(--bg-card);border:2px solid var(--orange);border-radius:16px;padding:28px;max-width:480px;width:100%;max-height:85vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h3 style="font-size:18px;font-weight:900;margin:0">🔗 Connect Notion</h3>
+      <button onclick="closeNotionModal()" style="background:none;border:none;color:var(--text-muted);font-size:20px;cursor:pointer;line-height:1">✕</button>
+    </div>
+    <div style="background:var(--bg-card-2);border-radius:10px;padding:16px;margin-bottom:20px;font-size:13px;line-height:1.8;color:var(--text-secondary)">
+      <div style="font-weight:900;color:var(--orange);margin-bottom:8px;font-size:14px">One-time setup (2 min)</div>
+      <div>1. Go to <strong style="color:var(--text-primary)">notion.com/profile/integrations</strong></div>
+      <div>2. Click <strong style="color:var(--text-primary)">New integration</strong></div>
+      <div>3. Name it <strong style="color:var(--text-primary)">"Traction Report"</strong> → Submit</div>
+      <div>4. Copy the <strong style="color:var(--text-primary)">Internal Integration Secret</strong> — starts with <code style="color:var(--orange);background:var(--bg-primary);padding:2px 5px;border-radius:4px">secret_</code></div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">5. In Notion, open <strong style="color:var(--text-primary)">VPP 3.0 Athlete Performance Tracking</strong> → click <strong>···</strong> menu → <strong>Connections</strong> → add your "Traction Report" integration</div>
+    </div>
+    <label style="display:block;font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Integration Token</label>
+    <input id="notionTokenInput" type="password" placeholder="secret_..." style="width:100%;background:var(--bg-card-2);border:2px solid var(--border);border-radius:8px;padding:12px;color:var(--text-primary);font-size:14px;font-family:monospace;margin-bottom:16px;box-sizing:border-box" />
+    <button class="btn btn-primary" style="width:100%;font-size:15px;padding:14px" onclick="saveNotionToken()">Save &amp; Connect →</button>
+  </div>`;
+}
+
+function saveNotionToken() {
+  const val = (document.getElementById('notionTokenInput')?.value || '').trim();
+  if (!val.startsWith('secret_')) { alert('Token must start with "secret_" — please copy it again from your Notion integration page.'); return; }
+  notionToken = val;
+  localStorage.setItem('trNotionToken', notionToken);
+  openNotionLog(_notionDayIdx);
+}
+
+function disconnectNotion() {
+  if (!confirm('Disconnect Notion? You\'ll need to paste your token again to reconnect.')) return;
+  notionToken = '';
+  localStorage.removeItem('trNotionToken');
+  closeNotionModal();
+}
+
+function _nField(label, id, type, placeholder) {
+  return `<div>
+    <label style="display:block;font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">${label}</label>
+    <input id="${id}" type="${type}" placeholder="${placeholder}" style="width:100%;background:var(--bg-card-2);border:2px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text-primary);font-size:13px;box-sizing:border-box" />
+  </div>`;
+}
+
+function _nFieldRO(label, id, value) {
+  return `<div>
+    <label style="display:block;font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">${label}</label>
+    <input id="${id}" type="text" value="${value}" readonly style="width:100%;background:var(--bg-card-2);border:2px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--orange);font-size:13px;font-weight:700;box-sizing:border-box" />
+  </div>`;
+}
+
+function _nSelect(label, id, options, selected) {
+  return `<div>
+    <label style="display:block;font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">${label}</label>
+    <select id="${id}" style="width:100%;background:var(--bg-card-2);border:2px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text-primary);font-size:13px;box-sizing:border-box">
+      ${options.map(o => `<option${o===selected?' selected':''}>${o}</option>`).join('')}
+    </select>
+  </div>`;
+}
+
+function _nRating(label, id) {
+  return `<div>
+    <label style="display:block;font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">${label}</label>
+    <div style="display:flex;align-items:center;gap:8px">
+      <input id="${id}" type="range" min="1" max="10" value="7" style="flex:1;accent-color:var(--orange)" oninput="document.getElementById('${id}v').textContent=this.value" />
+      <span id="${id}v" style="font-size:14px;font-weight:900;color:var(--orange);min-width:18px;text-align:right">7</span>
+    </div>
+  </div>`;
+}
+
+function _nCheck(label, id, checked) {
+  return `<label style="display:flex;align-items:center;gap:10px;cursor:pointer;background:var(--bg-card-2);border-radius:8px;padding:12px">
+    <input id="${id}" type="checkbox"${checked?' checked':''} style="width:16px;height:16px;accent-color:var(--orange);cursor:pointer;flex-shrink:0" />
+    <span style="font-size:13px;color:var(--text-secondary)">${label}</span>
+  </label>`;
+}
+
+function buildNotionLogForm(dayIdx) {
+  const day = WEEK[dayIdx];
+  const vppDay = NOTION_DAY_MAP[dayIdx];
+  const today = new Date().toISOString().split('T')[0];
+  return `<div style="background:var(--bg-card);border:2px solid var(--orange);border-radius:16px;padding:28px;max-width:580px;width:100%;max-height:85vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <h3 style="font-size:18px;font-weight:900;margin:0">🚀 Log to Notion</h3>
+      <button onclick="closeNotionModal()" style="background:none;border:none;color:var(--text-muted);font-size:20px;cursor:pointer;line-height:1">✕</button>
+    </div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:20px">VPP 3.0 Athlete Performance Tracking → <strong style="color:var(--orange)">${day.name} · ${vppDay}</strong></div>
+
+    <div style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Session Info</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+      ${_nField('Date','nl-date','date',today)}
+      ${_nField('VPP Week #','nl-vppweek','number','1')}
+      ${_nSelect('Phase','nl-phase',['Phase 1','Phase 2','Phase 3','Phase 4'],'Phase 1')}
+      ${_nFieldRO('VPP Day','nl-vppday',vppDay)}
+    </div>
+
+    <div style="font-size:11px;font-weight:800;color:var(--orange);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Jump Metrics (inches)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+      ${_nField('Standing Vertical','nl-standing','number','')}
+      ${_nField('Approach Vertical','nl-approach','number','')}
+      ${_nField('Highest Touch','nl-touch','number','')}
+      ${_nField('Inches to Dunk','nl-itd','number','')}
+      ${_nField('Rim Height','nl-rim','number','120')}
+      ${_nField('Bodyweight (lbs)','nl-bw','number','')}
+    </div>
+
+    <div style="font-size:11px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Daily Readiness (1–10)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+      ${_nField('Sleep Hours','nl-sleep','number','8')}
+      ${_nRating('Sleep Quality','nl-sleepq')}
+      ${_nRating('Energy','nl-energy')}
+      ${_nRating('Soreness','nl-soreness')}
+      ${_nRating('Stress (1=low)','nl-stress')}
+      ${_nRating('Jump Quality','nl-jumpq')}
+      ${_nRating('CNS Load (1=fresh)','nl-cns')}
+      ${_nRating('Readiness Score','nl-readiness')}
+    </div>
+
+    <div style="font-size:11px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Completed Today</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+      ${_nCheck('Training On Plan','nl-train',true)}
+      ${_nCheck('Recovery On Plan','nl-recovery',true)}
+      ${_nCheck('Nutrition On Plan','nl-nutrition',true)}
+      ${_nCheck('Prayer Completed','nl-prayer',true)}
+    </div>
+
+    <div style="margin-bottom:20px">
+      <label style="display:block;font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Notes</label>
+      <textarea id="nl-notes" rows="3" style="width:100%;background:var(--bg-card-2);border:2px solid var(--border);border-radius:8px;padding:12px;color:var(--text-primary);font-size:13px;resize:vertical;font-family:inherit;box-sizing:border-box" placeholder="How did the session feel? What to improve tomorrow?"></textarea>
+    </div>
+
+    <div style="display:flex;gap:10px">
+      <button id="notionSendBtn" class="btn btn-primary" style="flex:1;font-size:14px;padding:14px" onclick="sendToNotion()">🚀 Send to Notion</button>
+      <button class="btn btn-secondary" style="font-size:11px;padding:10px 14px" onclick="disconnectNotion()" title="Disconnect Notion">🔌 Disconnect</button>
+    </div>
+    <div id="notionStatus" style="margin-top:12px;font-size:13px;text-align:center;min-height:20px"></div>
+  </div>`;
+}
+
+function _getN(id, type) {
+  const el = document.getElementById(id);
+  if (!el) return null;
+  if (type === 'number') { const v = parseFloat(el.value); return isNaN(v) ? null : v; }
+  if (type === 'check') return el.checked;
+  return el.value || null;
+}
+
+async function sendToNotion() {
+  const btn = document.getElementById('notionSendBtn');
+  const status = document.getElementById('notionStatus');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Sending…'; }
+
+  const day = WEEK[_notionDayIdx];
+  const vppDay = NOTION_DAY_MAP[_notionDayIdx];
+  const entryDate = _getN('nl-date', 'text') || new Date().toISOString().split('T')[0];
+  const vppWeek = _getN('nl-vppweek', 'number');
+  const phase = _getN('nl-phase', 'text');
+
+  const props = {
+    'Entry': { title: [{ text: { content: `${day.name} — ${vppDay} — ${entryDate}` } }] },
+    'Entry Date': { date: { start: entryDate } },
+    'VPP Day': { select: { name: vppDay } },
+  };
+  if (phase) props['Phase'] = { select: { name: phase } };
+  if (vppWeek !== null) props['VPP Week'] = { number: vppWeek };
+
+  [
+    ['Standing Vertical', 'nl-standing'],
+    ['Approach Vertical', 'nl-approach'],
+    ['Highest Touch', 'nl-touch'],
+    ['Inches To Dunk', 'nl-itd'],
+    ['Rim Height', 'nl-rim'],
+    ['Bodyweight', 'nl-bw'],
+    ['Sleep Hours', 'nl-sleep'],
+    ['Sleep Quality', 'nl-sleepq'],
+    ['Energy', 'nl-energy'],
+    ['Soreness', 'nl-soreness'],
+    ['Stress', 'nl-stress'],
+    ['Jump Quality', 'nl-jumpq'],
+    ['CNS Load', 'nl-cns'],
+    ['Readiness Score', 'nl-readiness'],
+  ].forEach(([prop, id]) => {
+    const v = _getN(id, 'number');
+    if (v !== null) props[prop] = { number: v };
+  });
+
+  props['Training On Plan'] = { checkbox: !!_getN('nl-train', 'check') };
+  props['Recovery On Plan'] = { checkbox: !!_getN('nl-recovery', 'check') };
+  props['Nutrition On Plan'] = { checkbox: !!_getN('nl-nutrition', 'check') };
+  props['Prayer Completed'] = { checkbox: !!_getN('nl-prayer', 'check') };
+
+  const notes = _getN('nl-notes', 'text');
+  if (notes) props['Notes'] = { rich_text: [{ text: { content: notes } }] };
+
+  try {
+    const res = await fetch('https://api.notion.com/v1/pages', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + notionToken,
+        'Content-Type': 'application/json',
+        'Notion-Version': '2022-06-28',
+      },
+      body: JSON.stringify({ parent: { database_id: NOTION_DB_ID }, properties: props }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      if (status) status.innerHTML = '<span style="color:var(--green);font-weight:900">✅ Logged to Notion successfully!</span>';
+      if (btn) { btn.textContent = '✅ Sent!'; btn.style.background = 'var(--green)'; }
+      setTimeout(closeNotionModal, 2000);
+    } else {
+      const msg = data?.message || data?.code || JSON.stringify(data);
+      if (status) status.innerHTML = '<span style="color:var(--red)">❌ Error: ' + msg + '</span>';
+      if (btn) { btn.disabled = false; btn.textContent = '🚀 Send to Notion'; }
+    }
+  } catch (e) {
+    if (status) status.innerHTML = '<span style="color:var(--red)">❌ Network error: ' + e.message + '</span>';
+    if (btn) { btn.disabled = false; btn.textContent = '🚀 Send to Notion'; }
+  }
 }
