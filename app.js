@@ -636,6 +636,12 @@ document.addEventListener('DOMContentLoaded', () => {
   renderAnalyticsHistory();
   renderReviewHistory();
   renderWeeklyPlanner();
+  renderJSDiagnostic();
+  renderPenultimate();
+  renderReactive();
+  renderArmSwing();
+  renderGroundContact();
+  renderPowerTraining();
   // Show default platform guide
   const defaultPlatBtn = document.querySelector('.platform-tab-btn');
   if (defaultPlatBtn) showPlatform('tiktok', defaultPlatBtn);
@@ -1132,4 +1138,611 @@ function closeHowTo(e) {
   if (!box || !box.contains(e.target) || e.currentTarget?.classList?.contains('modal-close') || e.currentTarget?.classList?.contains('btn')) {
     document.getElementById('howToModal').classList.remove('open');
   }
+}
+
+// ── Jump Science v1.1 ─────────────────────────────────────────────────────────
+
+const JS_DIAGNOSTIC_QUESTIONS = [
+  { q: 'When you jump off two feet, which describes your approach best?', options: [
+    { text: 'Fast run-up, last 2 steps are quick and short', score: { speed: 2, force: 0 } },
+    { text: 'Moderate run-up, deliberate penultimate step', score: { speed: 1, force: 1 } },
+    { text: 'Slow approach, I squat and load before jumping', score: { speed: 0, force: 2 } },
+  ]},
+  { q: 'How long is your ground contact on the jump-foot during a max attempt?', options: [
+    { text: 'Very brief — I barely feel the ground', score: { speed: 2, force: 0 } },
+    { text: 'Medium — I feel a quick push', score: { speed: 1, force: 1 } },
+    { text: 'Long — I bend deep and drive up', score: { speed: 0, force: 2 } },
+  ]},
+  { q: 'Which athletic activity feels most natural to you?', options: [
+    { text: 'Sprinting / fast first step', score: { speed: 2, force: 0 } },
+    { text: 'Mix of sprinting and strength', score: { speed: 1, force: 1 } },
+    { text: 'Squatting heavy / slow powerful movements', score: { speed: 0, force: 2 } },
+  ]},
+  { q: 'How do your pogo jumps feel?', options: [
+    { text: 'Natural and fast — I bounce easily', score: { speed: 2, force: 0 } },
+    { text: 'OK but I have to think about it', score: { speed: 1, force: 1 } },
+    { text: 'Difficult — I tend to bend my knees a lot', score: { speed: 0, force: 2 } },
+  ]},
+  { q: 'When you were younger, which sport/skill was easiest?', options: [
+    { text: 'Track, sprinting, soccer — fast movements', score: { speed: 2, force: 0 } },
+    { text: 'Basketball, football — mixed demands', score: { speed: 1, force: 1 } },
+    { text: 'Weightlifting, wrestling — strength-based', score: { speed: 0, force: 2 } },
+  ]},
+  { q: 'Your single-leg hop distance vs. two-leg jump:', options: [
+    { text: 'Single-leg is almost as good — I\'m reactive', score: { speed: 2, force: 0 } },
+    { text: 'Two-leg is clearly better but single-leg is decent', score: { speed: 1, force: 1 } },
+    { text: 'Big difference — two-leg is much better', score: { speed: 0, force: 2 } },
+  ]},
+];
+
+const JS_PROFILES = {
+  speed: {
+    label: 'Speed-Dominant Reactive Jumper', icon: '⚡', color: 'var(--orange)',
+    desc: 'You convert horizontal velocity into vertical height using the stretch-shortening cycle (SSC). Your strength is your elastic energy system — tendons store and release force faster than force-dominant jumpers. This is the NBA prototype: Westbrook, Ja Morant. Your approach speed IS your jump.',
+    strengths: ['Elastic ankle and Achilles tendon efficiency', 'Fast ground contact time (<0.18 sec)', 'Reactive (reflex-based) jump mechanics', 'Approach speed translates directly to height'],
+    limiters: ['Max strength is NOT your limiter', 'Rate of Force Development (RFD) and stiffness are the keys', 'Penultimate step mechanics are critical — bad last 2 steps wastes your speed', 'Reactive stiffness under load can break down at high speeds'],
+    priorities: ['Penultimate Step Development (highest priority)', 'Reactive Stiffness Training (ankle/Achilles complex)', 'Arm Swing Synchronization', 'Ground Contact Optimization (<0.18 sec target)', 'Speed-Based Power Training (not max strength focus)'],
+    trainingNote: 'For a 42-year-old speed-dominant profile: Your tendons are your primary asset AND primary injury risk. Collagen synthesis, progressive stiffness loading, and recovery between sessions are non-negotiable.'
+  },
+  hybrid: {
+    label: 'Hybrid Jumper', icon: '🔄', color: 'var(--gold)',
+    desc: 'You have characteristics of both speed-dominant and force-dominant jumpers. You jump effectively off a run or from a standstill. Players like LeBron James, Giannis Antetokounmpo — powerful in all contexts. Your training should develop both elastic and contractile qualities simultaneously.',
+    strengths: ['Versatility — effective in multiple contexts', 'Can adapt approach based on play', 'Good SSC capacity with strength backing it up'],
+    limiters: ['No single dominant weakness — context dependent', 'Need to sharpen one style for max performance', 'Often benefit from more approach specificity'],
+    priorities: ['Identify dominant style and sharpen it first', 'Penultimate Step Development', 'Both reactive stiffness and strength work', 'Approach-specific plyometrics'],
+    trainingNote: 'At 42, hybrid jumpers benefit from identifying which system needs more attention. Most experienced athletes have one system that lags. Your training data will confirm the direction.'
+  },
+  force: {
+    label: 'Force-Dominant Jumper', icon: '💪', color: 'var(--blue)',
+    desc: 'You jump best from strength and slow eccentric loading — a powerful squat-and-drive mechanic. Your peak force is your asset. Ground contact time is longer, but force output is high. Your opportunity is converting strength to reactive power.',
+    strengths: ['High peak force output', 'Effective from standing or short approaches', 'Strong bilateral jump (two-leg max)'],
+    limiters: ['Long ground contact time limits approach jump height', 'Less elastic energy efficiency', 'Sprint speed doesn\'t translate as directly to jump height'],
+    priorities: ['Strength → Power conversion (primary lever)', 'Reactive stiffness development (learn to use SSC)', 'Penultimate step mechanics to add speed component', 'Single-leg stability for approach jumps'],
+    trainingNote: 'Force-dominant athletes at 42 often have excellent strength bases. The opportunity is converting that to power — speed of force application, not max force, is what drives vertical gains at this stage.'
+  }
+};
+
+const PENULTIMATE_SYSTEM = {
+  overview: 'The penultimate step is the second-to-last step before your jump foot plants. For speed-dominant jumpers, this step is the engine. It must be LONGER than your normal stride and lower to the ground — this creates a braking force that converts horizontal momentum into upward force. A wrong penultimate costs 2–4 inches.',
+  mechanics: [
+    { label: 'Step Length', text: 'Penultimate step should be 10–15% LONGER than your normal stride. This lowers your center of mass and pre-loads the hip extensor muscles.' },
+    { label: 'Foot Strike', text: 'Heel-toe or midfoot strike on penultimate step (NOT forefoot). This creates the braking impulse needed to redirect force upward.' },
+    { label: 'Hip Drop', text: 'Your hips should drop 4–6 inches on the penultimate step — this is your eccentric loading phase. No hip drop = no elastic energy stored.' },
+    { label: 'Jump Foot Contact', text: 'The final step (jump foot) should be flat or forefoot, planted aggressively UNDER your hips — not in front. Contact time target: <0.20 sec.' },
+    { label: 'Rhythm', text: 'Long step (penultimate) → SHORT step (jump foot). The rhythm is L-O-N-G, short. Most athletes do short-short and leave inches on the table.' },
+  ],
+  levels: [
+    {
+      level: 1, label: 'Beginner', color: 'var(--green)', tag: 'Weeks 1–4',
+      focus: 'Learn the long-short rhythm without a ball',
+      drills: [
+        { name: 'Walk-to-Jump Approach', reps: '3×10 approaches', cue: 'Walk 5 steps → penultimate long step → jump. No speed yet. FEEL the hip drop.', benchmark: 'Hip drops 4+ inches on penultimate step' },
+        { name: 'Hop-Hop-Jump Pattern', reps: '3×8 each leg', cue: 'Right-left-JUMP. Alternating. Right foot hop, left foot is long penultimate, both feet jump.', benchmark: 'Consistent rhythm, no stuttering' },
+        { name: 'Mark Drill — Tape on Floor', reps: '4×5', cue: 'Tape at normal stride, then 15% further for penultimate. Hit the marks consistently.', benchmark: 'Landing within 3 inches of target marks' },
+        { name: 'Step-Step-Explode', reps: '3×8', cue: 'Two steps max. Just penultimate and jump step. Focus 100% on long-short rhythm at walking pace.', benchmark: 'Feel the difference vs. equal steps' },
+      ]
+    },
+    {
+      level: 2, label: 'Intermediate', color: 'var(--blue)', tag: 'Weeks 5–8',
+      focus: 'Build speed into the approach, maintain mechanics',
+      drills: [
+        { name: '3-Step Run-Up Approach', reps: '4×8', cue: 'Jogging pace. 3 steps + penultimate + jump. Speed is 50–60% max. Long step holds even as speed builds.', benchmark: 'Consistent hip drop at jogging pace' },
+        { name: 'Contrast: Equal vs. Long Step', reps: '3×5 each', cue: '5 jumps with equal steps. 5 jumps with deliberate long penultimate. Which is higher? Feel and own the difference.', benchmark: 'Long penultimate jump consistently higher' },
+        { name: 'Sprint-to-Approach (5m run-up)', reps: '5×5', cue: '5m sprint → controlled penultimate → jump. Keep long step even coming in fast.', benchmark: 'Long step holds at 70% sprint speed' },
+        { name: 'Video Review — Side Angle', reps: 'Film 5 approaches', cue: 'Film from SIDE. Watch for: hip drop on penultimate, length difference between last two steps, foot strike.', benchmark: 'Visual confirmation of long-short pattern' },
+      ]
+    },
+    {
+      level: 3, label: 'Advanced', color: 'var(--orange)', tag: 'Weeks 9–12',
+      focus: 'Full-speed penultimate with max effort',
+      drills: [
+        { name: 'Full-Speed Approach Jump (measured)', reps: '5×5 max effort', cue: 'Full run-up, max effort. Penultimate mechanics must hold at full speed. If they break, drop to 80%.', benchmark: 'Long step holds at full sprint speed' },
+        { name: '1-Step vs. 3-Step Comparison', reps: '5 each', cue: 'Measure vertical off 1-step and 3-step approach. Speed-dominant profile should jump HIGHER off 3+ steps.', benchmark: 'Approach jump 2+ inches higher than standing' },
+        { name: 'Reactive Approach (off signal)', reps: '3×8', cue: 'Someone signals when to jump. React → approach → penultimate → jump. Trains reactive penultimate.', benchmark: 'Mechanics hold under reactive conditions' },
+        { name: 'Band Assisted Approach Dunk', reps: '4×6', cue: 'Band reduces 20% BW. Full approach, penultimate mechanics, max effort dunk attempt. Film every set.', benchmark: 'Consistent mechanics on dunk attempts' },
+      ]
+    },
+    {
+      level: 4, label: 'Elite', color: 'var(--gold)', tag: 'Weeks 13–16',
+      focus: 'Express penultimate mechanics under game conditions',
+      drills: [
+        { name: 'Regulation Dunk Approach', reps: '10–15 max attempts', cue: 'No band. Full approach. Penultimate mechanics are automated now. Trust the system.', benchmark: 'Consistent mechanics on every attempt' },
+        { name: 'Variable Approach Angles', reps: '3×5 each angle', cue: 'Straight-on, 45° left, 45° right. Your penultimate adapts to the angle. Film from above if possible.', benchmark: 'Clean mechanics at all approach angles' },
+        { name: 'Game-Speed Dribble Approach', reps: '3×6', cue: 'Dribble at game speed → attack → penultimate → max jump. This is your game context.', benchmark: 'Dribble-to-dunk approach consistent' },
+        { name: 'One-Step Dunk Attempt', reps: '5 attempts', cue: '2 steps from rim. Pure explosive penultimate. Tests pure SSC without run-up help.', benchmark: 'Rim touch on one-step attempt' },
+      ]
+    },
+  ]
+};
+
+const REACTIVE_PHASES = [
+  {
+    phase: 1, label: 'Foundation Stiffness', weeks: '1–4', color: 'var(--green)',
+    goal: 'Build ankle/Achilles stiffness and proprioception. No explosive work — just loading the system.',
+    science: 'At 42, your Achilles and patellar tendons have reduced collagen turnover. The foundation phase uses slow, controlled loading to stimulate collagen synthesis and remodel tendon structure before adding speed.',
+    drills: [
+      { name: 'Slow Pogo Jumps (controlled)', reps: '3×20 reps', cue: 'Minimal knee bend. Land soft, leave soft. 1-second ground contact. Building stiffness awareness.' },
+      { name: 'Single-Leg Calf Raise Hold', reps: '3×30 sec each', cue: 'Bottom position hold. Loaded stretch for Achilles. Add weight as weeks progress.' },
+      { name: 'Depth Drop (absorb only)', reps: '3×8 off 12"', cue: 'Step off box, land in athletic position. No jump. Feel and absorb. Reset between reps.' },
+      { name: 'Jump Rope (standard pace)', reps: '3×2 min', cue: 'Focus on ankle, not calf. Stiff-ankle jumping. Light impact. Builds baseline elastic capacity.' },
+    ]
+  },
+  {
+    phase: 2, label: 'Elastic Loading', weeks: '5–8', color: 'var(--blue)',
+    goal: 'Increase SSC capacity. Shorter ground contacts. Introduce direction changes.',
+    science: 'The SSC operates in two modes: slow SSC (>250ms contact) and fast SSC (<250ms). This phase bridges the two — moving from controlled loading to faster, more elastic contacts. Ground contact targets begin here.',
+    drills: [
+      { name: 'Fast Pogo Jumps', reps: '4×20 — target <0.3 sec contact', cue: 'Bounce as fast as possible. Ankles are springs. No heel contact. Think "hot ground."' },
+      { name: 'Lateral Pogo Hops', reps: '3×10 each direction', cue: 'Rapid side-to-side. Stiff ankles. Reactive contact. Builds lateral stiffness for approach jumps.' },
+      { name: 'Depth Drop → Jump (intro)', reps: '4×5 off 15"', cue: 'Jump immediately after landing. Ground contact <0.3 sec. If you bend too deep, drop box height.' },
+      { name: 'Reactive Bound', reps: '4×6 each leg', cue: 'Single-leg horizontal bound. Land and immediately bound again. SSC on one leg — key for approach jumps.' },
+    ]
+  },
+  {
+    phase: 3, label: 'Reactive Expression', weeks: '9–12', color: 'var(--orange)',
+    goal: 'Express reactive stiffness at approach-jump speeds. Sub-0.20 sec ground contacts.',
+    science: 'At this phase, tendon stiffness should handle approach-speed impacts. Target ground contact time <0.20 seconds — the threshold where SSC becomes maximally efficient for speed-dominant jumpers.',
+    drills: [
+      { name: 'Approach-Speed Pogos (aggressive)', reps: '4×15 — target <0.2 sec', cue: 'Max speed pogos. Film at 60fps: <12 frames from contact to leave = <0.2 sec.' },
+      { name: 'Depth Jump (full reactive)', reps: '4×5 off 20"', cue: 'Off box, immediately max vertical. Highest intensity plyo. Do FIRST in session when CNS is fresh.' },
+      { name: 'Reactive Lateral Bound Series', reps: '4×5 each leg', cue: 'Bound laterally 5 times continuous. Reactive contact only. If stiffness goes, rest more.' },
+      { name: 'Approach Jump to Rim (reactive cue)', reps: '3×6', cue: 'Someone calls "go" — you sprint, approach, penultimate, jump. Reactive not pre-planned. Trains game SSC.' },
+    ]
+  },
+  {
+    phase: 4, label: 'Peak SSC', weeks: '13–16', color: 'var(--gold)',
+    goal: 'Maximal reactive stiffness expression. Every dunk attempt utilizes full SSC.',
+    science: 'Peak phase: SSC is fully developed. Volume drops significantly. Maintain stiffness while reducing fatigue. Over-training reactive stiffness now is counterproductive — freshness = higher jumps.',
+    drills: [
+      { name: 'Fast Pogos (maintenance)', reps: '3×12 — max speed', cue: 'Keep in to maintain stiffness. Do NOT increase volume. Quality only.' },
+      { name: 'Depth Jump (low volume)', reps: '3×3 off 20" — max quality', cue: 'Only 3 reps. Max intensity. 3 min rest between sets. Quality over quantity.' },
+      { name: 'Pre-Dunk Reactive Activation', reps: '2×10 fast pogos before each dunk attempt', cue: 'Activate the elastic system immediately before attempting dunks. Prime the tendons.' },
+      { name: 'Jump-Land-Jump (rapid response)', reps: '3×5', cue: 'Jump, land, immediately jump again from same spot. Reactive re-jump. Tests maintained stiffness.' },
+    ]
+  },
+];
+
+const ARM_SWING_DRILLS = [
+  { num: 1, name: 'Wall Arm Swing', dur: 'Daily · 3×20 swings',
+    desc: 'Stand 1 foot from wall. Swing arms from hips to overhead in the jump arc. Palms face floor on the way down, face up on the way up. Pure arm swing pattern without jumping.',
+    cue: 'Drive through the hips, not the shoulders. Arms should feel like pendulums — momentum carries them up.',
+    why: 'Isolates arm swing mechanics. Most athletes have learned incorrect patterns. Resetting here carries over to the jump.' },
+  { num: 2, name: 'Standing Jump Arm Sync', dur: '3×8 jumps',
+    desc: 'Standing broad jump with exaggerated arm swing. Arms reach back BEHIND you on loading, then drive forward and UP on jump. Arms and hips must explode simultaneously.',
+    cue: 'Arms behind at hips on dip, then throw them up as you explode. If arms are late, you lose 1–2 inches immediately.',
+    why: 'The arm swing adds 1–3 inches when timed correctly. Most athletes are 0.1–0.2 sec late.' },
+  { num: 3, name: 'Seated Arm Swing (no legs)', dur: '3×15 swings',
+    desc: 'Sit on a bench. Swing arms only as if jumping — back, then explosively forward and overhead. Without legs, you feel exactly how much force your arms generate.',
+    cue: 'Explosive. Hard stop at the top. You should feel hips lift off the bench if you swing hard enough.',
+    why: 'Teaches arm power in isolation. When legs and arms work in sync, force adds — not averages.' },
+  { num: 4, name: 'Double-Arm Drive Jump', dur: '3×8 max effort',
+    desc: 'Standing vertical jump, focus entirely on arm swing. Drive both arms down hard on loading phase, then explode both arms up simultaneously with the leg drive.',
+    cue: '"Arms → floor, arms → sky" — match the jump timing exactly. Hard down, hard up.',
+    why: 'Establishes two-arm synchronization that directly transfers to dunk attempts.' },
+  { num: 5, name: 'Single-Arm Approach Sync', dur: '3×6 each side',
+    desc: 'Walk-to-run approach jump, practicing single-dominant-arm swing pattern. Your right arm drives up as left foot plants (and vice versa). Natural running arm sync applied to jumping.',
+    cue: 'Watch NBA players in slow-mo — the arm opposite to the jump foot drives hardest. Match your arm to your footwork.',
+    why: 'Approach jumps use different arm mechanics than standing jumps. This trains the approach-specific pattern.' },
+  { num: 6, name: 'Full Approach Arm Sync', dur: '4×5 approach jumps',
+    desc: 'Full run-up, full arm swing. Film from side angle. At the moment your jump foot leaves the ground, arms should be at eye level or above and still moving upward.',
+    cue: 'Arms should be traveling UP when you leave the ground — not coming back down. If they peak before takeoff, you left height on the floor.',
+    why: 'The arm swing continues to add force for the first 0.1 sec of flight. A complete arm swing adds measurable inches.' },
+  { num: 7, name: 'Dunk Attempt Arm Check', dur: '5 filmed attempts',
+    desc: 'Film 5 dunk attempts specifically to analyze arm swing. Frame-by-frame: Do arms fully extend overhead? Are they synced with your jump? Do they reach max height after takeoff?',
+    cue: 'Checklist: ① Arms load back on penultimate ② Arms drive forward on jump foot contact ③ Arms fully extend above head at/after takeoff ④ Both arms reach max height in the air',
+    why: 'Video feedback closes the gap between what you think you\'re doing and what\'s actually happening.' },
+];
+
+const GROUND_CONTACT_DATA = {
+  science: 'Ground contact time (GCT) is the single most important mechanical variable for speed-dominant jumpers. The shorter your contact, the more you utilize elastic (SSC) energy stored in your Achilles and patellar tendons — and the less energy is lost to heat and ground deformation.',
+  targets: [
+    { label: 'Beginner GCT', value: '0.30–0.40s', status: 'baseline', desc: 'Starting point. Mostly concentric force production with limited SSC.' },
+    { label: 'Intermediate GCT', value: '0.20–0.30s', status: 'developing', desc: 'SSC beginning to engage. Tendon stiffness developing.' },
+    { label: 'Advanced GCT', value: '0.15–0.20s', status: 'efficient', desc: 'High SSC utilization. Tendon stiffness doing the work.' },
+    { label: 'Elite (NBA) GCT', value: '<0.15s', status: 'elite', desc: 'Maximum elastic energy return. Tendon = primary force producer.' },
+  ],
+  howToMeasure: 'Film your approach jumps at 60fps (standard iPhone slo-mo). Count frames from foot contact to foot leave. Divide by 60 to get seconds. Example: 12 frames ÷ 60 = 0.20 seconds.',
+  cues: [
+    { icon: '🔥', label: 'Hot Ground Cue', text: 'Think of the floor as a hot surface. Get off it as fast as possible. This mental cue reduces GCT by 10–20% immediately in most athletes.' },
+    { icon: '⚡', label: 'Stiff Ankle Protocol', text: 'On pogo jumps and approach jumps: dorsiflexed ankle BEFORE contact (toes up). This pre-loads the Achilles and reduces contact time.' },
+    { icon: '🎯', label: 'Attack Under Hip', text: 'Jump foot should contact the ground directly under your center of mass — not in front. Landing in front creates braking force that adds GCT.' },
+    { icon: '💥', label: 'Reactive Not Muscular', text: 'At high speeds, you do NOT have time to fire muscles consciously. Pre-tension the system and let the reflex arc do the work.' },
+    { icon: '🦴', label: 'Hip Height Maintenance', text: 'After the penultimate step loads, your hips should rise rapidly and STAY high through takeoff. Dropping hips at takeoff is the most common GCT killer.' },
+    { icon: '🕐', label: 'Short-Short Rule', text: 'Final 2 steps should get FASTER (shorter in time). Approach speed should INCREASE into the jump, not decelerate.' },
+    { icon: '🎥', label: 'Film Your GCT', text: 'Film every dunk session at 60fps. Review weekly. Your GCT shows if your elastic system is improving — often before your vertical number moves.' },
+  ],
+  metrics: [
+    { id: 'gc_approach', label: 'Approach Speed (felt)' },
+    { id: 'gc_hip_drop', label: 'Penultimate Hip Drop' },
+    { id: 'gc_contact', label: 'Ground Contact Feel' },
+    { id: 'gc_ankle', label: 'Ankle Stiffness' },
+    { id: 'gc_arm_sync', label: 'Arm Swing Sync' },
+  ]
+};
+
+const POWER_TRAINING_DATA = {
+  philosophy: 'Speed-dominant jumpers do NOT need more max strength — they need faster strength. The goal is Rate of Force Development (RFD): how fast you can generate force, not how much force you can generate at maximum load. A heavier squat does NOT correlate with higher jumps for speed-dominant athletes. Speed of movement is your training signal.',
+  comparison: [
+    { exercise: 'Trap Bar Deadlift', v1: '4×5 @ 75%', v1note: 'Standard strength focus', v11: '3×3 @ 70% — FAST', v11note: 'Velocity-based: move bar as fast as possible' },
+    { exercise: 'Squats', v1: 'Slow controlled', v1note: 'Hypertrophy/strength focus', v11: 'Jump squats @ 30–40% BW', v11note: 'Explosive intent, ground contact as priority' },
+    { exercise: 'Depth Drops', v1: 'Absorb only', v1note: 'Landing mechanics', v11: 'Depth Jump → Immediate jump', v11note: 'SSC priority, contact < 0.2 sec' },
+    { exercise: 'Calf Raises', v1: 'Standard bilateral', v1note: 'Volume focus', v11: 'Single-leg, fast top', v11note: 'Reactive Achilles loading' },
+    { exercise: 'Plyometrics', v1: 'Volume accumulation', v1note: 'Foundation approach', v11: 'Quality × low volume, max intensity', v11note: 'CNS fresh = higher quality reactive output' },
+  ],
+  priorityExercises: [
+    { name: 'Reactive Depth Jump', sets: '4×5', load: 'Off 20" box', why: 'Highest RFD stimulus. Do FIRST when CNS is fresh. This is your primary power exercise — not the deadlift.', longevity: 'Land on BOTH feet. Limit 4×/week. If knees ache after, reduce box height.' },
+    { name: 'Jump Squat (Velocity)', sets: '4×5', load: '30–40% BW (bar + plates)', why: 'Trains fast-force production needed for jump-off. Bar should lift off hands at the top.', longevity: 'Monitor spine. Use safety bar if available. If it\'s not fast, the load is too heavy.' },
+    { name: 'Single-Leg Explosive Step-Up', sets: '3×5 each', load: 'Box at knee height, BW to 25lb', why: 'Unilateral power that mimics approach jump. Drives glute and hip extension explosively.', longevity: 'Controlled step down. Never jump down. Achilles and knee stress — progress conservatively.' },
+    { name: 'Fast Pogo Progression', sets: '4×15', load: 'Bodyweight', why: 'Builds Achilles stiffness. #1 reactive stiffness developer. Do before every HPT session.', longevity: 'Forefoot only. Stop if Achilles aches. 48h between heavy pogo sessions minimum.' },
+    { name: 'Hip Thrust (explosive top)', sets: '3×8', load: 'Moderate (135–185lb)', why: 'Hip extension peak force — same motion that drives you vertically. Explosive off floor, peak at top.', longevity: 'Use barbell pad. Stop short of hyperextension. Glute-driven, not low back.' },
+    { name: 'Trap Bar Deadlift (velocity intent)', sets: '3×3', load: '65–70% 1RM — FAST', why: 'Strength base maintenance with velocity signal. Never grind — every rep must accelerate.', longevity: 'Maintained only in Phase 3–4. If form slows, drop weight.' },
+  ],
+  longevityPrinciples: [
+    { icon: '⏰', label: '48-Hour Rule', text: 'Never do high-intensity plyometrics (depth jumps, max approach jumps) within 48 hours of the previous session. Tendons take longer to recover than muscles at 42.' },
+    { icon: '📊', label: 'HRV + Reactive Link', text: 'If your HRV drops >10% from baseline, drop all reactive work to sub-max for that day. A tired tendon is an injury waiting to happen.' },
+    { icon: '🦴', label: 'Collagen Window', text: '15g collagen + Vitamin C taken 30–60 min before training stimulates tendon collagen synthesis during loading. Non-negotiable for 42-year-old tendons.' },
+    { icon: '🔄', label: 'Load Cycle', text: 'Every 4th week is a deload. Reactive training drops to 50%. This is when tendons catch up to accumulated stress. Skipping deloads = injury in Phase 3.' },
+    { icon: '🏃', label: 'Speed Before Strength', text: 'Always do reactive/plyometric work BEFORE strength work in the same session. CNS freshness determines reactive stiffness quality. A post-squat depth jump is 30% less effective.' },
+    { icon: '🔍', label: 'Monitoring Protocol', text: 'Weekly check: Rate 1–10 — knee soreness, Achilles tightness, shin pain, hip flexor tightness. If any hits 6+, reduce load. If 7+, take 2–3 days off reactive work.' },
+  ]
+};
+
+let gcLog = JSON.parse(localStorage.getItem('trGCLog') || '[]');
+let jsProfile = localStorage.getItem('trJSProfile') ? JSON.parse(localStorage.getItem('trJSProfile')) : null;
+
+function switchJSTab(tab, btn) {
+  document.querySelectorAll('.js-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.js-panel').forEach(p => p.style.display = 'none');
+  btn.classList.add('active');
+  document.getElementById('js-' + tab).style.display = 'block';
+}
+
+function renderJSDiagnostic() {
+  const panel = document.getElementById('js-profile');
+  if (!panel) return;
+  if (jsProfile) { showJSProfile(jsProfile.type, false); return; }
+
+  let html = `<div class="page-header" style="padding:0 0 16px">
+    <div class="badge">🧬 Jumper Classification System</div>
+    <h2 style="font-size:22px;font-weight:900">What Type of Jumper Are You?</h2>
+    <p class="text-sm text-muted">Answer 6 questions to identify your jump profile and get a personalized training roadmap.</p>
+  </div><div id="jsQuizForm">`;
+
+  JS_DIAGNOSTIC_QUESTIONS.forEach((q, qi) => {
+    html += `<div class="js-question card mb-16">
+      <div class="js-q-label">Question ${qi + 1} of 6</div>
+      <div class="js-q-text">${q.q}</div>
+      <div class="js-q-options">${q.options.map((opt, oi) => `<label class="js-option">
+        <input type="radio" name="jsq${qi}" value="${oi}" style="margin-right:10px">${opt.text}
+      </label>`).join('')}</div>
+    </div>`;
+  });
+
+  html += `</div><button class="btn btn-primary" onclick="submitJSDiagnostic()" style="width:100%;justify-content:center;font-size:15px;padding:14px">⚡ Get My Jumper Profile</button>`;
+  panel.innerHTML = html;
+}
+
+function submitJSDiagnostic() {
+  let speedScore = 0, forceScore = 0;
+  for (let qi = 0; qi < JS_DIAGNOSTIC_QUESTIONS.length; qi++) {
+    const sel = document.querySelector(`input[name="jsq${qi}"]:checked`);
+    if (!sel) { alert('Please answer all 6 questions before submitting.'); return; }
+    const opt = JS_DIAGNOSTIC_QUESTIONS[qi].options[parseInt(sel.value)];
+    speedScore += opt.score.speed;
+    forceScore += opt.score.force;
+  }
+  let profileType = speedScore > forceScore ? (speedScore >= 9 ? 'speed' : 'hybrid') : (forceScore >= 9 ? 'force' : 'hybrid');
+  if (Math.abs(speedScore - forceScore) <= 2) profileType = 'hybrid';
+  const profile = { type: profileType, speedScore, forceScore, date: new Date().toISOString() };
+  jsProfile = profile;
+  localStorage.setItem('trJSProfile', JSON.stringify(profile));
+  showJSProfile(profileType, true);
+}
+
+function showJSProfile(type, isNew) {
+  const p = JS_PROFILES[type];
+  const panel = document.getElementById('js-profile');
+  let html = `<div>`;
+  if (isNew) html += `<div class="highlight-box mb-16" style="border-color:${p.color}"><p>✅ Profile saved. Your Jump Science tabs are now personalized for this profile.</p></div>`;
+  html += `<div class="card mb-16" style="border-color:${p.color}">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
+      <div style="font-size:48px">${p.icon}</div>
+      <div>
+        <div class="badge" style="background:${p.color}20;color:${p.color};margin-bottom:6px">Your Profile</div>
+        <div style="font-size:22px;font-weight:900;color:${p.color}">${p.label}</div>
+      </div>
+    </div>
+    <p class="text-sm" style="line-height:1.7;margin-bottom:16px">${p.desc}</p>
+    <div class="grid-2">
+      <div>
+        <div style="font-size:12px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px">Your Strengths</div>
+        ${p.strengths.map(s => `<div style="display:flex;gap:8px;margin-bottom:6px;font-size:13px"><span style="color:${p.color}">✓</span>${s}</div>`).join('')}
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px">Key Limiters</div>
+        ${p.limiters.map(l => `<div style="display:flex;gap:8px;margin-bottom:6px;font-size:13px"><span style="color:var(--gold)">→</span>${l}</div>`).join('')}
+      </div>
+    </div>
+  </div>
+  <div class="card mb-16">
+    <div class="card-title">🎯 Your Training Priorities (in order)</div>
+    ${p.priorities.map((pr, i) => `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="width:28px;height:28px;border-radius:50%;background:${p.color}20;color:${p.color};font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center">${i+1}</div>
+      <div style="font-size:13px;font-weight:700">${pr}</div>
+    </div>`).join('')}
+  </div>
+  <div class="highlight-box" style="border-color:var(--orange)">
+    <p><strong>42-Year-Old Athlete Note:</strong> ${p.trainingNote}</p>
+  </div>
+  <button class="btn btn-secondary mt-16" onclick="retakeJSDiagnostic()" style="font-size:12px">Retake Diagnostic</button>
+  </div>`;
+  panel.innerHTML = html;
+}
+
+function retakeJSDiagnostic() {
+  jsProfile = null;
+  localStorage.removeItem('trJSProfile');
+  renderJSDiagnostic();
+}
+
+function renderPenultimate() {
+  const panel = document.getElementById('js-penultimate');
+  if (!panel) return;
+  let html = `<div class="page-header" style="padding:0 0 16px">
+    <div class="badge">👟 Speed-Dominant Priority #1</div>
+    <h2 style="font-size:22px;font-weight:900">Penultimate Step System</h2>
+    <p class="text-sm text-muted">The engine of the speed-dominant approach jump. Get this right and gain 2–4 inches immediately.</p>
+  </div>
+  <div class="highlight-box mb-20" style="border-color:var(--orange)">
+    <p><strong>The Secret:</strong> ${PENULTIMATE_SYSTEM.overview}</p>
+  </div>
+  <div class="section-divider"><h2>Mechanics Breakdown</h2></div>
+  <div class="card mb-20">
+    ${PENULTIMATE_SYSTEM.mechanics.map(m => `<div style="display:flex;gap:16px;padding:12px 0;border-bottom:1px solid var(--border)">
+      <div style="min-width:120px;font-size:12px;font-weight:800;color:var(--orange);text-transform:uppercase">${m.label}</div>
+      <div style="font-size:13px;color:var(--text-secondary);line-height:1.6">${m.text}</div>
+    </div>`).join('')}
+  </div>
+  <div class="section-divider"><h2>4-Level Progression System</h2></div>`;
+
+  PENULTIMATE_SYSTEM.levels.forEach(lvl => {
+    html += `<div class="phase-header" onclick="togglePhase(this)" style="border-color:${lvl.color}">
+      <div class="phase-title">
+        <div class="phase-num" style="background:${lvl.color}20;color:${lvl.color}">${lvl.level}</div>
+        <div><strong>${lvl.label}</strong> &nbsp;<span class="tag" style="background:${lvl.color}20;color:${lvl.color}">${lvl.tag}</span></div>
+      </div>
+      <div><span class="text-muted text-sm">${lvl.focus}</span> &nbsp;▾</div>
+    </div>
+    <div class="phase-body mb-16"><div class="grid-2">`;
+    lvl.drills.forEach(drill => {
+      html += `<div class="session-block">
+        <div class="session-block-header">
+          <div class="session-num" style="background:${lvl.color}20;color:${lvl.color}">▶</div>
+          <h4>${drill.name}</h4><span class="session-duration">${drill.reps}</span>
+        </div>
+        <div class="session-block-body">
+          <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;line-height:1.5">${drill.cue}</div>
+          <div style="font-size:11px;color:var(--orange);font-weight:700">✓ BENCHMARK: ${drill.benchmark}</div>
+        </div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  });
+  panel.innerHTML = html;
+}
+
+function renderReactive() {
+  const panel = document.getElementById('js-reactive');
+  if (!panel) return;
+  let html = `<div class="page-header" style="padding:0 0 16px">
+    <div class="badge">⚡ Stretch-Shortening Cycle Development</div>
+    <h2 style="font-size:22px;font-weight:900">Reactive Stiffness System</h2>
+    <p class="text-sm text-muted">4-phase system tied to your 16-week calendar. Your Achilles and tendons are your elastic engine.</p>
+  </div>`;
+  REACTIVE_PHASES.forEach(phase => {
+    html += `<div class="card mb-20" style="border-color:${phase.color}">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div class="phase-num" style="background:${phase.color}20;color:${phase.color}">${phase.phase}</div>
+        <div>
+          <div style="font-weight:800;font-size:16px">${phase.label} <span class="tag" style="background:${phase.color}20;color:${phase.color};margin-left:6px">Weeks ${phase.weeks}</span></div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${phase.goal}</div>
+        </div>
+      </div>
+      <div class="highlight-box mb-14" style="padding:10px 14px">
+        <p style="font-size:12px"><strong>Science:</strong> ${phase.science}</p>
+      </div>
+      <div class="grid-2">
+        ${phase.drills.map(drill => `<div class="session-block">
+          <div class="session-block-header">
+            <div class="session-num" style="background:${phase.color}20;color:${phase.color}">▶</div>
+            <h4>${drill.name}</h4><span class="session-duration">${drill.reps}</span>
+          </div>
+          <div class="session-block-body">
+            <div style="font-size:12px;color:var(--text-secondary);line-height:1.5">${drill.cue}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  });
+  panel.innerHTML = html;
+}
+
+function renderArmSwing() {
+  const panel = document.getElementById('js-armswing');
+  if (!panel) return;
+  let html = `<div class="page-header" style="padding:0 0 16px">
+    <div class="badge">💪 +1 to +3 Inches From Your Arms Alone</div>
+    <h2 style="font-size:22px;font-weight:900">Arm Swing Development</h2>
+    <p class="text-sm text-muted">Your arms are the most undercoached aspect of jumping. A properly timed arm swing adds 1–3 inches with zero additional leg strength.</p>
+  </div>
+  <div class="highlight-box mb-20">
+    <p><strong>Why Arms Matter:</strong> At the moment of takeoff, your arms should be traveling upward at maximum velocity. This momentum transfers to your entire body through your core — Newton's 3rd Law. If your arms are already at their peak or coming back down when your feet leave the ground, you've wasted the arm swing.</p>
+  </div>
+  <div class="section-divider"><h2>7-Drill Progression</h2></div>
+  <div class="grid-2">`;
+  ARM_SWING_DRILLS.forEach(drill => {
+    html += `<div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,107,0,0.15);color:var(--orange);font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center">${drill.num}</div>
+        <div>
+          <div style="font-weight:800;font-size:14px">${drill.name}</div>
+          <div style="font-size:11px;color:var(--text-muted)">${drill.dur}</div>
+        </div>
+      </div>
+      <p class="text-sm" style="margin-bottom:8px;line-height:1.6;color:var(--text-secondary)">${drill.desc}</p>
+      <div style="background:rgba(255,107,0,0.08);border-radius:6px;padding:8px 10px;margin-bottom:8px;font-size:12px;color:var(--orange)">💬 Cue: ${drill.cue}</div>
+      <div style="font-size:11px;color:var(--text-muted);font-style:italic">${drill.why}</div>
+    </div>`;
+  });
+  html += `</div>`;
+  panel.innerHTML = html;
+}
+
+function renderGroundContact() {
+  const panel = document.getElementById('js-groundcontact');
+  if (!panel) return;
+  const d = GROUND_CONTACT_DATA;
+  const statusColors = { baseline: 'var(--text-muted)', developing: 'var(--blue)', efficient: 'var(--orange)', elite: 'var(--gold)' };
+  let html = `<div class="page-header" style="padding:0 0 16px">
+    <div class="badge">🦶 The #1 Mechanical Variable for Speed-Dominant Jumpers</div>
+    <h2 style="font-size:22px;font-weight:900">Ground Contact Optimization</h2>
+    <p class="text-sm text-muted">Shorter contacts = more elastic energy return. Your target: sub-0.20 sec on approach jumps.</p>
+  </div>
+  <div class="highlight-box mb-20"><p><strong>The Science:</strong> ${d.science}</p></div>
+  <div class="section-divider"><h2>Ground Contact Time Targets</h2></div>
+  <div class="grid-2 mb-20">
+    ${d.targets.map(t => `<div class="card" style="border-color:${statusColors[t.status]}">
+      <div style="font-size:28px;font-weight:900;color:${statusColors[t.status]};margin-bottom:4px">${t.value}</div>
+      <div style="font-weight:700;font-size:13px;margin-bottom:6px">${t.label}</div>
+      <div style="font-size:12px;color:var(--text-muted)">${t.desc}</div>
+    </div>`).join('')}
+  </div>
+  <div class="card mb-20">
+    <div class="card-title">📱 How to Measure Your GCT (Free)</div>
+    <p class="text-sm" style="color:var(--text-secondary);line-height:1.7">${d.howToMeasure}</p>
+  </div>
+  <div class="section-divider"><h2>7 Coaching Cues for Faster Contact Time</h2></div>
+  <div class="grid-2 mb-20">
+    ${d.cues.map(cue => `<div class="card">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:24px">${cue.icon}</span>
+        <div>
+          <div style="font-weight:800;font-size:13px;margin-bottom:6px">${cue.label}</div>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.6">${cue.text}</div>
+        </div>
+      </div>
+    </div>`).join('')}
+  </div>
+  <div class="section-divider"><h2>Session Quality Tracker</h2></div>
+  <div class="card mb-16">
+    <div class="card-title">Rate Today's Ground Contact Mechanics (1–5)</div>
+    <div class="tracker-form">
+      <div class="form-grid">
+        <div class="form-group"><label>Date</label><input type="date" id="gc_date"></div>
+        <div class="form-group"><label>Session Week</label><input type="number" id="gc_week" min="1" max="16" placeholder="1"></div>
+        ${d.metrics.map(m => `<div class="form-group">
+          <label>${m.label}</label>
+          <select id="${m.id}">
+            <option value="">Rate 1–5</option>
+            <option value="1">1 — Poor</option>
+            <option value="2">2 — Below avg</option>
+            <option value="3">3 — Average</option>
+            <option value="4">4 — Good</option>
+            <option value="5">5 — Excellent</option>
+          </select>
+        </div>`).join('')}
+      </div>
+      <div class="form-group mb-12"><label>Notes</label><input type="text" id="gc_notes" placeholder="What felt different? What to improve?" style="width:100%"></div>
+      <button class="btn btn-primary" onclick="saveGCLog()">+ Log Contact Quality</button>
+    </div>
+  </div>`;
+
+  if (gcLog.length) {
+    html += `<div class="card">
+      <div class="card-title">Contact Quality History <span class="text-muted text-sm">(${gcLog.length} entries)</span></div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Date</th><th>Wk</th><th>Approach</th><th>Hip Drop</th><th>Contact</th><th>Ankle</th><th>Arm Sync</th><th>Notes</th></tr></thead>
+        <tbody>${gcLog.slice(0,10).map(e => `<tr>
+          <td>${e.date}</td><td>${e.week||'—'}</td>
+          <td style="color:var(--orange);font-weight:700">${e.gc_approach||'—'}</td><td>${e.gc_hip_drop||'—'}</td><td>${e.gc_contact||'—'}</td>
+          <td>${e.gc_ankle||'—'}</td><td>${e.gc_arm_sync||'—'}</td>
+          <td class="text-sm text-muted">${e.notes||''}</td>
+        </tr>`).join('')}</tbody>
+      </table></div>
+    </div>`;
+  }
+
+  panel.innerHTML = html;
+  const gcDate = document.getElementById('gc_date');
+  if (gcDate) gcDate.value = new Date().toISOString().split('T')[0];
+}
+
+function saveGCLog() {
+  const entry = {
+    date: document.getElementById('gc_date')?.value,
+    week: document.getElementById('gc_week')?.value,
+    gc_approach: document.getElementById('gc_approach')?.value,
+    gc_hip_drop: document.getElementById('gc_hip_drop')?.value,
+    gc_contact: document.getElementById('gc_contact')?.value,
+    gc_ankle: document.getElementById('gc_ankle')?.value,
+    gc_arm_sync: document.getElementById('gc_arm_sync')?.value,
+    notes: document.getElementById('gc_notes')?.value,
+  };
+  if (!entry.date) { alert('Please select a date.'); return; }
+  gcLog.unshift(entry);
+  localStorage.setItem('trGCLog', JSON.stringify(gcLog));
+  renderGroundContact();
+  alert('Ground contact session logged!');
+}
+
+function renderPowerTraining() {
+  const panel = document.getElementById('js-powertraining');
+  if (!panel) return;
+  const d = POWER_TRAINING_DATA;
+  let html = `<div class="page-header" style="padding:0 0 16px">
+    <div class="badge">🏋️ Speed-Dominant Power Protocol</div>
+    <h2 style="font-size:22px;font-weight:900">Speed-Based Power Training</h2>
+    <p class="text-sm text-muted">Rate of Force Development over Max Strength. Move fast, build fast.</p>
+  </div>
+  <div class="highlight-box mb-20" style="border-color:var(--orange)">
+    <p><strong>Philosophy:</strong> ${d.philosophy}</p>
+  </div>
+  <div class="section-divider"><h2>v1.0 → v1.1 Exercise Modifications</h2></div>
+  <div class="card mb-20">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Exercise</th><th>v1.0 (Original)</th><th>v1.1 (Speed-Dominant)</th></tr></thead>
+      <tbody>
+        ${d.comparison.map(c => `<tr>
+          <td style="font-weight:700">${c.exercise}</td>
+          <td><div>${c.v1}</div><div class="text-sm text-muted">${c.v1note}</div></td>
+          <td><div style="color:var(--orange);font-weight:700">${c.v11}</div><div class="text-sm text-muted">${c.v11note}</div></td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>
+  </div>
+  <div class="section-divider"><h2>Priority Exercise Library (Speed-Dominant)</h2></div>
+  <div class="grid-2 mb-20">
+    ${d.priorityExercises.map(ex => `<div class="card">
+      <div style="font-weight:800;font-size:14px;margin-bottom:6px">${ex.name}</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <span class="tag tag-orange">${ex.sets}</span>
+        <span class="tag" style="background:rgba(255,215,0,0.1);color:var(--gold)">${ex.load}</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;line-height:1.6"><strong style="color:var(--text-primary)">Why:</strong> ${ex.why}</div>
+      <div style="font-size:11px;color:var(--green);background:rgba(0,204,136,0.08);border-radius:6px;padding:6px 8px"><strong>Longevity:</strong> ${ex.longevity}</div>
+    </div>`).join('')}
+  </div>
+  <div class="section-divider"><h2>42-Year-Old Longevity Principles</h2></div>
+  <div class="grid-2">
+    ${d.longevityPrinciples.map(lp => `<div class="card">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:22px">${lp.icon}</span>
+        <div>
+          <div style="font-weight:800;font-size:13px;margin-bottom:6px">${lp.label}</div>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.6">${lp.text}</div>
+        </div>
+      </div>
+    </div>`).join('')}
+  </div>`;
+  panel.innerHTML = html;
 }
