@@ -527,6 +527,9 @@ function showDayDetail(i) {
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0">
       <button class="btn btn-primary" style="font-size:11px;padding:8px 14px" onclick="openNotionLog(${i})">🚀 Log to Notion</button>
+      <button class="btn btn-secondary" style="font-size:11px;padding:8px 12px" onclick="openSessionLog(${i})">💪 Session</button>
+      <button class="btn btn-secondary" style="font-size:11px;padding:8px 12px" onclick="openRecoveryLog(${i})">💤 Recovery</button>
+      <button class="btn btn-secondary" style="font-size:11px;padding:8px 12px;background:rgba(255,215,0,.12);color:var(--gold)" onclick="openNutritionLog(${i})">🥗 Nutrition</button>
       <button class="btn btn-secondary" style="font-size:11px;padding:8px 12px" onclick="exportDayWorkout(${i})">📥 Export Day</button>
       <button class="btn btn-secondary" style="font-size:11px;padding:8px 12px" onclick="exportWeekWorkout()">📥 Export Week</button>
     </div>
@@ -577,14 +580,36 @@ function showDayDetail(i) {
   if (meta.shootingDay && meta.shootingSession) {
     const ss = meta.shootingSession;
     let ssHtml = '<div class="grid-2">';
-    ss.blocks.forEach(b => {
+    ss.blocks.forEach((b, bi) => {
+      const prevEntries = Object.entries(shootingLog).filter(([k]) => k.endsWith('_' + bi)).sort(([a],[c]) => c.localeCompare(a)).slice(0, 6);
+      const histHtml = prevEntries.length ? prevEntries.map(([k,v]) => {
+        const d = k.split('_')[0].slice(5);
+        const c = v.pct >= 70 ? 'var(--green)' : v.pct >= 50 ? 'var(--gold)' : 'var(--red)';
+        return '<span style="background:var(--bg-card-2);border-radius:6px;padding:4px 8px;font-size:11px"><span style="color:var(--text-muted)">' + d + '</span> <strong style="color:' + c + '">' + v.pct + '%</strong></span>';
+      }).join('') : '<span style="color:var(--text-muted);font-size:11px">No history yet</span>';
       ssHtml += `<div class="session-block">
         <div class="session-block-header">
           <div class="session-num" style="background:rgba(68,136,255,0.15);color:var(--blue);font-size:16px">${b.icon}</div>
           <h4>${b.name}</h4><span class="session-duration">${b.time}</span>
         </div>
         <div class="session-block-body">
-          <div style="font-size:13px;color:var(--text-secondary);line-height:1.6">${b.desc}</div>
+          <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px">${b.desc}</div>
+          <div style="border-top:1px solid var(--border);padding-top:12px">
+            <div style="font-size:11px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">📊 Track Shots</div>
+            <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:8px">
+              <div><div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Made</div>
+                <input id="shot-made-${i}-${bi}" type="number" min="0" max="999" placeholder="0" style="width:60px;background:var(--bg-card-2);border:2px solid var(--border);border-radius:8px;padding:8px;color:var(--text-primary);font-size:16px;font-weight:900;text-align:center">
+              </div>
+              <div style="font-size:20px;color:var(--text-muted);padding-bottom:8px">/</div>
+              <div><div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Attempted</div>
+                <input id="shot-att-${i}-${bi}" type="number" min="0" max="999" placeholder="0" style="width:60px;background:var(--bg-card-2);border:2px solid var(--border);border-radius:8px;padding:8px;color:var(--text-primary);font-size:16px;font-weight:900;text-align:center">
+              </div>
+              <button onclick="saveShot(${i},${bi})" style="background:var(--blue);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:12px;font-weight:800;cursor:pointer">Save</button>
+              <div id="shot-status-${i}-${bi}" style="font-size:12px;padding-bottom:4px"></div>
+            </div>
+            <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:5px">History</div>
+            <div id="shot-hist-${i}-${bi}" style="display:flex;flex-wrap:wrap;gap:6px">${histHtml}</div>
+          </div>
         </div>
       </div>`;
     });
@@ -1255,6 +1280,9 @@ document.addEventListener('DOMContentLoaded', () => {
   renderShopSchedule();
   renderSupplementStack();
   renderRecoveryTiers();
+  renderCoachSection();
+  const coachNav = document.querySelector('[data-section="coach"]');
+  if (coachNav) coachNav.addEventListener('click', () => setTimeout(renderCoachSection, 30));
   // Show default platform guide
   const defaultPlatBtn = document.querySelector('.platform-tab-btn');
   if (defaultPlatBtn) showPlatform('tiktok', defaultPlatBtn);
@@ -3553,5 +3581,470 @@ async function sendToNotion() {
   } catch (e) {
     if (status) status.innerHTML = '<span style="color:var(--red)">❌ Network error: ' + e.message + '</span>';
     if (btn) { btn.disabled = false; btn.textContent = '🚀 Send to Notion'; }
+  }
+}
+
+// ── Pillar Notion Exports ─────────────────────────────────────────────────────
+const NOTION_SESSION_DB_ID  = '3fe389dd-0d73-4f73-a0be-f4a117d51411';
+const NOTION_RECOVERY_DB_ID = '79cd4de2-b3e5-4271-9693-bd5496861142';
+const NOTION_NUTRITION_DB_ID = 'a19726f3-657b-464b-99fd-eb0862688591';
+
+const SESSION_DAY_NAME_MAP = ['FORCE DAY','ATHLETIC MOVEMENT','POWER DAY','RESTORATION','MAX JUMP DAY','ATHLETIC MOVEMENT','RESTORATION'];
+const SESSION_CATEGORY_MAP = [
+  ['strength','plyo','jump'],
+  ['skill','mechanics','jump'],
+  ['strength','power','jump'],
+  ['recovery','mobility'],
+  ['jump','plyo','speed'],
+  ['skill','mechanics','speed'],
+  ['recovery','mobility'],
+];
+const NUTRITION_TARGETS_MAP = {
+  training:   {cal:2800,protein:185,carbs:340,fat:75,label:'Training Day'},
+  basketball: {cal:2600,protein:175,carbs:310,fat:70,label:'Basketball Day'},
+  recovery:   {cal:2200,protein:165,carbs:250,fat:65,label:'Recovery Day'},
+};
+
+let shootingLog = JSON.parse(localStorage.getItem('trShootingLog2') || '{}');
+let coachHistory = [];
+let backendUrl = localStorage.getItem('trBackendUrl') || '';
+let anthropicDirectKey = localStorage.getItem('trAnthropicDirectKey') || '';
+let _pillarDayIdx = 0;
+
+// ── Pillar Modal Helpers ──────────────────────────────────────────────────────
+function _openPillarModal(html) {
+  _closePillarModal();
+  const overlay = document.createElement('div');
+  overlay.id = 'pillarModal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:10001;display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto';
+  overlay.innerHTML = html;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) _closePillarModal(); });
+}
+function _closePillarModal() {
+  const el = document.getElementById('pillarModal');
+  if (el) el.remove();
+}
+function _pillarCard(accent, title, inner) {
+  return '<div style="background:var(--bg-card);border:2px solid ' + accent + ';border-radius:16px;padding:28px;max-width:560px;width:100%;max-height:85vh;overflow-y:auto">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">' +
+    '<h3 style="font-size:17px;font-weight:900;margin:0">' + title + '</h3>' +
+    '<button onclick="_closePillarModal()" style="background:none;border:none;color:var(--text-muted);font-size:20px;cursor:pointer;line-height:1">✕</button></div>' + inner + '</div>';
+}
+async function _pillarPost(dbId, props, btnId, statusId) {
+  if (!notionToken) { alert('Set up your Notion token first via 🚀 Log to Notion.'); return false; }
+  const btn = document.getElementById(btnId);
+  const status = document.getElementById(statusId);
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Sending…'; }
+  try {
+    const r = await fetch('https://api.notion.com/v1/pages', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + notionToken, 'Content-Type': 'application/json', 'Notion-Version': '2022-06-28' },
+      body: JSON.stringify({ parent: { database_id: dbId }, properties: props }),
+    });
+    const data = await r.json();
+    if (r.ok) {
+      if (status) status.innerHTML = '<span style="color:var(--green);font-weight:900">✅ Logged!</span>';
+      if (btn) { btn.textContent = '✅ Sent!'; btn.style.background = 'var(--green)'; }
+      setTimeout(_closePillarModal, 1800);
+      return true;
+    }
+    const msg = data?.message || data?.code || 'Error';
+    if (status) status.innerHTML = '<span style="color:var(--red)">❌ ' + msg + '</span>';
+    if (btn) { btn.disabled = false; btn.textContent = '📤 Send'; }
+    return false;
+  } catch (e) {
+    if (status) status.innerHTML = '<span style="color:var(--red)">❌ ' + e.message + '</span>';
+    if (btn) { btn.disabled = false; btn.textContent = '📤 Send'; }
+    return false;
+  }
+}
+
+// ── Session Log → Personal Session Log ───────────────────────────────────────
+function openSessionLog(dayIdx) {
+  _pillarDayIdx = dayIdx;
+  const day = WEEK[dayIdx];
+  const dayName = SESSION_DAY_NAME_MAP[dayIdx];
+  const today = new Date().toISOString().split('T')[0];
+  _openPillarModal(_pillarCard('var(--orange)', '💪 Log Session — ' + day.name,
+    '<div style="font-size:12px;color:var(--text-muted);margin-bottom:18px">Personal Session Log → ' + dayName + '</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
+      _nField('Date','sl-date','date',today) + _nField('VPP Week #','sl-week','number','1') +
+      _nSelect('Phase','sl-phase',['FOUNDATION','FORCE DEV','ELASTIC','PEAK'],'FOUNDATION') +
+      _nFieldRO('Day Name','sl-dayname',dayName) +
+    '</div>' +
+    '<div style="font-size:11px;font-weight:800;color:var(--orange);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Session Feel</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
+      _nRating('Session RPE','sl-rpe') + _nRating('Jump Quality','sl-jq') +
+      _nRating('Energy','sl-energy') + _nRating('CNS Load (1=fresh)','sl-cns') +
+      _nRating('Soreness','sl-soreness') + _nRating('Stress','sl-stress') +
+    '</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
+      _nField('Sleep Hours','sl-sleep','number','8') + _nField('Shoe Worn','sl-shoe','text','e.g. Nike Zoom') +
+    '</div>' +
+    '<div style="margin-bottom:14px">' + _nCheck('Session Completed','sl-done',true) + '</div>' +
+    '<div style="margin-bottom:16px"><label style="display:block;font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Coaching Notes</label>' +
+    '<textarea id="sl-notes" rows="2" style="width:100%;background:var(--bg-card-2);border:2px solid var(--border);border-radius:8px;padding:10px;color:var(--text-primary);font-size:13px;resize:vertical;font-family:inherit;box-sizing:border-box" placeholder="What felt good? What to improve?"></textarea></div>' +
+    '<button id="slSendBtn" class="btn btn-primary" style="width:100%;font-size:14px;padding:14px" onclick="sendSessionLog()">📤 Send to Personal Session Log</button>' +
+    '<div id="slStatus" style="margin-top:10px;text-align:center;min-height:20px;font-size:13px"></div>'
+  ));
+}
+
+async function sendSessionLog() {
+  const day = WEEK[_pillarDayIdx];
+  const dayName = SESSION_DAY_NAME_MAP[_pillarDayIdx];
+  const date = _getN('sl-date','text') || new Date().toISOString().split('T')[0];
+  const week = _getN('sl-week','number');
+  const phase = _getN('sl-phase','text');
+  const cats = SESSION_CATEGORY_MAP[_pillarDayIdx];
+  const props = {
+    'Session': { title: [{ text: { content: day.name + ' — ' + dayName + ' — ' + date } }] },
+    'Date': { date: { start: date } },
+    'Day': { select: { name: NOTION_DAY_MAP[_pillarDayIdx] } },
+    'Day Name': { select: { name: dayName } },
+    'Completed': { checkbox: !!_getN('sl-done','check') },
+    'Category': { multi_select: cats.map(c => ({ name: c })) },
+  };
+  if (phase) props['Phase'] = { select: { name: phase } };
+  if (week) props['Week'] = { number: week };
+  [['Session RPE','sl-rpe'],['Jump Quality','sl-jq'],['Energy','sl-energy'],['CNS Load','sl-cns'],['Soreness','sl-soreness'],['Stress','sl-stress'],['Sleep Hours','sl-sleep']].forEach(([p,id]) => {
+    const v = _getN(id,'number'); if (v !== null) props[p] = { number: v };
+  });
+  const shoe = _getN('sl-shoe','text'); if (shoe) props['Shoe Worn'] = { rich_text: [{ text: { content: shoe } }] };
+  const notes = _getN('sl-notes','text'); if (notes) props['Coaching Notes'] = { rich_text: [{ text: { content: notes } }] };
+  await _pillarPost(NOTION_SESSION_DB_ID, props, 'slSendBtn', 'slStatus');
+}
+
+// ── Recovery Log → Readiness + Recovery Log ───────────────────────────────────
+function openRecoveryLog(dayIdx) {
+  _pillarDayIdx = dayIdx;
+  const day = WEEK[dayIdx];
+  const today = new Date().toISOString().split('T')[0];
+  _openPillarModal(_pillarCard('var(--green)', '💤 Recovery Log — ' + day.name,
+    '<div style="font-size:12px;color:var(--text-muted);margin-bottom:18px">Readiness + Recovery Log → ' + day.name + '</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
+      _nField('Date','rl-date','date',today) + _nField('VPP Week #','rl-week','number','1') +
+      _nSelect('Readiness Level','rl-level',['PEAK','GOOD','MODERATE','LOW'],'GOOD') +
+      _nField('Bodyweight (lbs)','rl-bw','number','') +
+    '</div>' +
+    '<div style="font-size:11px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Sleep</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
+      _nField('Sleep Hours','rl-sleep','number','8') + _nRating('Sleep Quality','rl-sleepq') +
+    '</div>' +
+    '<div style="font-size:11px;font-weight:800;color:var(--orange);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Body Checks (1–10 · higher=better except soreness/stress)</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
+      _nRating('Energy','rl-energy') + _nRating('Soreness','rl-soreness') +
+      _nRating('Stress','rl-stress') + _nRating('Fatigue Score','rl-fatigue') +
+      _nRating('Jump Quality','rl-jq') + _nRating('Ankle/Achilles','rl-ankle') +
+      _nRating('Knee Health','rl-knee') + _nRating('Back','rl-back') +
+    '</div>' +
+    '<div style="margin-bottom:16px"><label style="display:block;font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Recovery Notes</label>' +
+    '<textarea id="rl-notes" rows="2" style="width:100%;background:var(--bg-card-2);border:2px solid var(--border);border-radius:8px;padding:10px;color:var(--text-primary);font-size:13px;resize:vertical;font-family:inherit;box-sizing:border-box" placeholder="How did the body feel? Any issues?"></textarea></div>' +
+    '<button id="rlSendBtn" class="btn btn-primary" style="width:100%;font-size:14px;padding:14px;background:var(--green)" onclick="sendRecoveryLog()">📤 Send to Recovery Log</button>' +
+    '<div id="rlStatus" style="margin-top:10px;text-align:center;min-height:20px;font-size:13px"></div>'
+  ));
+}
+
+async function sendRecoveryLog() {
+  const day = WEEK[_pillarDayIdx];
+  const date = _getN('rl-date','text') || new Date().toISOString().split('T')[0];
+  const week = _getN('rl-week','number');
+  const level = _getN('rl-level','text');
+  const bw = _getN('rl-bw','number');
+  const props = {
+    'Entry': { title: [{ text: { content: 'Recovery — ' + day.name + ' — ' + date } }] },
+    'Date': { date: { start: date } },
+  };
+  if (week) props['Week'] = { number: week };
+  if (level) props['Readiness Level'] = { select: { name: level } };
+  if (bw) props['Bodyweight'] = { number: bw };
+  [['Sleep Hours','rl-sleep'],['Sleep Quality','rl-sleepq'],['Energy','rl-energy'],['Soreness','rl-soreness'],['Stress','rl-stress'],['Fatigue Score','rl-fatigue'],['Jump Quality','rl-jq'],['Ankle Achilles','rl-ankle'],['Knee Pain','rl-knee'],['Back Tightness','rl-back']].forEach(([p,id]) => {
+    const v = _getN(id,'number'); if (v !== null) props[p] = { number: v };
+  });
+  const notes = _getN('rl-notes','text'); if (notes) props['Recovery Notes'] = { rich_text: [{ text: { content: notes } }] };
+  await _pillarPost(NOTION_RECOVERY_DB_ID, props, 'rlSendBtn', 'rlStatus');
+}
+
+// ── Nutrition Log → Nutrition & Macro Log ─────────────────────────────────────
+function openNutritionLog(dayIdx) {
+  _pillarDayIdx = dayIdx;
+  const day = WEEK[dayIdx];
+  const meta = DAY_META[dayIdx];
+  const tgt = NUTRITION_TARGETS_MAP[meta.nutritionType];
+  const today = new Date().toISOString().split('T')[0];
+  _openPillarModal(_pillarCard('var(--gold)', '🥗 Nutrition Log — ' + day.name,
+    '<div style="font-size:12px;color:var(--text-muted);margin-bottom:18px">Nutrition & Macro Log → ' + tgt.label + ' · Target ' + tgt.cal + ' kcal</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
+      _nField('Date','nl2-date','date',today) + _nField('VPP Week #','nl2-week','number','1') +
+    '</div>' +
+    '<div style="font-size:11px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Macros — Target vs Consumed</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
+      _nFieldRO('Cal Target','nl2-calt',String(tgt.cal)) + _nField('Cal Consumed','nl2-cal','number','') +
+      _nFieldRO('Protein Target (g)','nl2-pt',String(tgt.protein)) + _nField('Protein Consumed (g)','nl2-protein','number','') +
+      _nFieldRO('Carbs Target (g)','nl2-ct',String(tgt.carbs)) + _nField('Carbs Consumed (g)','nl2-carbs','number','') +
+      _nFieldRO('Fat Target (g)','nl2-ft',String(tgt.fat)) + _nField('Fat Consumed (g)','nl2-fat','number','') +
+      _nField('Water (oz)','nl2-water','number','100') +
+    '</div>' +
+    '<div style="font-size:11px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Completed</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">' +
+      _nCheck('Meal 1 Logged','nl2-m1',true) + _nCheck('Meal 2 Logged','nl2-m2',true) +
+      _nCheck('Meal 3 Logged','nl2-m3',true) + _nCheck('Pre-Workout Nutrition','nl2-preworkout',false) +
+      _nCheck('Post-Workout Nutrition','nl2-postworkout',true) + _nCheck('Collagen + Tart Cherry','nl2-collagen',true) +
+      _nCheck('Supplements Taken','nl2-supps',true) +
+    '</div>' +
+    '<div style="margin-bottom:16px"><label style="display:block;font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Notes</label>' +
+    '<textarea id="nl2-notes" rows="2" style="width:100%;background:var(--bg-card-2);border:2px solid var(--border);border-radius:8px;padding:10px;color:var(--text-primary);font-size:13px;resize:vertical;font-family:inherit;box-sizing:border-box" placeholder="Anything off? Good meals to repeat?"></textarea></div>' +
+    '<button id="nlSendBtn2" class="btn btn-primary" style="width:100%;font-size:14px;padding:14px;background:var(--gold);color:#000" onclick="sendNutritionLog()">📤 Send to Nutrition Log</button>' +
+    '<div id="nlStatus2" style="margin-top:10px;text-align:center;min-height:20px;font-size:13px"></div>'
+  ));
+}
+
+async function sendNutritionLog() {
+  const day = WEEK[_pillarDayIdx];
+  const meta = DAY_META[_pillarDayIdx];
+  const tgt = NUTRITION_TARGETS_MAP[meta.nutritionType];
+  const date = _getN('nl2-date','text') || new Date().toISOString().split('T')[0];
+  const week = _getN('nl2-week','number');
+  const props = {
+    'Entry': { title: [{ text: { content: 'Nutrition — ' + day.name + ' — ' + date } }] },
+    'Date': { date: { start: date } },
+    'Day Type': { select: { name: tgt.label } },
+    'Calories Target': { number: tgt.cal },
+    'Protein Target (g)': { number: tgt.protein },
+    'Carbs Target (g)': { number: tgt.carbs },
+    'Fat Target (g)': { number: tgt.fat },
+    'Meal 1 Logged': { checkbox: !!_getN('nl2-m1','check') },
+    'Meal 2 Logged': { checkbox: !!_getN('nl2-m2','check') },
+    'Meal 3 Logged': { checkbox: !!_getN('nl2-m3','check') },
+    'Pre-Workout Nutrition': { checkbox: !!_getN('nl2-preworkout','check') },
+    'Post-Workout Nutrition': { checkbox: !!_getN('nl2-postworkout','check') },
+    'Collagen Tart Cherry': { checkbox: !!_getN('nl2-collagen','check') },
+    'Supplements Taken': { checkbox: !!_getN('nl2-supps','check') },
+  };
+  if (week) props['Week'] = { number: week };
+  [['Calories Consumed','nl2-cal'],['Protein Consumed (g)','nl2-protein'],['Carbs Consumed (g)','nl2-carbs'],['Fat Consumed (g)','nl2-fat'],['Water (oz)','nl2-water']].forEach(([p,id]) => {
+    const v = _getN(id,'number'); if (v !== null) props[p] = { number: v };
+  });
+  const notes = _getN('nl2-notes','text'); if (notes) props['Notes'] = { rich_text: [{ text: { content: notes } }] };
+  await _pillarPost(NOTION_NUTRITION_DB_ID, props, 'nlSendBtn2', 'nlStatus2');
+}
+
+// ── Shooting Drill Tracker ─────────────────────────────────────────────────────
+function saveShot(dayIdx, blockIdx) {
+  const made = parseInt(document.getElementById('shot-made-' + dayIdx + '-' + blockIdx)?.value) || 0;
+  const att = parseInt(document.getElementById('shot-att-' + dayIdx + '-' + blockIdx)?.value) || 0;
+  if (att === 0) { alert('Enter shots attempted.'); return; }
+  const pct = Math.round((made / att) * 100);
+  const key = new Date().toISOString().split('T')[0] + '_' + blockIdx;
+  shootingLog[key] = { made, att, pct, day: WEEK[dayIdx].name };
+  localStorage.setItem('trShootingLog2', JSON.stringify(shootingLog));
+  const statusEl = document.getElementById('shot-status-' + dayIdx + '-' + blockIdx);
+  if (statusEl) statusEl.innerHTML = '<span style="color:var(--green);font-weight:900">✅ ' + made + '/' + att + ' (' + pct + '%)</span>';
+  _refreshShotHistory(dayIdx, blockIdx);
+}
+
+function _refreshShotHistory(dayIdx, blockIdx) {
+  const el = document.getElementById('shot-hist-' + dayIdx + '-' + blockIdx);
+  if (!el) return;
+  const entries = Object.entries(shootingLog).filter(([k]) => k.endsWith('_' + blockIdx)).sort(([a],[b]) => b.localeCompare(a)).slice(0, 6);
+  el.innerHTML = entries.map(([k,v]) => {
+    const d = k.split('_')[0].slice(5);
+    const c = v.pct >= 70 ? 'var(--green)' : v.pct >= 50 ? 'var(--gold)' : 'var(--red)';
+    return '<span style="background:var(--bg-card-2);border-radius:6px;padding:4px 8px;font-size:11px"><span style="color:var(--text-muted)">' + d + '</span> <strong style="color:' + c + '">' + v.pct + '%</strong></span>';
+  }).join('') || '<span style="color:var(--text-muted);font-size:11px">No history yet</span>';
+}
+
+// ── AI Coach ──────────────────────────────────────────────────────────────────
+function renderCoachSection() {
+  const section = document.getElementById('section-coach');
+  if (!section) return;
+  const hasConn = !!(backendUrl || anthropicDirectKey);
+  const quickPrompts = [
+    "How am I progressing toward dunking?",
+    "What should I focus on today?",
+    "My knees are sore — should I train?",
+    "What's my biggest weakness right now?",
+    "Give me a motivation boost",
+    "Analyze my last week of data",
+  ];
+  section.innerHTML =
+    '<div class="page-header">' +
+      '<div class="badge">🤖 AI-Powered · Claude · Personal Coach</div>' +
+      '<h1>Coach <span>B</span></h1>' +
+      '<p>Your AI performance coach. Knows your program, your numbers, and your goal. Ask anything.</p>' +
+    '</div>' +
+    (hasConn ? (
+      '<div style="max-width:700px;margin:0 auto">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">' +
+          '<div style="font-size:12px;color:var(--text-muted)">Coach B · ' + (backendUrl ? '🚀 Vercel Backend' : '⚡ Direct API') + '</div>' +
+          '<button onclick="disconnectCoach()" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--text-muted);font-size:11px;padding:5px 10px;cursor:pointer">Disconnect</button>' +
+        '</div>' +
+        '<div id="coachFeed" style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:16px;min-height:240px;max-height:500px;overflow-y:auto;margin-bottom:16px;display:flex;flex-direction:column;gap:12px">' +
+          '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:24px 0">' +
+            '<div style="font-size:36px;margin-bottom:10px">🏀</div>' +
+            '<strong style="color:var(--text-secondary);font-size:15px">Coach B is ready.</strong><br>' +
+            '<span style="font-size:12px">Ask me anything about training, recovery, progress, or your next session.</span>' +
+          '</div>' +
+        '</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px">' +
+          quickPrompts.map(p => '<button onclick="sendQuickPrompt(\'' + p.replace(/'/g,"\\'") + '\')" style="background:var(--bg-card-2);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-size:12px;color:var(--text-secondary);cursor:pointer;white-space:nowrap">' + p + '</button>').join('') +
+        '</div>' +
+        '<div style="display:flex;gap:10px">' +
+          '<textarea id="coachInput" rows="2" placeholder="Ask Coach B anything…" style="flex:1;background:var(--bg-card);border:2px solid var(--border);border-radius:10px;padding:12px;color:var(--text-primary);font-size:14px;resize:none;font-family:inherit" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();sendCoachMessage();}"></textarea>' +
+          '<button id="coachSendBtn" class="btn btn-primary" style="align-self:flex-end;padding:12px 18px;font-size:14px" onclick="sendCoachMessage()">Send</button>' +
+        '</div>' +
+      '</div>'
+    ) : (
+      '<div class="card" style="max-width:540px;margin:0 auto;border:2px solid var(--orange)">' +
+        '<div style="font-size:32px;text-align:center;margin-bottom:10px">🤖</div>' +
+        '<h3 style="text-align:center;font-size:18px;margin-bottom:6px">Connect Coach B</h3>' +
+        '<p style="text-align:center;font-size:13px;color:var(--text-muted);margin-bottom:24px">Choose your connection. Vercel keeps your API key secure. Direct is faster to start.</p>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">' +
+          '<div style="background:var(--bg-card-2);border-radius:12px;padding:16px;border:2px solid var(--orange)">' +
+            '<div style="font-weight:900;font-size:13px;margin-bottom:6px">🚀 Vercel Backend</div>' +
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:12px;line-height:1.6">API key stays on server. Can read Notion history. Recommended for production.</div>' +
+            '<label style="display:block;font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:5px">Your Vercel URL</label>' +
+            '<input id="coach-backend-url" type="text" placeholder="https://your-app.vercel.app" style="width:100%;background:var(--bg-primary);border:2px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text-primary);font-size:12px;margin-bottom:10px;box-sizing:border-box">' +
+            '<button class="btn btn-primary" style="width:100%;font-size:12px;padding:10px" onclick="saveCoachBackend()">Save Backend URL</button>' +
+          '</div>' +
+          '<div style="background:var(--bg-card-2);border-radius:12px;padding:16px">' +
+            '<div style="font-weight:900;font-size:13px;margin-bottom:6px">⚡ Direct API</div>' +
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:12px;line-height:1.6">Instant setup. Key stored in localStorage. Works without a server.</div>' +
+            '<label style="display:block;font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:5px">Anthropic API Key</label>' +
+            '<input id="coach-direct-key" type="password" placeholder="sk-ant-..." style="width:100%;background:var(--bg-primary);border:2px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text-primary);font-size:12px;margin-bottom:10px;box-sizing:border-box">' +
+            '<button class="btn btn-secondary" style="width:100%;font-size:12px;padding:10px" onclick="saveCoachDirectKey()">Save API Key</button>' +
+          '</div>' +
+        '</div>' +
+        '<div style="font-size:11px;color:var(--text-muted);text-align:center">Vercel: <strong style="color:var(--text-secondary)">vercel.com</strong> (free) · Anthropic key: <strong style="color:var(--text-secondary)">console.anthropic.com</strong></div>' +
+      '</div>'
+    ));
+}
+
+function saveCoachBackend() {
+  const url = (document.getElementById('coach-backend-url')?.value || '').trim().replace(/\/$/, '');
+  if (!url.startsWith('http')) { alert('Enter a valid URL, e.g. https://your-app.vercel.app'); return; }
+  backendUrl = url;
+  localStorage.setItem('trBackendUrl', backendUrl);
+  coachHistory = [];
+  renderCoachSection();
+}
+
+function saveCoachDirectKey() {
+  const key = (document.getElementById('coach-direct-key')?.value || '').trim();
+  if (!key.startsWith('sk-ant-')) { alert('Enter a valid Anthropic API key starting with sk-ant-'); return; }
+  anthropicDirectKey = key;
+  localStorage.setItem('trAnthropicDirectKey', anthropicDirectKey);
+  coachHistory = [];
+  renderCoachSection();
+}
+
+function disconnectCoach() {
+  if (!confirm('Disconnect Coach B?')) return;
+  backendUrl = ''; anthropicDirectKey = '';
+  localStorage.removeItem('trBackendUrl'); localStorage.removeItem('trAnthropicDirectKey');
+  coachHistory = [];
+  renderCoachSection();
+}
+
+function sendQuickPrompt(text) {
+  const input = document.getElementById('coachInput');
+  if (input) { input.value = text; sendCoachMessage(); }
+}
+
+function _coachBubble(role, content) {
+  const isUser = role === 'user';
+  return '<div style="display:flex;' + (isUser ? 'justify-content:flex-end' : 'justify-content:flex-start') + '">' +
+    '<div style="max-width:82%;background:' + (isUser ? 'var(--orange)' : 'var(--bg-card-2)') + ';color:' + (isUser ? '#fff' : 'var(--text-primary)') + ';border-radius:' + (isUser ? '16px 16px 4px 16px' : '16px 16px 16px 4px') + ';padding:12px 16px;font-size:13px;line-height:1.6;white-space:pre-wrap">' +
+    content + '</div></div>';
+}
+
+function _buildCoachContext() {
+  const dunks = JSON.parse(localStorage.getItem('trDunkLog') || '[]').slice(0, 5);
+  let bestStanding = null, bestApproach = null;
+  dunks.forEach(d => {
+    const s = parseFloat(d.standing || d.standingJump);
+    const a = parseFloat(d.approach || d.approachJump);
+    if (!isNaN(s) && (bestStanding === null || s > bestStanding)) bestStanding = s;
+    if (!isNaN(a) && (bestApproach === null || a > bestApproach)) bestApproach = a;
+  });
+  const dayNames = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  const todayAbbr = dayNames[new Date().getDay()];
+  const todayIdx = ['MON','TUE','WED','THU','FRI','SAT','SUN'].indexOf(todayAbbr === 'SUN' ? 'SUN' : todayAbbr);
+  return {
+    bestStanding, bestApproach,
+    inchesToDunk: bestApproach ? Math.max(0, 114 - bestApproach).toFixed(1) : null,
+    today: new Date().toLocaleDateString('en-US', {weekday:'long'}),
+    sessionType: todayIdx >= 0 ? WEEK[todayIdx]?.focus : null,
+    audits: auditLog.slice(0, 3).map(a => ({ date: a.date, energy: a.energy, soreness: a.soreness, jumpQ: a.explosive || a.jumpQ, cns: a.cns })),
+    dunks: dunks.map(d => ({ date: d.date, standing: d.standing || d.standingJump, approach: d.approach || d.approachJump, touch: d.touch || d.highTouch })),
+  };
+}
+
+function _buildSystemPrompt(ctx) {
+  const audits = ctx.audits?.map(a => '  ' + a.date + ': Energy ' + (a.energy||'?') + '/10, Soreness ' + (a.soreness||'?') + '/10, Explosive ' + (a.jumpQ||'?') + '/10').join('\n') || '  No audit data yet.';
+  const dunks = ctx.dunks?.map(d => '  ' + d.date + ': Standing ' + (d.standing||'?') + '"  Approach ' + (d.approach||'?') + '"  Touch ' + (d.touch||'?') + '"').join('\n') || '  No jump data yet.';
+  return 'You are Coach B — an elite performance coach for Bryan, a 42-year-old male athlete training to dunk a basketball for the first time on a regulation 10-foot rim (need 114" standing touch).\n\nPROGRAM: VPP 3.0 — 16 weeks, 4 phases (Foundation → Force Dev → Elastic → Peak). Mon/Wed/Fri = HPT strength+power. Tue/Sat = Basketball skill. Thu/Sun = Active recovery.\n\nATHLETE DATA:\n- Best standing vertical: ' + (ctx.bestStanding || '?') + '"  Best approach: ' + (ctx.bestApproach || '?') + '"\n- Est. inches to dunk: ' + (ctx.inchesToDunk || 'calculating') + '\n- Today: ' + ctx.today + ' (' + (ctx.sessionType || '?') + ')\n\nRECENT AUDITS:\n' + audits + '\n\nJUMP LOG:\n' + dunks + '\n\nBe direct, specific, motivating. Reference actual numbers. Concise unless detail is asked for.';
+}
+
+async function sendCoachMessage() {
+  const input = document.getElementById('coachInput');
+  const feed = document.getElementById('coachFeed');
+  const btn = document.getElementById('coachSendBtn');
+  const text = input?.value.trim();
+  if (!text || !feed) return;
+
+  const userDiv = document.createElement('div');
+  userDiv.innerHTML = _coachBubble('user', text);
+  feed.appendChild(userDiv.firstChild);
+  coachHistory.push({ role: 'user', content: text });
+  if (input) input.value = '';
+  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+
+  const typingDiv = document.createElement('div');
+  typingDiv.id = 'coachTyping';
+  typingDiv.innerHTML = _coachBubble('assistant', '⏳ Thinking…');
+  feed.appendChild(typingDiv.firstChild);
+  feed.scrollTop = feed.scrollHeight;
+
+  const messages = coachHistory.map(m => ({ role: m.role, content: m.content }));
+  const ctx = _buildCoachContext();
+
+  try {
+    let reply = '';
+    if (backendUrl) {
+      const r = await fetch(backendUrl + '/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages, context: ctx }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Backend error');
+      reply = data.reply;
+    } else if (anthropicDirectKey) {
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'x-api-key': anthropicDirectKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1024, system: _buildSystemPrompt(ctx), messages }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data?.error?.message || 'API error');
+      reply = data.content[0].text;
+    } else {
+      throw new Error('No API connection configured. Go to the Coach section to set up.');
+    }
+
+    document.getElementById('coachTyping')?.remove();
+    coachHistory.push({ role: 'assistant', content: reply });
+    const replyDiv = document.createElement('div');
+    replyDiv.innerHTML = _coachBubble('assistant', reply);
+    feed.appendChild(replyDiv.firstChild);
+  } catch (e) {
+    document.getElementById('coachTyping')?.remove();
+    const errDiv = document.createElement('div');
+    errDiv.innerHTML = _coachBubble('assistant', '❌ Error: ' + e.message);
+    feed.appendChild(errDiv.firstChild);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Send'; }
+    feed.scrollTop = feed.scrollHeight;
   }
 }
