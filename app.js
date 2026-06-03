@@ -3607,6 +3607,114 @@ const NOTION_SESSION_DB_ID   = '3fe389dd-0d73-4f73-a0be-f4a117d51411'; // Person
 const NOTION_RECOVERY_DB_ID  = '79cd4de2-b3e5-4271-9693-bd5496861142'; // Readiness + Recovery Log
 const NOTION_NUTRITION_DB_ID = 'a19726f3-657b-464b-99fd-eb0862688591'; // Nutrition & Macro Log
 const NOTION_SHOOTING_DB_ID  = '3ff0ccd4-1344-48bb-977f-985c8b1df735'; // Shooting Drill Log
+const NOTION_EXERCISE_REL_DB_ID = 'ac9538ea-66e0-419f-ab00-0597d2cd727a'; // Exercise Relationships
+const NOTION_WIL_DB_ID       = '771ccf08-d5f8-4cad-af10-366d2ef8bb14'; // Workout Intelligence Layer
+const NOTION_WEEKLY_DB_ID    = '8355f346-bd37-475f-9034-5f92f4b286dd'; // Weekly AI Review System
+
+let _notionCtxCache = null;
+let _notionCtxTs = 0;
+const NOTION_CTX_TTL = 5 * 60 * 1000; // 5-min cache
+
+async function _queryNotion(dbId, body) {
+  const token = localStorage.getItem('trNotionToken');
+  if (!token) return [];
+  try {
+    const r = await fetch('https://api.notion.com/v1/databases/' + dbId + '/query', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Notion-Version': '2022-06-28' },
+      body: JSON.stringify(body),
+    });
+    const d = await r.json();
+    return r.ok ? (d.results || []) : [];
+  } catch (_) { return []; }
+}
+
+function _prop(page, name, type) {
+  const p = page.properties?.[name];
+  if (!p) return null;
+  switch (type) {
+    case 'title': return p.title?.[0]?.text?.content || null;
+    case 'text':  return p.rich_text?.[0]?.text?.content || null;
+    case 'num':   return p.number ?? null;
+    case 'sel':   return p.select?.name || null;
+    case 'date':  return p.date?.start || null;
+    case 'check': return p.checkbox ?? null;
+  }
+  return null;
+}
+
+async function fetchNotionContext(force = false) {
+  const token = localStorage.getItem('trNotionToken');
+  if (!token) return null;
+  const now = Date.now();
+  if (!force && _notionCtxCache && (now - _notionCtxTs) < NOTION_CTX_TTL) return _notionCtxCache;
+
+  const sevenAgo = new Date(); sevenAgo.setDate(sevenAgo.getDate() - 7);
+  const cutoff = sevenAgo.toISOString().split('T')[0];
+  const dateSort = (prop) => ({ sorts: [{ property: prop, direction: 'descending' }], page_size: 7 });
+
+  const [recPages, sessPages, jumpPages, exRelPages, shootPages] = await Promise.all([
+    _queryNotion(NOTION_RECOVERY_DB_ID,  { ...dateSort('Date'), filter: { property: 'Date', date: { on_or_after: cutoff } } }),
+    _queryNotion(NOTION_SESSION_DB_ID,   { ...dateSort('Date'), page_size: 5 }),
+    _queryNotion(NOTION_DB_ID,           { sorts: [{ property: 'Entry Date', direction: 'descending' }], page_size: 5 }),
+    _queryNotion(NOTION_EXERCISE_REL_DB_ID, { page_size: 50 }),
+    _queryNotion(NOTION_SHOOTING_DB_ID,  { ...dateSort('Date'), page_size: 5 }),
+  ]);
+
+  _notionCtxCache = {
+    recovery: recPages.map(p => ({
+      date:     _prop(p,'Date','date'),
+      sleep:    _prop(p,'Sleep Hours','num'),
+      sleepQ:   _prop(p,'Sleep Quality','num'),
+      energy:   _prop(p,'Energy','num'),
+      soreness: _prop(p,'Soreness','num'),
+      stress:   _prop(p,'Stress','num'),
+      fatigue:  _prop(p,'Fatigue Score','num'),
+      readiness:_prop(p,'Readiness Level','sel'),
+      jumpQ:    _prop(p,'Jump Quality','num'),
+      knee:     _prop(p,'Knee Pain','num'),
+      notes:    _prop(p,'Recovery Notes','text'),
+    })).filter(r => r.date),
+    sessions: sessPages.map(p => ({
+      date:    _prop(p,'Date','date'),
+      name:    _prop(p,'Session','title'),
+      dayName: _prop(p,'Day Name','sel'),
+      rpe:     _prop(p,'Session RPE','num'),
+      energy:  _prop(p,'Energy','num'),
+      jumpQ:   _prop(p,'Jump Quality','num'),
+      week:    _prop(p,'Week','num'),
+      phase:   _prop(p,'Phase','sel'),
+      notes:   _prop(p,'Coaching Notes','text'),
+    })).filter(s => s.date),
+    jumps: jumpPages.map(p => ({
+      date:     _prop(p,'Entry Date','date'),
+      approach: _prop(p,'Approach Vertical','num'),
+      touch:    _prop(p,'Highest Touch','num'),
+      week:     _prop(p,'VPP Week','num'),
+      notes:    _prop(p,'Notes','text'),
+    })).filter(j => j.date),
+    exerciseRules: exRelPages.map(p => ({
+      name:        _prop(p,'Relationship','title'),
+      base:        _prop(p,'Base Exercise','text'),
+      progression: _prop(p,'Progression Exercise','text'),
+      regression:  _prop(p,'Regression Exercise','text'),
+      trigger:     _prop(p,'Readiness Trigger','text'),
+      aiRule:      _prop(p,'AI Rule','text'),
+      chainType:   _prop(p,'Chain Type','sel'),
+      phase:       _prop(p,'Phase Entry','sel'),
+    })).filter(e => e.base || e.name),
+    shooting: shootPages.map(p => ({
+      date:  _prop(p,'Date','date'),
+      drill: _prop(p,'Drill Name','text'),
+      made:  _prop(p,'Made','num'),
+      att:   _prop(p,'Attempted','num'),
+      pct:   _prop(p,'Make Percentage','num'),
+      type:  _prop(p,'Session Type','sel'),
+    })).filter(s => s.date),
+  };
+  _notionCtxTs = now;
+  return _notionCtxCache;
+}
 
 // Silent background Notion export — fires and forgets, no UI feedback
 async function _autoNotion(dbId, props) {
@@ -4034,8 +4142,14 @@ function renderCoachSection() {
     (hasConn ? (
       '<div style="max-width:700px;margin:0 auto">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">' +
-          '<div style="font-size:12px;color:var(--text-muted)">Coach B · ' + (backendUrl ? '🚀 Vercel Backend' : '⚡ Direct API') + '</div>' +
-          '<button onclick="disconnectCoach()" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--text-muted);font-size:11px;padding:5px 10px;cursor:pointer">Disconnect</button>' +
+          '<div style="font-size:12px;color:var(--text-muted)">' +
+            'Coach B · ' + (backendUrl ? '🚀 Vercel' : '⚡ Direct') +
+            (localStorage.getItem('trNotionToken') ? ' · <span id="notionCtxStatus" style="color:var(--text-muted)">⏳ Loading Athlete Zero…</span>' : ' · <span style="color:var(--text-muted)">No Notion token</span>') +
+          '</div>' +
+          '<div style="display:flex;gap:8px">' +
+            '<button onclick="refreshNotionCtx()" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--text-muted);font-size:11px;padding:5px 10px;cursor:pointer">🔄 Refresh</button>' +
+            '<button onclick="disconnectCoach()" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--text-muted);font-size:11px;padding:5px 10px;cursor:pointer">Disconnect</button>' +
+          '</div>' +
         '</div>' +
         '<div id="coachFeed" style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:16px;min-height:240px;max-height:500px;overflow-y:auto;margin-bottom:16px;display:flex;flex-direction:column;gap:12px">' +
           '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:24px 0">' +
@@ -4076,6 +4190,28 @@ function renderCoachSection() {
         '<div style="font-size:11px;color:var(--text-muted);text-align:center">Vercel: <strong style="color:var(--text-secondary)">vercel.com</strong> (free) · Anthropic key: <strong style="color:var(--text-secondary)">console.anthropic.com</strong></div>' +
       '</div>'
     ));
+  // Auto-fetch Notion context when Coach B opens
+  if (hasConn && localStorage.getItem('trNotionToken')) {
+    fetchNotionContext().then(_updateNotionCtxStatus);
+  }
+}
+
+function _updateNotionCtxStatus() {
+  const el = document.getElementById('notionCtxStatus');
+  if (!el) return;
+  if (!_notionCtxCache) { el.innerHTML = '<span style="color:var(--text-muted)">No Notion data</span>'; return; }
+  const rec = _notionCtxCache.recovery?.length || 0;
+  const sess = _notionCtxCache.sessions?.length || 0;
+  const jumps = _notionCtxCache.jumps?.length || 0;
+  const rules = _notionCtxCache.exerciseRules?.length || 0;
+  el.innerHTML = '<span style="color:var(--green)">✅ Athlete Zero live</span> <span style="color:var(--text-muted);font-size:10px">(' + rec + ' recovery · ' + sess + ' sessions · ' + jumps + ' jumps · ' + rules + ' rules)</span>';
+}
+
+async function refreshNotionCtx() {
+  const el = document.getElementById('notionCtxStatus');
+  if (el) el.innerHTML = '<span style="color:var(--gold)">⏳ Fetching…</span>';
+  await fetchNotionContext(true);
+  _updateNotionCtxStatus();
 }
 
 function saveCoachBackend() {
@@ -4121,27 +4257,104 @@ function _buildCoachContext() {
   let bestStanding = null, bestApproach = null;
   dunks.forEach(d => {
     const s = parseFloat(d.standing || d.standingJump);
-    const a = parseFloat(d.approach || d.approachJump);
+    const a = parseFloat(d.approach || d.approachJump || d.vj);
     if (!isNaN(s) && (bestStanding === null || s > bestStanding)) bestStanding = s;
     if (!isNaN(a) && (bestApproach === null || a > bestApproach)) bestApproach = a;
   });
   const dayNames = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
   const todayAbbr = dayNames[new Date().getDay()];
   const todayIdx = ['MON','TUE','WED','THU','FRI','SAT','SUN'].indexOf(todayAbbr === 'SUN' ? 'SUN' : todayAbbr);
+  const nc = _notionCtxCache;
+  // pick best approach from Notion jump log too
+  if (nc?.jumps) nc.jumps.forEach(j => {
+    const a = parseFloat(j.approach);
+    if (!isNaN(a) && (bestApproach === null || a > bestApproach)) bestApproach = a;
+  });
   return {
     bestStanding, bestApproach,
     inchesToDunk: bestApproach ? Math.max(0, 114 - bestApproach).toFixed(1) : null,
     today: new Date().toLocaleDateString('en-US', {weekday:'long'}),
     sessionType: todayIdx >= 0 ? WEEK[todayIdx]?.focus : null,
     audits: auditLog.slice(0, 3).map(a => ({ date: a.date, energy: a.energy, soreness: a.soreness, jumpQ: a.explosive || a.jumpQ, cns: a.cns })),
-    dunks: dunks.map(d => ({ date: d.date, standing: d.standing || d.standingJump, approach: d.approach || d.approachJump, touch: d.touch || d.highTouch })),
+    dunks: dunks.map(d => ({ date: d.date, standing: d.standing || d.standingJump, approach: d.approach || d.approachJump || d.vj, touch: d.touch || d.highTouch || d.max })),
+    // Notion live data
+    notionRecovery:  nc?.recovery  || [],
+    notionSessions:  nc?.sessions  || [],
+    notionJumps:     nc?.jumps     || [],
+    exerciseRules:   nc?.exerciseRules || [],
+    notionShooting:  nc?.shooting  || [],
+    notionLoaded:    !!nc,
   };
 }
 
 function _buildSystemPrompt(ctx) {
   const audits = ctx.audits?.map(a => '  ' + a.date + ': Energy ' + (a.energy||'?') + '/10, Soreness ' + (a.soreness||'?') + '/10, Explosive ' + (a.jumpQ||'?') + '/10').join('\n') || '  No audit data yet.';
-  const dunks = ctx.dunks?.map(d => '  ' + d.date + ': Standing ' + (d.standing||'?') + '"  Approach ' + (d.approach||'?') + '"  Touch ' + (d.touch||'?') + '"').join('\n') || '  No jump data yet.';
-  return 'You are Coach B — an elite performance coach for Bryan, a 42-year-old male athlete training to dunk a basketball for the first time on a regulation 10-foot rim (need 114" standing touch).\n\nPROGRAM: VPP 3.0 — 16 weeks, 4 phases (Foundation → Force Dev → Elastic → Peak). Mon/Wed/Fri = HPT strength+power. Tue/Sat = Basketball skill. Thu/Sun = Active recovery.\n\nATHLETE DATA:\n- Best standing vertical: ' + (ctx.bestStanding || '?') + '"  Best approach: ' + (ctx.bestApproach || '?') + '"\n- Est. inches to dunk: ' + (ctx.inchesToDunk || 'calculating') + '\n- Today: ' + ctx.today + ' (' + (ctx.sessionType || '?') + ')\n\nRECENT AUDITS:\n' + audits + '\n\nJUMP LOG:\n' + dunks + '\n\nBe direct, specific, motivating. Reference actual numbers. Concise unless detail is asked for.';
+  const dunks = ctx.dunks?.map(d => '  ' + d.date + ': Approach ' + (d.approach||'?') + '"  Touch ' + (d.touch||'?') + '"').join('\n') || '  No jump data yet.';
+
+  let notionSection = '';
+  if (ctx.notionLoaded) {
+    if (ctx.notionRecovery?.length) {
+      notionSection += '\nATHLETE ZERO — RECOVERY LOG (last 7 days):\n';
+      notionSection += ctx.notionRecovery.map(r =>
+        '  ' + r.date + ': ' + [
+          r.readiness && 'Readiness=' + r.readiness,
+          r.sleep != null && 'Sleep=' + r.sleep + 'h',
+          r.sleepQ != null && 'SleepQ=' + r.sleepQ + '/10',
+          r.energy != null && 'Energy=' + r.energy + '/10',
+          r.soreness != null && 'Soreness=' + r.soreness + '/10',
+          r.stress != null && 'Stress=' + r.stress + '/10',
+          r.fatigue != null && 'Fatigue=' + r.fatigue + '/10',
+          r.jumpQ != null && 'JumpQ=' + r.jumpQ + '/10',
+          r.knee != null && r.knee > 4 && 'KneePain=' + r.knee + '/10',
+          r.notes && '| Note: ' + r.notes,
+        ].filter(Boolean).join(', ')
+      ).join('\n');
+    }
+    if (ctx.notionSessions?.length) {
+      notionSection += '\n\nATHLETE ZERO — SESSION LOG (last 5):\n';
+      notionSection += ctx.notionSessions.map(s =>
+        '  ' + s.date + ': ' + (s.dayName || s.name || '?') +
+        (s.rpe != null ? ' | RPE=' + s.rpe : '') +
+        (s.energy != null ? ' | Energy=' + s.energy : '') +
+        (s.jumpQ != null ? ' | JumpQ=' + s.jumpQ : '') +
+        (s.week ? ' | Wk' + s.week : '') +
+        (s.phase ? ' | ' + s.phase : '') +
+        (s.notes ? ' | ' + s.notes : '')
+      ).join('\n');
+    }
+    if (ctx.notionJumps?.length) {
+      notionSection += '\n\nATHLETE ZERO — DUNK & JUMP LOG:\n';
+      notionSection += ctx.notionJumps.map(j =>
+        '  ' + j.date + ': Approach=' + (j.approach || '?') + '"  Touch=' + (j.touch || '?') + '"' +
+        (j.week ? ' Wk' + j.week : '') + (j.notes ? ' | ' + j.notes : '')
+      ).join('\n');
+    }
+    if (ctx.notionShooting?.length) {
+      notionSection += '\n\nATHLETE ZERO — SHOOTING LOG:\n';
+      notionSection += ctx.notionShooting.map(s =>
+        '  ' + s.date + ': ' + (s.drill || '?') + ' — ' + (s.made || 0) + '/' + (s.att || 0) +
+        (s.pct != null ? ' (' + Math.round(s.pct * 100) + '%)' : '') + (s.type ? ' [' + s.type + ']' : '')
+      ).join('\n');
+    }
+    if (ctx.exerciseRules?.length) {
+      notionSection += '\n\nEXERCISE RELATIONSHIP RULES (follow these precisely):\n';
+      notionSection += ctx.exerciseRules.map(e =>
+        '  ' + (e.name || e.base) + ': Base=' + (e.base || '?') +
+        (e.progression ? ' → Progress to: ' + e.progression : '') +
+        (e.regression ? ' | Regress to: ' + e.regression : '') +
+        (e.trigger ? ' | Unlock when: ' + e.trigger : '') +
+        (e.chainType ? ' [' + e.chainType + ']' : '') +
+        (e.aiRule ? '\n    AI RULE: ' + e.aiRule : '')
+      ).join('\n');
+    }
+  }
+
+  return 'You are Coach B — an elite performance coach for Bryan, a 42-year-old male athlete training to dunk a basketball for the first time on a regulation 10-foot rim (need 114" standing touch).\n\nPROGRAM: VPP 3.0 — 16 weeks, 4 phases (Foundation → Force Dev → Elastic → Peak). Mon/Wed/Fri = HPT strength+power. Tue/Sat = Basketball skill. Thu/Sun = Active recovery.\n\nATHLETE DATA:\n- Best approach vertical: ' + (ctx.bestApproach || '?') + '"  | Est. inches to dunk: ' + (ctx.inchesToDunk || 'calculating') + '"' +
+    '\n- Today: ' + ctx.today + ' (' + (ctx.sessionType || '?') + ')' +
+    '\n\nLOCAL AUDIT LOG:\n' + audits +
+    '\n\nLOCAL JUMP LOG:\n' + dunks +
+    notionSection +
+    '\n\nBe direct, specific, motivating. Reference actual numbers from above. Prioritize Athlete Zero data over local data when both exist. If exercise rules say to regress/progress, tell Bryan explicitly. Concise unless detail is requested.';
 }
 
 async function sendCoachMessage() {

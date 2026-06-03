@@ -37,30 +37,97 @@ module.exports = async function handler(req, res) {
 
 function buildSystem(ctx) {
   const audits = ctx.audits?.slice(0, 3).map(a =>
-    `  ${a.date}: Energy ${a.energy}/10, Soreness ${a.soreness}/10, Jump Quality ${a.jumpQ || a.explosive}/10, CNS ${a.cns || '—'}`
-  ).join('\n') || '  No audit data yet.';
+    `  ${a.date}: Energy ${a.energy}/10, Soreness ${a.soreness}/10, JumpQ ${a.jumpQ || a.explosive}/10`
+  ).join('\n') || '  No local audit data.';
 
-  const dunks = ctx.dunks?.slice(0, 5).map(d =>
-    `  ${d.date}: Standing ${d.standing}"  Approach ${d.approach}"  Touch ${d.touch}"  Rim ${d.rim}"`
-  ).join('\n') || '  No jump log data yet.';
+  const localDunks = ctx.dunks?.slice(0, 5).map(d =>
+    `  ${d.date}: Approach ${d.approach || '?'}"  Touch ${d.touch || '?'}"`
+  ).join('\n') || '  No local jump data.';
+
+  // ── Athlete Zero live data ────────────────────────────────────────────────
+  let notionSection = '';
+
+  if (ctx.notionRecovery?.length) {
+    notionSection += '\nATHLETE ZERO — RECOVERY LOG (last 7 days):\n';
+    notionSection += ctx.notionRecovery.map(r => {
+      const parts = [
+        r.readiness && `Readiness=${r.readiness}`,
+        r.sleep != null && `Sleep=${r.sleep}h`,
+        r.sleepQ != null && `SleepQ=${r.sleepQ}/10`,
+        r.energy != null && `Energy=${r.energy}/10`,
+        r.soreness != null && `Soreness=${r.soreness}/10`,
+        r.stress != null && `Stress=${r.stress}/10`,
+        r.fatigue != null && `Fatigue=${r.fatigue}/10`,
+        r.jumpQ != null && `JumpQ=${r.jumpQ}/10`,
+        r.knee != null && r.knee > 4 && `KneePain=${r.knee}/10`,
+        r.notes && `| ${r.notes}`,
+      ].filter(Boolean).join(', ');
+      return `  ${r.date}: ${parts}`;
+    }).join('\n');
+  }
+
+  if (ctx.notionSessions?.length) {
+    notionSection += '\n\nATHLETE ZERO — SESSION LOG (last 5):\n';
+    notionSection += ctx.notionSessions.map(s =>
+      `  ${s.date}: ${s.dayName || s.name || '?'}` +
+      (s.rpe != null ? ` | RPE=${s.rpe}` : '') +
+      (s.energy != null ? ` | Energy=${s.energy}` : '') +
+      (s.jumpQ != null ? ` | JumpQ=${s.jumpQ}` : '') +
+      (s.week ? ` | Wk${s.week}` : '') +
+      (s.phase ? ` | ${s.phase}` : '') +
+      (s.notes ? ` | ${s.notes}` : '')
+    ).join('\n');
+  }
+
+  if (ctx.notionJumps?.length) {
+    notionSection += '\n\nATHLETE ZERO — DUNK & JUMP LOG:\n';
+    notionSection += ctx.notionJumps.map(j =>
+      `  ${j.date}: Approach=${j.approach || '?'}"  Touch=${j.touch || '?'}"` +
+      (j.week ? ` Wk${j.week}` : '') + (j.notes ? ` | ${j.notes}` : '')
+    ).join('\n');
+  }
+
+  if (ctx.notionShooting?.length) {
+    notionSection += '\n\nATHLETE ZERO — SHOOTING LOG:\n';
+    notionSection += ctx.notionShooting.map(s =>
+      `  ${s.date}: ${s.drill || '?'} — ${s.made || 0}/${s.att || 0}` +
+      (s.pct != null ? ` (${Math.round(s.pct * 100)}%)` : '') +
+      (s.type ? ` [${s.type}]` : '')
+    ).join('\n');
+  }
+
+  if (ctx.exerciseRules?.length) {
+    notionSection += '\n\nEXERCISE RELATIONSHIP RULES (follow these precisely):\n';
+    notionSection += ctx.exerciseRules.map(e =>
+      `  ${e.name || e.base}: Base=${e.base || '?'}` +
+      (e.progression ? ` → Progress: ${e.progression}` : '') +
+      (e.regression ? ` | Regress: ${e.regression}` : '') +
+      (e.trigger ? ` | Unlock when: ${e.trigger}` : '') +
+      (e.chainType ? ` [${e.chainType}]` : '') +
+      (e.aiRule ? `\n    AI RULE: ${e.aiRule}` : '')
+    ).join('\n');
+  }
 
   return `You are Coach B — an elite performance coach for Bryan, a 42-year-old male athlete training to dunk a basketball for the first time on a regulation 10-foot rim.
 
 PROGRAM: VPP 3.0 — Vertical Performance Protocol (16 weeks, 4 phases: Foundation → Force Dev → Elastic → Peak)
 Training split: Mon/Wed/Fri = High Performance Training | Tue/Sat = Basketball Skill | Thu/Sun = Active Recovery
+Dunk standard: need 114" standing touch. Current best approach: ${ctx.bestApproach || 'not logged'}" | Est. inches to dunk: ${ctx.inchesToDunk != null ? ctx.inchesToDunk + '"' : 'calculating'}
 
-ATHLETE DATA:
-- Best standing vertical: ${ctx.bestStanding || 'not logged yet'}"
-- Best approach vertical: ${ctx.bestApproach || 'not logged yet'}"
-- Inches to dunk: ${ctx.inchesToDunk != null ? ctx.inchesToDunk + '"' : 'calculating...'}
-- Current week: ${ctx.week || '?'}  Phase: ${ctx.phase || '?'}
-- Today: ${ctx.today || '?'} (${ctx.sessionType || '?'})
+TODAY: ${ctx.today || '?'} — ${ctx.sessionType || '?'}
 
-LAST 3 WEEKLY AUDITS:
+LOCAL DATA (fallback if Athlete Zero unavailable):
+AUDIT LOG:
 ${audits}
+JUMP LOG:
+${localDunks}
+${notionSection}
 
-LAST 5 JUMP LOG ENTRIES:
-${dunks}
-
-COACHING STYLE: Direct, motivating, technically precise. Short answers unless detail is asked for. Reference actual numbers from the data above when relevant. If data is missing, ask the athlete for it. Never be generic — speak to Bryan's specific situation.`;
+COACHING RULES:
+- Prioritize Athlete Zero data over local data when both exist
+- If recovery shows 2+ consecutive LOW readiness days: recommend regression + reduce CNS load
+- If Exercise Relationship rules specify a trigger, check recovery data and tell Bryan explicitly whether he qualifies to progress
+- Reference actual numbers when making any recommendation
+- Be direct, specific, and motivating. Concise unless detail is asked for.
+- Never be generic — Bryan is a specific athlete with specific numbers. Speak to those numbers.`;
 }
