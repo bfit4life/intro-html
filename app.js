@@ -522,11 +522,13 @@ function showDayDetail(i) {
       <h2 style="font-size:22px;font-weight:900">${day.name} — ${day.focus}</h2>
       <div style="font-size:11px;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:.05em">Full daily plan · Training · Nutrition · Content · Recovery · Sleep</div>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px">
       <button class="btn btn-primary" style="font-size:11px;padding:8px 6px;white-space:nowrap" onclick="openNotionLog(${i})">🚀 Notion</button>
       <button class="btn btn-secondary" style="font-size:11px;padding:8px 6px;white-space:nowrap" onclick="openSessionLog(${i})">💪 Session</button>
-      <button class="btn btn-secondary" style="font-size:11px;padding:8px 6px;white-space:nowrap" onclick="openRecoveryLog(${i})">💤 Recovery</button>
+      <button class="btn btn-secondary" style="font-size:11px;padding:8px 6px;white-space:nowrap;background:rgba(68,136,255,.12);color:var(--blue)" onclick="openSleepLog(${i})">🌙 Sleep</button>
       <button class="btn btn-secondary" style="font-size:11px;padding:8px 6px;white-space:nowrap;background:rgba(255,215,0,.12);color:var(--gold)" onclick="openNutritionLog(${i})">🥗 Nutrition</button>
+      <button class="btn btn-secondary" style="font-size:11px;padding:8px 6px;white-space:nowrap;background:rgba(255,107,0,.12);color:var(--orange)" onclick="openShootingLog(${i})">🏀 Shoot</button>
+      <button class="btn btn-secondary" style="font-size:11px;padding:8px 6px;white-space:nowrap" onclick="openRecoveryLog(${i})">💤 Recovery</button>
       <button class="btn btn-secondary" style="font-size:11px;padding:8px 6px;white-space:nowrap" onclick="exportDayWorkout(${i})">📥 Day</button>
       <button class="btn btn-secondary" style="font-size:11px;padding:8px 6px;white-space:nowrap" onclick="exportWeekWorkout()">📥 Week</button>
     </div>
@@ -911,8 +913,8 @@ function saveWeeklyAudit() {
   localStorage.setItem('trAuditLog', JSON.stringify(auditLog));
   alert(`Audit saved for ${entry.date}. Week ${entry.week || '?'} logged.`);
   if (currentDayIndex === 6) showDayDetail(6);
-  // Auto-export to Notion VPP Performance Tracking
-  const _ap = { 'Entry': { title: [{ text: { content: 'Audit — ' + entry.date } }] }, 'Entry Date': { date: { start: entry.date } } };
+  // Auto-export to Athlete Zero — Readiness + Recovery Log
+  const _ap = { 'Entry': { title: [{ text: { content: 'Audit — ' + entry.date } }] }, 'Date': { date: { start: entry.date } } };
   if (entry.energy)    _ap['Energy']       = { number: parseInt(entry.energy) };
   if (entry.soreness)  _ap['Soreness']     = { number: parseInt(entry.soreness) };
   const jumpQ = entry.jumpQ || entry.explosive;
@@ -920,8 +922,8 @@ function saveWeeklyAudit() {
   if (entry.sleep)     _ap['Sleep Hours']  = { number: parseFloat(entry.sleep) };
   if (entry.sleepQ)    _ap['Sleep Quality']= { number: parseInt(entry.sleepQ) };
   if (entry.stress)    _ap['Stress']       = { number: parseInt(entry.stress) };
-  if (entry.week)      _ap['VPP Week']     = { number: parseInt(entry.week) };
-  _autoNotion(NOTION_DB_ID, _ap);
+  if (entry.week)      _ap['Week']         = { number: parseInt(entry.week) };
+  _autoNotion(NOTION_RECOVERY_DB_ID, _ap);
 }
 
 function renderRecoveryTiers() {
@@ -1074,13 +1076,13 @@ function logDunkSession() {
   updateKPIs();
   ['logWeek','logReach','logMax','logVJ','logNotes'].forEach(id => { document.getElementById(id).value = ''; });
   document.getElementById('logDunk').value = 'none';
-  // Auto-export to Notion VPP Performance Tracking
+  // Auto-export to Athlete Zero — Dunk & Jump Log
   const _np = { 'Entry': { title: [{ text: { content: 'Jump Log — ' + entry.date } }] }, 'Entry Date': { date: { start: entry.date } } };
-  if (entry.standing) _np['Standing Vertical'] = { number: parseFloat(entry.standing) };
-  if (entry.approach) _np['Approach Vertical'] = { number: parseFloat(entry.approach) };
-  if (entry.touch)    _np['Highest Touch']      = { number: parseFloat(entry.touch) };
-  if (entry.rim)      _np['Rim Height']         = { number: parseFloat(entry.rim) };
-  if (entry.week)     _np['VPP Week']           = { number: parseInt(entry.week) };
+  if (entry.vj)    _np['Approach Vertical'] = { number: parseFloat(entry.vj) };
+  if (entry.max)   _np['Highest Touch']     = { number: parseFloat(entry.max) };
+  if (entry.reach) _np['Rim Height']        = { number: parseFloat(entry.reach) };
+  if (entry.week)  _np['VPP Week']          = { number: parseInt(entry.week) };
+  if (entry.notes) _np['Notes']             = { rich_text: [{ text: { content: entry.notes } }] };
   _autoNotion(NOTION_DB_ID, _np);
 }
 
@@ -3353,7 +3355,7 @@ function buildSupplementCard(supp) {
 }
 
 // ── Notion Integration ────────────────────────────────────────────────────────
-const NOTION_DB_ID = '0e55762148e94d0f981c31d8bde78e40';
+const NOTION_DB_ID = 'bac4317f-b586-4e24-bfc1-6a29db0878b8'; // Dunk & Jump Log — Athlete Zero
 const NOTION_DAY_MAP = [
   'D1 Force Day',         // MON
   'D6 Athletic Movement', // TUE
@@ -3600,10 +3602,11 @@ async function sendToNotion() {
   }
 }
 
-// ── Pillar Notion Exports ─────────────────────────────────────────────────────
-const NOTION_SESSION_DB_ID  = '3fe389dd-0d73-4f73-a0be-f4a117d51411';
-const NOTION_RECOVERY_DB_ID = '79cd4de2-b3e5-4271-9693-bd5496861142';
-const NOTION_NUTRITION_DB_ID = 'a19726f3-657b-464b-99fd-eb0862688591';
+// ── Pillar Notion Exports — all Athlete Zero ──────────────────────────────────
+const NOTION_SESSION_DB_ID   = '3fe389dd-0d73-4f73-a0be-f4a117d51411'; // Personal Session Log
+const NOTION_RECOVERY_DB_ID  = '79cd4de2-b3e5-4271-9693-bd5496861142'; // Readiness + Recovery Log
+const NOTION_NUTRITION_DB_ID = 'a19726f3-657b-464b-99fd-eb0862688591'; // Nutrition & Macro Log
+const NOTION_SHOOTING_DB_ID  = '3ff0ccd4-1344-48bb-977f-985c8b1df735'; // Shooting Drill Log
 
 // Silent background Notion export — fires and forgets, no UI feedback
 async function _autoNotion(dbId, props) {
@@ -3862,6 +3865,126 @@ async function sendNutritionLog() {
   props['Electrolytes Taken'] = { checkbox: !!_getN('nl2-electrolytes','check') };
   const notes = _getN('nl2-notes','text'); if (notes) props['Notes'] = { rich_text: [{ text: { content: notes } }] };
   await _pillarPost(NOTION_NUTRITION_DB_ID, props, 'nlSendBtn2', 'nlStatus2');
+}
+
+// ── Sleep Log → Readiness + Recovery Log ──────────────────────────────────────
+function openSleepLog(dayIdx) {
+  _pillarDayIdx = dayIdx;
+  const day = WEEK[dayIdx];
+  const today = new Date().toISOString().split('T')[0];
+  _openPillarModal(_pillarCard('var(--blue)', '🌙 Sleep Log — ' + day.name,
+    '<div style="font-size:12px;color:var(--text-muted);margin-bottom:18px">Readiness + Recovery Log → Sleep Entry</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
+      _nField('Date','slp-date','date',today) + _nField('VPP Week #','slp-week','number','1') +
+    '</div>' +
+    '<div style="font-size:11px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Sleep</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
+      _nField('Hours Slept','slp-hours','number','8') + _nRating('Sleep Quality (1–10)','slp-quality') +
+    '</div>' +
+    '<div style="font-size:11px;font-weight:800;color:var(--orange);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Morning Feel</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
+      _nSelect('Readiness Level','slp-level',['PEAK','GOOD','MODERATE','LOW'],'GOOD') +
+      _nRating('Energy on Wake','slp-energy') +
+      _nRating('Fatigue Score','slp-fatigue') + _nRating('Stress Level','slp-stress') +
+    '</div>' +
+    '<div style="margin-bottom:16px"><label style="display:block;font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Sleep Notes</label>' +
+    '<textarea id="slp-notes" rows="2" style="width:100%;background:var(--bg-card-2);border:2px solid var(--border);border-radius:8px;padding:10px;color:var(--text-primary);font-size:13px;resize:vertical;font-family:inherit;box-sizing:border-box" placeholder="How did you sleep? Any disturbances?"></textarea></div>' +
+    '<button id="slpSendBtn" class="btn btn-primary" style="width:100%;font-size:14px;padding:14px;background:var(--blue)" onclick="sendSleepLog()">📤 Send to Recovery Log</button>' +
+    '<div id="slpStatus" style="margin-top:10px;text-align:center;min-height:20px;font-size:13px"></div>'
+  ));
+}
+
+async function sendSleepLog() {
+  const day = WEEK[_pillarDayIdx];
+  const date = _getN('slp-date','text') || new Date().toISOString().split('T')[0];
+  const week = _getN('slp-week','number');
+  const level = _getN('slp-level','text');
+  const props = {
+    'Entry': { title: [{ text: { content: 'Sleep — ' + day.name + ' — ' + date } }] },
+    'Date': { date: { start: date } },
+  };
+  if (week) props['Week'] = { number: week };
+  if (level) props['Readiness Level'] = { select: { name: level } };
+  [['Sleep Hours','slp-hours'],['Sleep Quality','slp-quality'],['Energy','slp-energy'],['Fatigue Score','slp-fatigue'],['Stress','slp-stress']].forEach(([p,id]) => {
+    const v = _getN(id,'number'); if (v !== null) props[p] = { number: v };
+  });
+  const notes = _getN('slp-notes','text'); if (notes) props['Recovery Notes'] = { rich_text: [{ text: { content: notes } }] };
+  await _pillarPost(NOTION_RECOVERY_DB_ID, props, 'slpSendBtn', 'slpStatus');
+}
+
+// ── Shooting Drill Log → Shooting Drill Log (Athlete Zero) ────────────────────
+function openShootingLog(dayIdx) {
+  _pillarDayIdx = dayIdx;
+  const day = WEEK[dayIdx];
+  const today = new Date().toISOString().split('T')[0];
+  _openPillarModal(_pillarCard('var(--orange)', '🏀 Shooting Drill Log — ' + day.name,
+    '<div style="font-size:12px;color:var(--text-muted);margin-bottom:18px">Shooting Drill Log → Athlete Zero</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
+      _nField('Date','shl-date','date',today) + _nField('VPP Week #','shl-week','number','1') +
+    '</div>' +
+    '<div style="margin-bottom:16px"><label style="display:block;font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Drill Name</label>' +
+    '<input id="shl-drill" type="text" style="width:100%;background:var(--bg-card-2);border:2px solid var(--border);border-radius:8px;padding:10px;color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box" placeholder="e.g. 5-Spot Form Shooting, Elbow Pull-Up"></div>' +
+    '<div style="font-size:11px;font-weight:800;color:var(--orange);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Makes</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">' +
+      _nField('Made','shl-made','number','') + _nField('Attempted','shl-att','number','') +
+      '<div><label style="display:block;font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Make %</label>' +
+      '<div id="shl-pct" style="background:var(--bg-card-2);border:2px solid var(--border);border-radius:8px;padding:10px;color:var(--text-muted);font-size:13px;min-height:42px;display:flex;align-items:center">—</div></div>' +
+    '</div>' +
+    '<div style="margin-bottom:16px">' +
+      _nSelect('Session Type','shl-type',['Skill Day','Open Gym','Game Prep','Team Practice'],'Skill Day') +
+    '</div>' +
+    '<div style="margin-bottom:16px"><label style="display:block;font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Notes</label>' +
+    '<textarea id="shl-notes" rows="2" style="width:100%;background:var(--bg-card-2);border:2px solid var(--border);border-radius:8px;padding:10px;color:var(--text-primary);font-size:13px;resize:vertical;font-family:inherit;box-sizing:border-box" placeholder="What zone were you in? What to fix?"></textarea></div>' +
+    '<button id="shlSendBtn" class="btn btn-primary" style="width:100%;font-size:14px;padding:14px;background:var(--orange)" onclick="sendShootingLog()">📤 Send to Shooting Drill Log</button>' +
+    '<div id="shlStatus" style="margin-top:10px;text-align:center;min-height:20px;font-size:13px"></div>'
+  ));
+  // Live make % calculator
+  setTimeout(() => {
+    ['shl-made','shl-att'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', _calcShotPct);
+    });
+  }, 50);
+}
+
+function _calcShotPct() {
+  const made = parseFloat(document.getElementById('shl-made')?.value) || 0;
+  const att = parseFloat(document.getElementById('shl-att')?.value) || 0;
+  const pctEl = document.getElementById('shl-pct');
+  if (!pctEl) return;
+  if (att > 0) {
+    const pct = Math.round((made / att) * 100);
+    const color = pct >= 70 ? 'var(--green)' : pct >= 50 ? 'var(--gold)' : 'var(--red)';
+    pctEl.innerHTML = '<strong style="color:' + color + ';font-size:16px">' + pct + '%</strong>';
+  } else {
+    pctEl.textContent = '—';
+  }
+}
+
+async function sendShootingLog() {
+  const day = WEEK[_pillarDayIdx];
+  const date = _getN('shl-date','text') || new Date().toISOString().split('T')[0];
+  const week = _getN('shl-week','number');
+  const drill = document.getElementById('shl-drill')?.value?.trim() || '';
+  const made = _getN('shl-made','number');
+  const att = _getN('shl-att','number');
+  const type = _getN('shl-type','text');
+  if (!drill) { alert('Enter a drill name.'); return; }
+  if (!att) { alert('Enter shots attempted.'); return; }
+  const pct = att > 0 ? made / att : 0;
+  const entryTitle = drill + ' — ' + day.name + ' — ' + date;
+  const props = {
+    'Entry': { title: [{ text: { content: entryTitle } }] },
+    'Date': { date: { start: date } },
+    'Drill Name': { rich_text: [{ text: { content: drill } }] },
+  };
+  if (made !== null) props['Made'] = { number: made };
+  if (att !== null)  props['Attempted'] = { number: att };
+  if (att > 0)       props['Make Percentage'] = { number: pct };
+  if (week)          props['VPP Week'] = { number: week };
+  if (type)          props['Session Type'] = { select: { name: type } };
+  const notes = _getN('shl-notes','text'); if (notes) props['Notes'] = { rich_text: [{ text: { content: notes } }] };
+  await _pillarPost(NOTION_SHOOTING_DB_ID, props, 'shlSendBtn', 'shlStatus');
 }
 
 // ── Shooting Drill Tracker ─────────────────────────────────────────────────────
