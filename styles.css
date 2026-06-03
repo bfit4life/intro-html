@@ -657,7 +657,7 @@ tbody td:first-child { color: var(--text-primary); font-weight: 600; }
   .grid-2, .grid-3, .macro-grid { grid-template-columns: 1fr; }
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .content-pipeline { grid-template-columns: repeat(2, 1fr); }
-  .menu-btn { display: none; }
+  .menu-btn { display: flex !important; top: 10px; left: 10px; padding: 8px 10px; font-size: 18px; z-index: 10000; }
   .mobile-bottom-nav { display: flex; }
 }
 
