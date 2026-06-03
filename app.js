@@ -384,7 +384,8 @@ const DAY_META = [
       ]}
   },
   { // THU — Recovery
-    nutritionType: 'recovery', trainWindow: '7:00 AM – 8:30 AM', shootingDay: false, dunkDay: false, jsFocus: null
+    nutritionType: 'recovery', trainWindow: '7:00 AM – 8:30 AM', shootingDay: false, dunkDay: false, jsFocus: null,
+    shoppingDay: true,
   },
   { // FRI — HPT 3 + Dunk
     nutritionType: 'training', trainWindow: '7:30 AM – 9:30 AM', shootingDay: false, dunkDay: true,
@@ -521,6 +522,29 @@ function showDayDetail(i) {
             <li><input type="checkbox" class="ex-check"> Notes on what improved</li>
           </ul>
           <button class="btn btn-secondary mt-12" style="font-size:12px" onclick="document.querySelector('[data-section=jumpscience]').click()">→ Open Jump Science Lab</button>
+        </div>
+      </div>`);
+  }
+
+  // ── SHOPPING (Thursday) ──────────────────────────────
+  if (meta.shoppingDay) {
+    html += buildDayBlock('🛒 WEEKLY GROCERY SHOP · 10:00 AM – 11:30 AM', 'var(--green)',
+      `<div class="grid-2">
+        <div class="card" style="border-color:rgba(0,204,136,0.3)">
+          <div style="font-size:12px;font-weight:800;color:var(--green);text-transform:uppercase;margin-bottom:10px">This Week's Priority List</div>
+          <ul style="list-style:none">
+            ${SHOPPING_SCHEDULE[0].checklist.map(item => `<li style="display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--text-secondary)">
+              <input type="checkbox" class="ex-check" style="flex-shrink:0;margin-top:2px"> ${item.replace('✓ ', '')}
+            </li>`).join('')}
+          </ul>
+        </div>
+        <div class="card" style="border-color:rgba(0,204,136,0.3)">
+          <div style="font-size:12px;font-weight:800;color:var(--green);text-transform:uppercase;margin-bottom:10px">Best Stores for This Run</div>
+          ${STORE_GUIDE.slice(0, 3).map(s => `<div style="padding:8px 0;border-bottom:1px solid var(--border)">
+            <div style="font-size:12px;font-weight:800;color:${s.color}">${s.icon} ${s.name} <span class="tag" style="background:${s.color}15;color:${s.color};font-size:9px;margin-left:4px">${s.tag}</span></div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${s.bestFor.slice(0, 2).join(' · ')}</div>
+          </div>`).join('')}
+          <button class="btn btn-secondary mt-12" style="font-size:12px;width:100%;justify-content:center" onclick="document.querySelector('[data-section=shopping]').click()">→ Open Full Shopping List</button>
         </div>
       </div>`);
   }
@@ -904,6 +928,10 @@ document.addEventListener('DOMContentLoaded', () => {
   renderArmSwing();
   renderGroundContact();
   renderPowerTraining();
+  renderWeeklyList();
+  renderStoreGuide();
+  renderShopSchedule();
+  renderSupplementStack();
   // Show default platform guide
   const defaultPlatBtn = document.querySelector('.platform-tab-btn');
   if (defaultPlatBtn) showPlatform('tiktok', defaultPlatBtn);
@@ -2442,4 +2470,517 @@ function renderCompetitiveShooting() {
     <p><strong>The Session Template:</strong> Form Shooting (10 min) → Spot Work (15 min) → Off-Dribble (10 min) → Finishing (10 min) → Competitive Game (10 min) = 55-min complete shooting session. Do this 2× per week (Tuesday + Saturday skill days) and you will be a different shooter in 8 weeks.</p>
   </div>`;
   panel.innerHTML = html;
+}
+
+// ── Shopping List Data ────────────────────────────────────────────────────────
+const SHOPPING_CATEGORIES = [
+  {
+    name: 'Proteins', icon: '🥩', color: 'var(--orange)',
+    items: [
+      { name: 'Chicken Breast', qty: '3.5 lbs', est: '$9–13', notes: 'Buy family pack, freeze extra in weekly portions', priority: 'essential' },
+      { name: 'Salmon (Atlantic or Wild-Caught)', qty: '1 lb', est: '$8–13', notes: 'Fresh or frozen — wild-caught has more omega-3s', priority: 'essential' },
+      { name: 'Turkey Breast (or ground turkey)', qty: '1 lb', est: '$5–7', notes: 'Pre-court meal Tue/Sat lunch', priority: 'essential' },
+      { name: 'Chicken Thighs (bone-in or boneless)', qty: '1.5 lbs', est: '$5–7', notes: 'Post-court recovery dinner (higher fat = more flavor)', priority: 'essential' },
+      { name: 'Eggs (large)', qty: '2 dozen', est: '$5–8', notes: 'Post-workout scramble + recovery morning', priority: 'essential' },
+      { name: 'Tuna in Water (canned)', qty: '4 cans', est: '$4–6', notes: 'Emergency protein — quick meal when short on time', priority: 'backup' },
+    ]
+  },
+  {
+    name: 'Carbs & Grains', icon: '🌾', color: 'var(--gold)',
+    items: [
+      { name: 'Old-Fashioned Oats', qty: '2 lbs dry', est: '$3–5', notes: 'Measure 50g (½ cup dry) per morning. Bulk = best price', priority: 'essential' },
+      { name: 'Brown Rice', qty: '3 lbs dry', est: '$3–5', notes: 'Cook 4–6 servings on Sunday. Fridge holds 5 days', priority: 'essential' },
+      { name: 'White Rice', qty: '1 lb dry', est: '$1–3', notes: 'Fast-digesting for basketball day mid-morning meal', priority: 'essential' },
+      { name: 'Quinoa', qty: '1 lb dry', est: '$4–6', notes: 'Complete protein + carb for Tue/Sat pre-court lunch', priority: 'essential' },
+      { name: 'Ezekiel Bread (sprouted grain)', qty: '1 loaf', est: '$5–7', notes: 'Usually in frozen aisle — higher protein than regular bread', priority: 'essential' },
+      { name: 'Sweet Potatoes', qty: '5 lbs', est: '$4–6', notes: 'Roast 4–5 on Sunday at 400°F. Used Mon/Wed/Fri dinners', priority: 'essential' },
+      { name: 'Potatoes (yellow or white)', qty: '2 lbs', est: '$2–3', notes: 'Post-court recovery dinner (Sat) — fast carb refuel', priority: 'essential' },
+    ]
+  },
+  {
+    name: 'Produce', icon: '🥦', color: 'var(--green)',
+    items: [
+      { name: 'Bananas', qty: '2 bunches (14–16)', est: '$2–4', notes: 'Pre-workout fuel every training morning — buy some green to ripen mid-week', priority: 'essential' },
+      { name: 'Mixed Berries (frozen)', qty: '3 bags (12 oz each)', est: '$8–12', notes: 'Frozen = same nutrition, cheaper. Anti-inflammatory. Post-workout + overnight', priority: 'essential' },
+      { name: 'Blueberries', qty: '2 pints (or 1 frozen 3 lb bag)', est: '$5–9', notes: 'Snacks + overnight recovery bowl', priority: 'essential' },
+      { name: 'Apples', qty: '6–7', est: '$3–5', notes: 'Recovery day afternoon snack with nuts', priority: 'essential' },
+      { name: 'Spinach (baby)', qty: '2 bags (5 oz)', est: '$5–7', notes: 'Recovery lunch salad base — iron, magnesium', priority: 'essential' },
+      { name: 'Mixed Greens / Spring Mix', qty: '2–3 bags', est: '$5–8', notes: 'Training day lunch + basketball day meals', priority: 'essential' },
+      { name: 'Broccoli (fresh crowns or frozen)', qty: '4–5 crowns', est: '$4–6', notes: 'Dinner vegetable 4–5 nights. Vitamin C + fiber. Frozen bags also work great', priority: 'essential' },
+      { name: 'Asparagus', qty: '2 bunches', est: '$4–6', notes: 'Post-court recovery dinner (Sat) — pairs with chicken thighs', priority: 'essential' },
+      { name: 'Cherry Tomatoes', qty: '1 pint', est: '$3–4', notes: 'Basketball day salads Tue/Sat', priority: 'essential' },
+      { name: 'Avocados', qty: '4–5', est: '$4–7', notes: 'Training day lunch + recovery morning. Buy some firm to ripen by Wed', priority: 'essential' },
+      { name: 'Lemons', qty: '6–8', est: '$2–4', notes: 'Dressings + marinade on everything', priority: 'essential' },
+      { name: 'Garlic (2 bulbs)', qty: '2 bulbs', est: '$1–2', notes: 'Anti-inflammatory. Broccoli + recovery dinners', priority: 'essential' },
+    ]
+  },
+  {
+    name: 'Dairy & Cold', icon: '🥛', color: 'var(--blue)',
+    items: [
+      { name: 'Low-Fat Greek Yogurt (plain)', qty: '3 containers (32 oz)', est: '$10–15', notes: 'Chobani / Fage / store brand. Post-workout + snacks', priority: 'essential' },
+      { name: 'Low-Fat Cottage Cheese', qty: '4 containers (16 oz)', est: '$8–12', notes: 'Best dollar-per-gram of casein protein. Overnight recovery + snacks', priority: 'essential' },
+      { name: 'Orange Juice (100%, no added sugar)', qty: '½ gallon', est: '$3–5', notes: 'Basketball morning fast-carb fuel before court', priority: 'essential' },
+    ]
+  },
+  {
+    name: 'Pantry & Fats', icon: '🫙', color: 'var(--text-secondary)',
+    items: [
+      { name: 'Extra Virgin Olive Oil', qty: '1 bottle (32 oz)', est: '$6–10', notes: 'Every dinner + dressing. Buy 32 oz — better price per oz', priority: 'essential' },
+      { name: 'Almonds (raw or lightly salted)', qty: '12–16 oz bag', est: '$5–9', notes: '1 oz = 23 almonds = daily snack fat portion', priority: 'essential' },
+      { name: 'Mixed Nuts', qty: '10–12 oz bag', est: '$5–8', notes: 'Recovery day afternoon snack with apple', priority: 'essential' },
+      { name: 'Peanut Butter (natural — no added sugar)', qty: '1 jar (16 oz)', est: '$4–7', notes: 'Pre-game snack: 2 dates + 1 tbsp PB + ½ banana', priority: 'essential' },
+      { name: 'Honey (raw)', qty: '1 small jar', est: '$5–8', notes: 'Morning oats sweetener + Greek yogurt', priority: 'essential' },
+      { name: 'Granola (low sugar)', qty: '1 bag', est: '$4–6', notes: 'Recovery day light snack with Greek yogurt', priority: 'essential' },
+      { name: 'Dates (Medjool)', qty: '14–16 dates', est: '$5–7', notes: 'Pre-game 30–60 min before court — fast glycemic index', priority: 'essential' },
+      { name: 'Apple Cider Vinegar', qty: '1 bottle', est: '$3–5', notes: 'Recovery day salad dressing. Lasts weeks', priority: 'pantry' },
+      { name: 'Balsamic Vinegar or Glaze', qty: '1 bottle', est: '$3–5', notes: 'Basketball day salad dressing. Lasts weeks', priority: 'pantry' },
+    ]
+  },
+  {
+    name: 'Hydration', icon: '💧', color: 'var(--blue)',
+    items: [
+      { name: 'Electrolyte Powder (no sugar)', qty: '1 box (30 servings)', est: '$15–25', notes: 'LMNT, Liquid IV, Nuun, or store brand packets. 16 oz water every morning', priority: 'essential' },
+      { name: 'Tart Cherry Juice (100% pure)', qty: '2 bottles (16 oz)', est: '$7–13', notes: 'Anti-inflammatory. 4 oz morning + 4 oz pre-sleep. Biggest impact on soreness', priority: 'essential' },
+    ]
+  },
+];
+
+const STORE_GUIDE = [
+  {
+    name: 'Walmart / Neighborhood Market',
+    tag: 'EVERYDAY STAPLES',
+    color: 'var(--blue)',
+    icon: '🏪',
+    savings: 'Save 30–40% with Great Value brand',
+    bestFor: [
+      'Oats, rice, quinoa — store brand = identical nutrition',
+      'Chicken breast in family packs (freeze extra)',
+      'Eggs — Great Value, cheapest consistent price',
+      'Frozen broccoli, mixed vegetables, mixed berries',
+      'Cottage cheese and Greek yogurt (store brand)',
+      'Olive oil, honey, peanut butter, granola',
+      'Orange juice, canned tuna',
+    ],
+    tip: 'Great Value oats, eggs, and frozen veg are nutritionally identical to name brands — 30–40% cheaper. Use the Walmart app for rollback deals. Check produce section for ripe avocados.',
+  },
+  {
+    name: 'ALDI',
+    tag: 'BUDGET MVP',
+    color: 'var(--orange)',
+    icon: '🥇',
+    savings: 'Consistently lowest on proteins + produce',
+    bestFor: [
+      'Chicken breast — frequently cheapest per lb across all stores',
+      'Eggs — most consistently lowest price anywhere',
+      'Greek yogurt — Simply Nature brand is excellent quality',
+      'Avocados — usually $0.49–$0.79 each',
+      'Fresh produce: bag salads, broccoli, spinach, bananas',
+      'Almonds and mixed nuts — premium quality at low price',
+      'Salmon (check weekly specials section)',
+    ],
+    tip: 'ALDI "Finds" runs electrolytes, protein bars, and athletic supplements at steep discounts — check weekly. Salmon goes on special often. Go Saturday early for best fresh produce selection.',
+  },
+  {
+    name: 'Costco / Sam\'s Club',
+    tag: 'BULK BUY',
+    color: 'var(--gold)',
+    icon: '📦',
+    savings: 'Best per-oz price on proteins + nuts',
+    bestFor: [
+      'Chicken breast — 6–10 lb bags (freeze in weekly 3.5 lb portions)',
+      'Wild-caught salmon — frozen 3 lb bags, best price-quality anywhere',
+      'Almonds — 3 lb bag, unbeatable per-oz price',
+      'Eggs — 36-count, significant savings',
+      'Greek yogurt — Chobani 4-packs or Kirkland brand',
+      'Olive oil — 3 liter bottle (best per-oz available)',
+      'Blueberries — frozen 3 lb bags',
+    ],
+    tip: 'Monthly Costco run replaces ~40% of your protein and pantry budget. Freeze chicken in 3.5 lb portions immediately after buying. Kirkland omega-3 fish oil is one of the best values for supplements.',
+  },
+  {
+    name: 'Trader Joe\'s',
+    tag: 'QUALITY PICK',
+    color: 'var(--green)',
+    icon: '🌿',
+    savings: 'Premium quality at fair prices',
+    bestFor: [
+      'Wild-caught salmon — fresh or frozen, best price-to-quality ratio',
+      'Ezekiel bread (frozen aisle — sprouted grain, higher protein)',
+      'Pre-washed bag salads and mixed greens',
+      'Medjool dates — great value on the pre-game snack staple',
+      'Tart cherry juice (sometimes stocks concentrate)',
+      'Interesting healthy snacks and variety items',
+    ],
+    tip: 'TJ\'s wild salmon is the best non-Costco price for quality fish. Their frozen grilled chicken strips are a great meal-prep shortcut — 3 minutes to a complete meal. Check for seasonal electrolyte products.',
+  },
+  {
+    name: 'Local Grocery Chain',
+    tag: 'CONVENIENCE',
+    color: 'var(--purple)',
+    icon: '🛒',
+    savings: 'Weekly sales + digital coupons stack',
+    bestFor: [
+      'Midweek fresh top-up (avocados, berries, bananas)',
+      'Fresh salmon when Costco run isn\'t happening',
+      'Orange juice, specialty fresh produce',
+      'Items you run out of mid-week',
+      'Same-day emergency purchases',
+    ],
+    tip: 'Kroger, Publix, HEB, Safeway all have loyalty apps with digital coupons. Chicken breast, salmon, and berries cycle on sale weekly — stack app coupons with sale price for best deal.',
+  },
+];
+
+const SHOPPING_SCHEDULE = [
+  {
+    day: 'THURSDAY',
+    pill: 'MAIN SHOP',
+    time: '10:00 AM – 11:30 AM',
+    color: 'var(--green)',
+    icon: '🛒',
+    why: 'Recovery day means no heavy training — mental bandwidth to shop mindfully and set up the full week in one run.',
+    stores: 'Walmart or ALDI (primary) + Costco on monthly bulk run',
+    duration: '60–90 min',
+    checklist: [
+      'Proteins — chicken, salmon, eggs, turkey, cottage cheese, Greek yogurt',
+      'Produce — bananas, berries, greens, broccoli, sweet potato, avocado, lemons',
+      'Carbs — oats, brown rice, bread, potatoes',
+      'Pantry restocks — olive oil, nuts, honey, PB (only when low)',
+      'Hydration — electrolytes, tart cherry juice, orange juice',
+    ]
+  },
+  {
+    day: 'SATURDAY',
+    pill: 'QUICK REFRESH',
+    time: '8:00 AM – 8:30 AM',
+    color: 'var(--blue)',
+    icon: '🏃',
+    why: 'Before court. 20-minute stop for fresh items that won\'t last a full 7 days from Thursday.',
+    stores: 'ALDI or Walmart — closest and fastest',
+    duration: '20–30 min',
+    checklist: [
+      'Fresh salmon (if needed for Sat/Sun dinner)',
+      'Avocados (buy firm — ripen by Monday)',
+      'Bananas or berries if running low',
+      'Protein gap-fill if needed (extra eggs or chicken)',
+    ]
+  },
+  {
+    day: 'SUNDAY',
+    pill: 'MEAL PREP',
+    time: '4:00 PM – 5:30 PM',
+    color: 'var(--orange)',
+    icon: '👨‍🍳',
+    why: 'No shopping — prep day. 90 minutes of cooking = Mon–Wed eating on autopilot. This is what separates hitting macros from missing them.',
+    stores: 'Kitchen only',
+    duration: '60–90 min',
+    checklist: [
+      'Grill or air-fry 3–4 lbs chicken breast — portion into 6 oz containers',
+      'Cook large batch brown rice (4–6 servings) — fridge-safe 5 days',
+      'Roast 4–5 sweet potatoes at 400°F for 45 min',
+      'Hard-boil 8 eggs for backup protein (snacks + quick meals)',
+      'Pre-wash and dry salad greens — store with paper towel to stay crisp',
+      'Measure and bag oat portions for Mon–Wed mornings (50g each)',
+    ]
+  },
+];
+
+const SUPPLEMENT_STACK = [
+  {
+    name: 'Whey Protein', icon: '🥤', priority: 1, cost: '$40–55/month (5 lb tub)',
+    color: 'var(--orange)',
+    why: 'Post-workout muscle protein synthesis in the critical 30–45 min window. Non-negotiable for hitting 175g daily protein target.',
+    dose: '1–2 scoops (25–50g)', when: 'Within 30–45 min post-training',
+    brands: 'Optimum Nutrition Gold Standard · Ghost Whey · Myprotein · Kirkland (Costco)',
+    where: 'Costco (best bulk price), Amazon, Walmart, GNC',
+  },
+  {
+    name: 'Magnesium Glycinate', icon: '💊', priority: 1, cost: '$15–25 (3–4 month supply)',
+    color: 'var(--blue)',
+    why: 'Sleep quality, muscle recovery, and cramp prevention. Over 40% of Americans are deficient. Glycinate is the most bioavailable form — no laxative effect unlike magnesium oxide.',
+    dose: '400mg', when: '9:00 PM with recovery snack',
+    brands: 'Thorne · Doctor\'s Best · Life Extension · Kirkland (Costco)',
+    where: 'Amazon (best price), Costco, Walmart, Whole Foods',
+  },
+  {
+    name: 'Omega-3 Fish Oil', icon: '🐟', priority: 1, cost: '$20–35/month',
+    color: 'var(--green)',
+    why: 'Reduces joint inflammation — critical for a 42-year-old high-output athlete. Look for 1g+ EPA+DHA per serving on the label. Supports cardiovascular health and post-exercise recovery speed.',
+    dose: '2–3g EPA+DHA daily', when: 'With any meal (fat-soluble)',
+    brands: 'Nordic Naturals · Carlson · OmegaVia · Kirkland (Costco)',
+    where: 'Costco (best price), Amazon, Walmart',
+  },
+  {
+    name: 'Tart Cherry (Juice or Capsule)', icon: '🍒', priority: 1, cost: '$7–13/week juice · $15–20/month capsule',
+    color: 'var(--red)',
+    why: 'Reduces DOMS (soreness) by 30–40% in multiple RCTs. Anti-inflammatory anthocyanins. Also improves sleep quality. Biggest single supplement impact for a high-volume training athlete.',
+    dose: '4 oz juice 2× daily OR 400–500mg capsule 2×', when: 'Morning + pre-sleep',
+    brands: 'Cheribundi Tart Cherry Juice · Dynamic Health · Lyfebar Tart Cherry Capsules',
+    where: 'Trader Joe\'s, Whole Foods, Walmart, Amazon',
+  },
+  {
+    name: 'Electrolytes (No Sugar)', icon: '💧', priority: 1, cost: '$15–25/month',
+    color: 'var(--blue)',
+    why: 'Prevents cramps and optimizes hydration. You lose sodium and potassium through sweat — replace them, especially in the morning after an 8-hour fast when cortisol is highest.',
+    dose: '1 serving in 16 oz water', when: '6:30 AM every morning + during/after training',
+    brands: 'LMNT · Liquid IV (no sugar) · Nuun Sport · DripDrop · Great Value packets (Walmart)',
+    where: 'Amazon, Walmart, Target, Costco (seasonal)',
+  },
+  {
+    name: 'Vitamin D3 + K2', icon: '☀️', priority: 2, cost: '$15–25 (2–3 month supply)',
+    color: 'var(--gold)',
+    why: 'Testosterone support, bone density, immune function. Most indoor athletes are deficient. D3 needs K2 to work properly — K2 routes calcium to bones, not arteries. Do not take D3 alone.',
+    dose: '3,000–5,000 IU D3 + 100mcg K2', when: 'With breakfast (fat-soluble — needs food)',
+    brands: 'Thorne D3/K2 Drops · NatureWise · Sports Research · NOW Foods',
+    where: 'Amazon, Costco, Walmart, GNC',
+  },
+  {
+    name: 'Creatine Monohydrate', icon: '⚡', priority: 2, cost: '$15–25/month (500g tub)',
+    color: 'var(--orange)',
+    why: 'Directly improves jump height, sprint speed, and power output. 1,000+ studies — most researched supplement in existence. Completely safe at 42+. Buy pure monohydrate ONLY — ignore fancy forms.',
+    dose: '3–5g daily (no loading protocol needed)', when: 'Any time — daily consistency is all that matters',
+    brands: 'Optimum Nutrition · Myprotein · BulkSupplements · Any 99.9% pure creatine monohydrate',
+    where: 'Amazon (best price), Walmart, GNC, Costco',
+  },
+];
+
+// ── Shopping List Functions ───────────────────────────────────────────────────
+function switchShoppingListTab(tab, btn) {
+  const panels = { list: 'sl-list', stores: 'sl-stores', schedule: 'sl-schedule', supplements: 'sl-supplements' };
+  document.querySelectorAll('#section-shopping .js-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  Object.values(panels).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  const active = document.getElementById(panels[tab]);
+  if (active) active.style.display = '';
+}
+
+function renderWeeklyList() {
+  const panel = document.getElementById('sl-list');
+  if (!panel) return;
+
+  const totalLow = 100, totalHigh = 160;
+  let html = `<div class="highlight-box mb-20" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <div style="font-size:11px;font-weight:800;color:var(--green);text-transform:uppercase;margin-bottom:4px">Estimated Weekly Budget</div>
+      <div style="font-size:26px;font-weight:900;color:var(--green)">$${totalLow}–$${totalHigh} <span style="font-size:13px;color:var(--text-muted);font-weight:500">/week all-in</span></div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Includes amortized supplements. Drops after pantry is stocked.</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Main Shop Day</div>
+      <div style="font-size:15px;font-weight:800;color:var(--gold)">Thursday · 10 AM</div>
+      <div style="font-size:11px;color:var(--text-muted)">Quick refresh: Saturday 8 AM</div>
+    </div>
+  </div>`;
+
+  SHOPPING_CATEGORIES.forEach(cat => {
+    const essentials = cat.items.filter(i => i.priority === 'essential');
+    const backups = cat.items.filter(i => i.priority !== 'essential');
+
+    html += `<div class="card mb-20" style="border-left:4px solid ${cat.color}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <span style="font-size:26px">${cat.icon}</span>
+        <div>
+          <div style="font-size:16px;font-weight:900;color:${cat.color}">${cat.name}</div>
+          <div style="font-size:11px;color:var(--text-muted)">${essentials.length} essential items</div>
+        </div>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr>
+          <th>Item</th>
+          <th style="min-width:90px">Weekly Qty</th>
+          <th style="min-width:80px">Est. Cost</th>
+          <th>Notes</th>
+        </tr></thead>
+        <tbody>
+          ${cat.items.map(item => {
+            const isBackup = item.priority !== 'essential' && item.priority !== 'pantry';
+            const rowStyle = isBackup ? 'opacity:0.7' : '';
+            const badgeStyle = item.priority === 'pantry' ? 'background:rgba(152,152,190,0.15);color:var(--text-muted)' : 'background:rgba(0,204,136,0.12);color:var(--green)';
+            const badgeLabel = item.priority === 'pantry' ? 'Pantry' : item.priority === 'backup' ? 'Backup' : 'Essential';
+            return `<tr style="${rowStyle}">
+              <td>
+                <div style="font-weight:700;font-size:13px">${item.name}</div>
+                <span class="tag" style="${badgeStyle};font-size:9px;padding:2px 6px">${badgeLabel}</span>
+              </td>
+              <td style="font-weight:700;color:var(--gold)">${item.qty}</td>
+              <td style="font-weight:700;color:var(--green)">${item.est}</td>
+              <td style="font-size:11px;color:var(--text-muted);line-height:1.5">${item.notes}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table></div>
+    </div>`;
+  });
+
+  html += `<div class="highlight-box" style="border-color:var(--orange)">
+    <p><strong>Pro Tip — Batch Buying:</strong> Your first shop will be ~$150–180 to stock the pantry (olive oil, nuts, PB, honey, ACV, granola). After week one, your weekly recurring cost drops to $100–130 since pantry items last 2–3 weeks. Costco monthly trip for chicken/salmon/almonds/eggs saves an additional $20–35 per week.</p>
+  </div>`;
+
+  panel.innerHTML = html;
+}
+
+function renderStoreGuide() {
+  const panel = document.getElementById('sl-stores');
+  if (!panel) return;
+
+  let html = `<div class="highlight-box mb-20">
+    <p><strong>Strategy:</strong> Don't shop at just one store. Walmart/ALDI for weekly staples, Costco monthly for bulk proteins and nuts, Trader Joe's for quality fish and specialty items. This combination gets you the best nutrition-per-dollar ratio available.</p>
+  </div>
+  <div class="grid-2">`;
+
+  STORE_GUIDE.forEach(store => {
+    html += `<div class="card" style="border-left:4px solid ${store.color}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:28px">${store.icon}</span>
+          <div>
+            <div style="font-size:16px;font-weight:900">${store.name}</div>
+            <span class="tag" style="background:${store.color}20;color:${store.color};font-size:10px">${store.tag}</span>
+          </div>
+        </div>
+        <div style="background:rgba(0,204,136,0.1);border-radius:6px;padding:6px 8px;text-align:right;flex-shrink:0">
+          <div style="font-size:10px;font-weight:800;color:var(--green);text-transform:uppercase">Savings</div>
+          <div style="font-size:11px;color:var(--text-secondary)">${store.savings}</div>
+        </div>
+      </div>
+      <div style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px">Best For</div>
+      <ul style="list-style:none;margin-bottom:14px">
+        ${store.bestFor.map(item => `<li style="font-size:12px;color:var(--text-secondary);padding:5px 0;border-bottom:1px solid var(--border);display:flex;gap:8px">
+          <span style="color:${store.color};flex-shrink:0">▸</span>${item}
+        </li>`).join('')}
+      </ul>
+      <div style="background:${store.color}08;border:1px solid ${store.color}25;border-radius:8px;padding:10px 12px">
+        <div style="font-size:10px;font-weight:800;color:${store.color};text-transform:uppercase;margin-bottom:4px">Pro Tip</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.6">${store.tip}</div>
+      </div>
+    </div>`;
+  });
+
+  html += `</div>
+  <div class="highlight-box mt-20" style="border-color:var(--blue)">
+    <p><strong>Location Note:</strong> Use Google Maps or store apps to find the nearest Walmart, ALDI, Costco, and Trader Joe's in your area. Search: "ALDI near me", "Costco near me". Most major US markets have all four within reasonable driving distance — plan your Thursday shop route to hit 2 stores in one trip if possible.</p>
+  </div>`;
+
+  panel.innerHTML = html;
+}
+
+function renderShopSchedule() {
+  const panel = document.getElementById('sl-schedule');
+  if (!panel) return;
+
+  let html = `<div class="highlight-box mb-20">
+    <p><strong>The System:</strong> Thursday = main shop (recovery day, no performance pressure). Saturday = quick perishable refresh (before court). Sunday = meal prep (not shopping). This rhythm means you never scramble for food on a training day.</p>
+  </div>`;
+
+  SHOPPING_SCHEDULE.forEach((sched, idx) => {
+    html += `<div class="card mb-20" style="border-left:4px solid ${sched.color}">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+        <span style="font-size:32px">${sched.icon}</span>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+            <span class="tag" style="background:${sched.color}20;color:${sched.color};font-size:11px">${sched.pill}</span>
+            <span class="tag tag-blue">${sched.duration}</span>
+          </div>
+          <div style="font-size:20px;font-weight:900">${sched.day}</div>
+          <div style="font-size:13px;color:var(--gold);font-weight:700">${sched.time}</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;font-style:italic;border-left:2px solid ${sched.color}40;padding-left:10px">${sched.why}</div>
+      <div class="grid-2" style="gap:12px">
+        <div>
+          <div style="font-size:11px;font-weight:800;color:${sched.color};text-transform:uppercase;margin-bottom:8px">Checklist</div>
+          <ul style="list-style:none">
+            ${sched.checklist.map(item => `<li style="display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--text-secondary)">
+              <input type="checkbox" class="ex-check" style="flex-shrink:0;margin-top:2px">
+              <span>${item}</span>
+            </li>`).join('')}
+          </ul>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:800;color:${sched.color};text-transform:uppercase;margin-bottom:8px">Where</div>
+          <div style="font-size:13px;color:var(--text-secondary);padding:12px;background:var(--bg-card-2);border-radius:8px;line-height:1.6">${sched.stores}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  html += `<div class="highlight-box" style="border-color:var(--orange)">
+    <p><strong>Budget Tracking:</strong> Screenshot your receipt after every Thursday shop. After 4 weeks you will know your exact average and can optimize. Most people find the budget drops $15–20/week once they know which items to buy at which stores.</p>
+  </div>`;
+
+  panel.innerHTML = html;
+}
+
+function renderSupplementStack() {
+  const panel = document.getElementById('sl-supplements');
+  if (!panel) return;
+
+  const p1 = SUPPLEMENT_STACK.filter(s => s.priority === 1);
+  const p2 = SUPPLEMENT_STACK.filter(s => s.priority === 2);
+
+  const monthlyCostLow = 97, monthlyCostHigh = 163;
+
+  let html = `<div class="highlight-box mb-20" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <div style="font-size:11px;font-weight:800;color:var(--orange);text-transform:uppercase;margin-bottom:4px">Estimated Monthly Supplement Cost</div>
+      <div style="font-size:26px;font-weight:900;color:var(--orange)">$${monthlyCostLow}–$${monthlyCostHigh} <span style="font-size:13px;color:var(--text-muted);font-weight:500">/month</span></div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:2px">~$25–40/week. Priority 1 items are non-negotiables for your program.</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Best Value Source</div>
+      <div style="font-size:15px;font-weight:800;color:var(--gold)">Amazon Subscribe + Costco</div>
+      <div style="font-size:11px;color:var(--text-muted)">Subscribe & Save = extra 5–15% off</div>
+    </div>
+  </div>
+
+  <div class="section-divider"><h2>Priority 1 — Non-Negotiable Stack</h2></div>
+  <div class="highlight-box mb-16" style="border-color:var(--orange)"><p>These 5 supplements have the highest evidence base for a 42-year-old high-output athlete. Build this stack first before adding anything else.</p></div>
+  <div class="grid-2 mb-20">`;
+
+  p1.forEach(supp => {
+    html += buildSupplementCard(supp);
+  });
+
+  html += `</div>
+  <div class="section-divider"><h2>Priority 2 — Performance Amplifiers</h2></div>
+  <div class="highlight-box mb-16"><p>Add these once Priority 1 is consistently in place. Each has strong evidence for athletic performance and longevity.</p></div>
+  <div class="grid-2 mb-20">`;
+
+  p2.forEach(supp => {
+    html += buildSupplementCard(supp);
+  });
+
+  html += `</div>
+  <div class="highlight-box" style="border-color:var(--green)">
+    <p><strong>Order of operations:</strong> Get food right first (80% of results). Then Priority 1 supplements. Then Priority 2. Don't buy expensive supplements if your protein is inconsistent — the food always wins.</p>
+  </div>`;
+
+  panel.innerHTML = html;
+}
+
+function buildSupplementCard(supp) {
+  return `<div class="card" style="border-left:4px solid ${supp.color}">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <span style="font-size:28px">${supp.icon}</span>
+      <div style="flex:1">
+        <div style="font-size:16px;font-weight:900">${supp.name}</div>
+        <div style="font-size:12px;font-weight:700;color:var(--green)">${supp.cost}</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px">${supp.why}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      <div style="background:var(--bg-card-2);border-radius:6px;padding:8px 10px">
+        <div style="font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:3px">Dose</div>
+        <div style="font-size:12px;color:var(--text-secondary)">${supp.dose}</div>
+      </div>
+      <div style="background:var(--bg-card-2);border-radius:6px;padding:8px 10px">
+        <div style="font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:3px">When</div>
+        <div style="font-size:12px;color:var(--text-secondary)">${supp.when}</div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px"><strong style="color:${supp.color}">Brands:</strong> ${supp.brands}</div>
+    <div style="font-size:11px;color:var(--text-muted)"><strong style="color:var(--text-secondary)">Where:</strong> ${supp.where}</div>
+  </div>`;
 }

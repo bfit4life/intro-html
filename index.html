@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Traction Report | Performance OS</title>
-  <link rel="stylesheet" href="styles.css?v=6">
+  <link rel="stylesheet" href="styles.css?v=7">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     /* Mobile bottom nav — inline to bypass cache */
@@ -43,6 +43,7 @@
     <button class="nav-item" data-section="nutrition"><span class="nav-icon">🥗</span><span>Nutrition & Meals</span></button>
     <button class="nav-item" data-section="sleep"><span class="nav-icon">🌙</span><span>Sleep Protocol</span></button>
     <button class="nav-item" data-section="recovery"><span class="nav-icon">🔄</span><span>Recovery System</span></button>
+    <button class="nav-item" data-section="shopping"><span class="nav-icon">🛒</span><span>Shopping List</span></button>
     <div class="nav-group-label">Brand</div>
     <button class="nav-item" data-section="content"><span class="nav-icon">🎬</span><span>Content Studio</span></button>
     <button class="nav-item" data-section="calendar"><span class="nav-icon">📆</span><span>Calendar Export</span></button>
@@ -866,6 +867,25 @@
   </div>
 </section>
 
+<!-- ──────────────────── SHOPPING LIST ───────────────────── -->
+<section id="section-shopping" class="section">
+  <div class="page-header">
+    <div class="badge">🛒 Affordable · Macro-Complete · Performance Fuel</div>
+    <h1>Shopping <span>List</span></h1>
+    <p>Weekly grocery guide — organized by category, store, and prep schedule. ~$100–160/week all-in.</p>
+  </div>
+  <div class="js-tabs mb-0">
+    <button class="js-tab active" onclick="switchShoppingListTab('list',this)">🛒 Weekly List</button>
+    <button class="js-tab" onclick="switchShoppingListTab('stores',this)">🏪 Store Guide</button>
+    <button class="js-tab" onclick="switchShoppingListTab('schedule',this)">📅 Schedule</button>
+    <button class="js-tab" onclick="switchShoppingListTab('supplements',this)">💊 Supplements</button>
+  </div>
+  <div id="sl-list" class="js-panel"></div>
+  <div id="sl-stores" class="js-panel" style="display:none"></div>
+  <div id="sl-schedule" class="js-panel" style="display:none"></div>
+  <div id="sl-supplements" class="js-panel" style="display:none"></div>
+</section>
+
 <!-- ──────────────────── CONTENT STUDIO ──────────────────── -->
 <section id="section-content" class="section">
   <div class="page-header">
@@ -1171,7 +1191,7 @@
 
 </div>
 
-<script src="app.js?v=6"></script>
+<script src="app.js?v=7"></script>
 
 <!-- ══ MOBILE BOTTOM NAV ════════════════════════════════ -->
 <nav class="mobile-bottom-nav" id="mobileBottomNav">
