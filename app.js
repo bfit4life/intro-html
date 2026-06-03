@@ -914,6 +914,17 @@ function saveWeeklyAudit() {
   localStorage.setItem('trAuditLog', JSON.stringify(auditLog));
   alert(`Audit saved for ${entry.date}. Week ${entry.week || '?'} logged.`);
   if (currentDayIndex === 6) showDayDetail(6);
+  // Auto-export to Notion VPP Performance Tracking
+  const _ap = { 'Entry': { title: [{ text: { content: 'Audit — ' + entry.date } }] }, 'Entry Date': { date: { start: entry.date } } };
+  if (entry.energy)    _ap['Energy']       = { number: parseInt(entry.energy) };
+  if (entry.soreness)  _ap['Soreness']     = { number: parseInt(entry.soreness) };
+  const jumpQ = entry.jumpQ || entry.explosive;
+  if (jumpQ)           _ap['Jump Quality'] = { number: parseInt(jumpQ) };
+  if (entry.sleep)     _ap['Sleep Hours']  = { number: parseFloat(entry.sleep) };
+  if (entry.sleepQ)    _ap['Sleep Quality']= { number: parseInt(entry.sleepQ) };
+  if (entry.stress)    _ap['Stress']       = { number: parseInt(entry.stress) };
+  if (entry.week)      _ap['VPP Week']     = { number: parseInt(entry.week) };
+  _autoNotion(NOTION_DB_ID, _ap);
 }
 
 function renderRecoveryTiers() {
@@ -1066,6 +1077,14 @@ function logDunkSession() {
   updateKPIs();
   ['logWeek','logReach','logMax','logVJ','logNotes'].forEach(id => { document.getElementById(id).value = ''; });
   document.getElementById('logDunk').value = 'none';
+  // Auto-export to Notion VPP Performance Tracking
+  const _np = { 'Entry': { title: [{ text: { content: 'Jump Log — ' + entry.date } }] }, 'Entry Date': { date: { start: entry.date } } };
+  if (entry.standing) _np['Standing Vertical'] = { number: parseFloat(entry.standing) };
+  if (entry.approach) _np['Approach Vertical'] = { number: parseFloat(entry.approach) };
+  if (entry.touch)    _np['Highest Touch']      = { number: parseFloat(entry.touch) };
+  if (entry.rim)      _np['Rim Height']         = { number: parseFloat(entry.rim) };
+  if (entry.week)     _np['VPP Week']           = { number: parseInt(entry.week) };
+  _autoNotion(NOTION_DB_ID, _np);
 }
 
 function renderDunkLog() {
@@ -3588,6 +3607,19 @@ async function sendToNotion() {
 const NOTION_SESSION_DB_ID  = '3fe389dd-0d73-4f73-a0be-f4a117d51411';
 const NOTION_RECOVERY_DB_ID = '79cd4de2-b3e5-4271-9693-bd5496861142';
 const NOTION_NUTRITION_DB_ID = 'a19726f3-657b-464b-99fd-eb0862688591';
+
+// Silent background Notion export — fires and forgets, no UI feedback
+async function _autoNotion(dbId, props) {
+  const token = localStorage.getItem('trNotionToken');
+  if (!token) return;
+  try {
+    await fetch('https://api.notion.com/v1/pages', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Notion-Version': '2022-06-28' },
+      body: JSON.stringify({ parent: { database_id: dbId }, properties: props }),
+    });
+  } catch (_) {}
+}
 
 const SESSION_DAY_NAME_MAP = ['FORCE DAY','ATHLETIC MOVEMENT','POWER DAY','RESTORATION','MAX JUMP DAY','ATHLETIC MOVEMENT','RESTORATION'];
 const SESSION_CATEGORY_MAP = [
