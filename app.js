@@ -321,24 +321,281 @@ function buildWeekGrid() {
   });
 }
 
+// ── Full Day Integration Data ─────────────────────────────────────────────────
+
+const MORNING_ACTIVATION_TIMES = [
+  { time: '6:30 AM', action: 'Wake — no snooze. 16 oz water + electrolytes' },
+  { time: '6:35 AM', action: '5–10 min morning sunlight outside' },
+  { time: '6:45 AM', action: '10 min mobility flow (hips, ankles, thoracic)' },
+  { time: '6:55 AM', action: 'Pre-training fuel — see nutrition section below' },
+  { time: '7:00 AM', action: 'Mental prep — review today\'s training goals' },
+];
+const MORNING_RECOVERY_TIMES = [
+  { time: '7:00 AM', action: 'Wake — no snooze. 16 oz water' },
+  { time: '7:10 AM', action: '10 min morning sun walk (barefoot if possible)' },
+  { time: '7:20 AM', action: 'Full-body mobility flow — 20 min, zero intensity' },
+  { time: '7:45 AM', action: 'Foot massage: lacrosse ball, 3 min each foot' },
+  { time: '8:00 AM', action: 'Relaxed morning meal — see nutrition below' },
+];
+const SLEEP_PROTOCOL_TIMES = [
+  { time: '9:00 PM', action: 'Wind-down begins — dim all lights' },
+  { time: '9:15 PM', action: 'Collagen + tart cherry juice (tendon synthesis window)' },
+  { time: '9:30 PM', action: 'SCREENS OFF — no phone, no TV, no exceptions' },
+  { time: '9:45 PM', action: 'Magnesium glycinate 400mg + hip/calf stretching' },
+  { time: '10:00 PM', action: 'Read physical book — downregulate nervous system' },
+  { time: '10:15 PM', action: 'Lights out — 8 hrs 15 min to 6:30 AM wake' },
+];
+const DAILY_RECOVERY_STACK = [
+  'Tibialis raises 3×20 — every single day, no exceptions',
+  'Soleus raises 3×15 — bent knee, 2 sec hold at top',
+  'Foot strength: towel scrunches 2×30 sec each foot',
+  'Foam roll: calves, quads, IT band — 60 sec each zone',
+  'Hip flexor stretch — 60 sec each side',
+  'Patellar tendon massage — 2 min each knee',
+];
+
+const DAY_META = [
+  { // MON — HPT 1
+    nutritionType: 'training', trainWindow: '7:30 AM – 9:00 AM', shootingDay: false, dunkDay: false,
+    jsFocus: { title: 'JUMP SCIENCE — Reactive Stiffness + Penultimate Step', color: 'var(--orange)',
+      notes: [
+        { icon: '⚡', label: 'Reactive Stiffness', text: 'Pogo jumps: stiff ankles, forefoot only. Each week target shorter contact time. Week 1–4: controlled. Week 5–8: fast, aim <0.3 sec.' },
+        { icon: '👟', label: 'Penultimate Step', text: 'On approach jumps: consciously extend the second-to-last step 10–15% longer. Feel your hips drop before the jump foot plants.' },
+        { icon: '💪', label: 'Arm Load', text: 'Arms must load BACK behind your hips on the penultimate step, then drive explosively UP at takeoff — not forward.' },
+      ]}
+  },
+  { // TUE — Skill 1
+    nutritionType: 'basketball', trainWindow: '7:30 AM – 8:45 AM', shootingDay: true, dunkDay: false,
+    shootingSession: { title: 'SHOOTING & FINISHING SESSION', color: 'var(--blue)',
+      blocks: [
+        { time: '10 min', name: 'Form Shooting — Foundation', icon: '📐', desc: '5 feet from rim: 10 makes (BEEF mechanics only). Free throw line: 10 makes. Right elbow: 7 makes. Left elbow: 7 makes. Elbow under ball, wrist snaps to full goose-neck on every rep.' },
+        { time: '15 min', name: 'Spot Shooting — 5-Spot Foundation', icon: '📍', desc: 'FT line (10 makes) → Right elbow (7 makes) → Left elbow (7 makes) → Right wing 3-pt (5 makes) → Left wing 3-pt (5 makes). Miss 3 in a row? Move 2 feet closer, rebuild confidence, come back.' },
+        { time: '15 min', name: 'Finishing Tier 1 — Essential', icon: '🔥', desc: 'Power layup: 10× each side at full speed — jump THROUGH contact, not away. Finger roll: 3×10 each hand. Reverse layup: 3×8 each side — commit to going under the basket, use the backboard.' },
+        { time: '10 min', name: 'Competitive: 21', icon: '🏆', desc: 'Pick 7 spots, 3 shots per spot = 21 total. Target: 14+/21. Record your score every session. Hit 17+? Add 2 spots from 3-point range next session.' },
+      ]}
+  },
+  { // WED — HPT 2
+    nutritionType: 'training', trainWindow: '7:30 AM – 9:00 AM', shootingDay: false, dunkDay: false,
+    jsFocus: { title: 'JUMP SCIENCE — Arm Swing + Reactive Bounds', color: 'var(--gold)',
+      notes: [
+        { icon: '💪', label: 'Arm Swing Activation', text: 'Before session: Wall Arm Swing 3×20. Arms pendulum from hips to overhead. Feel the momentum carry them up — do this BEFORE any approach jumps.' },
+        { icon: '⚡', label: 'Reactive Bounds', text: 'Lateral reactive bounds: land and explode immediately, <0.3 sec contact. Arms should swing ACROSS your body and UP on each bound — they add power on laterals too.' },
+        { icon: '🎥', label: 'Film Tip', text: 'Film 3 approach jumps from the side. Watch: are your arms still traveling UP when your feet leave the ground? If peaked before takeoff — leaving 1–2 inches on the floor.' },
+      ]}
+  },
+  { // THU — Recovery
+    nutritionType: 'recovery', trainWindow: '7:00 AM – 8:30 AM', shootingDay: false, dunkDay: false, jsFocus: null
+  },
+  { // FRI — HPT 3 + Dunk
+    nutritionType: 'training', trainWindow: '7:30 AM – 9:30 AM', shootingDay: false, dunkDay: true,
+    jsFocus: { title: 'JUMP SCIENCE — DUNK SESSION (Penultimate + Ground Contact)', color: 'var(--orange)',
+      notes: [
+        { icon: '👟', label: 'Penultimate Step — Max Effort', text: 'Every dunk attempt: LONG penultimate, hip drops 4–6 inches, short explosive jump step under your hips. Film from the SIDE to verify — not the front.' },
+        { icon: '🦶', label: 'Ground Contact Assessment', text: 'Film at 60fps. Foot contact to takeoff — count frames, divide by 60 = seconds. Target: <0.20 sec on jump foot. Log in Ground Contact tracker after.' },
+        { icon: '💪', label: 'Arm Sync Check', text: 'At the moment feet leave the ground: arms must still be traveling UPWARD, not yet peaked. If peaked before takeoff, you are leaving 1–2 inches. Film confirms this.' },
+      ]}
+  },
+  { // SAT — Skill 2
+    nutritionType: 'basketball', trainWindow: '7:30 AM – 8:45 AM', shootingDay: true, dunkDay: false,
+    shootingSession: { title: 'SHOOTING & FINISHING SESSION', color: 'var(--blue)',
+      blocks: [
+        { time: '12 min', name: 'Corner 3 Machine', icon: '📍', desc: 'Right corner 15 attempts → Left corner 15 → Right corner off 1-dribble 10 → Left corner off 1-dribble 10. Feet set BEFORE the catch — your stance beats the ball.' },
+        { time: '15 min', name: 'Off-Dribble: Elbow Pull-Ups + Step-Back', icon: '🏀', desc: 'Right elbow pull-up 10× (1-2 step footwork) → Left elbow pull-up 10× → Right wing step-back 8× (attack hard, step straight back) → Left wing step-back 8×. Attack must be real or step-back creates no space.' },
+        { time: '10 min', name: 'Finishing Tier 2 — Game Changers', icon: '🔥', desc: 'Euro step 4×8 each direction (step around a cone at the charge circle) → Running floater 3×10 each side (must go over a raised barrier — trash can, cone) → Contact layup 3×10 with partner resistance on your shoulder.' },
+        { time: '10 min', name: 'Competitive: Beat the Pro', icon: '🏆', desc: 'Pro scores 7/10 automatically. You shoot 5 spots × 2 shots = 10. Must match or beat 7. Track W/L across sessions. Win 3 consecutive rounds → raise pro to 8/10.' },
+      ]}
+  },
+  { // SUN — HPT 4
+    nutritionType: 'training', trainWindow: '7:30 AM – 9:00 AM', shootingDay: false, dunkDay: false,
+    jsFocus: { title: 'JUMP SCIENCE — Reactive Maintenance + Arm Sync Test', color: 'var(--green)',
+      notes: [
+        { icon: '⚡', label: 'Reactive Activation', text: 'Fast pogos 2×10 BEFORE every plyometric set — prime the elastic system. "Hot ground" from the very first rep. Do not skip this primer.' },
+        { icon: '💪', label: 'Arm Sync Test', text: 'Last 5 minutes: 3 approach jumps with minimal arm swing, then 3 with full arm swing. Feel and note the height difference. This should be 1–3 inches.' },
+        { icon: '📏', label: 'Weekly Vertical Check', text: 'Mark the wall. Jump 3× and record your best. Compare to last week. This is your weekly data point — feed it into the Dunk Lab.' },
+      ]}
+  },
+];
+
 function showDayDetail(i) {
   const day = WEEK[i];
+  const meta = DAY_META[i];
+  const plan = WEEKLY_PLAN[i];
+  const meals = MEALS[meta.nutritionType];
   const box = document.getElementById('dayDetail');
+  const isRecovery = day.type === 'recovery';
+  const isSkill = day.type === 'skill';
   const typeColor = day.type === 'hpt' ? 'var(--orange)' : day.type === 'skill' ? 'var(--blue)' : 'var(--green)';
-  let html = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
-    <h2 style="font-size:20px;font-weight:800">${day.name} — ${day.focus}</h2>
+  const mealColor = { training: 'var(--orange)', basketball: 'var(--blue)', recovery: 'var(--green)' }[meta.nutritionType];
+  const morningTimes = isRecovery ? MORNING_RECOVERY_TIMES : MORNING_ACTIVATION_TIMES;
+
+  let html = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+    <div>
+      <span class="tag" style="background:${typeColor}20;color:${typeColor};font-size:12px;margin-bottom:6px;display:inline-block">${day.pill}</span>
+      <h2 style="font-size:22px;font-weight:900">${day.name} — ${day.focus}</h2>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:.05em">Full daily plan · Training · Nutrition · Content · Recovery · Sleep</div>
+    </div>
   </div>`;
+
+  // ── MORNING ───────────────────────────────────────────
+  html += buildDayBlock('☀️ MORNING ACTIVATION', 'var(--gold)', `
+    <div class="day-timeline">
+      ${morningTimes.map(t => `<div class="day-timeline-item">
+        <div class="day-timeline-time">${t.time}</div>
+        <div class="day-timeline-text">${t.action}</div>
+      </div>`).join('')}
+    </div>`);
+
+  // ── TRAINING ──────────────────────────────────────────
+  const trainLabel = isRecovery ? 'ACTIVE RECOVERY SESSION' : isSkill ? 'BASKETBALL SKILL SESSION' : 'HIGH PERFORMANCE TRAINING';
+  let trainHtml = '';
   day.sessions.forEach(s => {
-    html += `<div class="session-block"><div class="session-block-header">
-      <div class="session-num" style="background:${typeColor}">${s.num}</div>
-      <h4>${s.title}</h4><span class="session-duration">${s.dur}</span>
-    </div><div class="session-block-body"><ul class="exercise-list">`;
-    s.items.forEach(item => {
-      html += `<li><input type="checkbox" class="ex-check"><div><div class="ex-name">${item.name}</div><div class="ex-detail">${item.detail}</div></div></li>`;
-    });
-    html += `</ul></div></div>`;
+    trainHtml += `<div class="session-block">
+      <div class="session-block-header">
+        <div class="session-num" style="background:${typeColor}20;color:${typeColor}">${s.num}</div>
+        <h4>${s.title}</h4><span class="session-duration">${s.dur}</span>
+      </div>
+      <div class="session-block-body"><ul class="exercise-list">
+        ${s.items.map(item => `<li><input type="checkbox" class="ex-check"><div>
+          <div class="ex-name">${item.name}</div>
+          <div class="ex-detail">${item.detail}</div>
+        </div></li>`).join('')}
+      </ul></div>
+    </div>`;
   });
+  html += buildDayBlock(`⚡ ${trainLabel} · ${meta.trainWindow}`, typeColor, trainHtml);
+
+  // ── JUMP SCIENCE FOCUS ────────────────────────────────
+  if (meta.jsFocus) {
+    const jf = meta.jsFocus;
+    html += buildDayBlock(`🔬 ${jf.title}`, jf.color,
+      `<div class="grid-3" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+        ${jf.notes.map(n => `<div class="card" style="border-color:${jf.color}30">
+          <div style="font-size:22px;margin-bottom:6px">${n.icon}</div>
+          <div style="font-size:12px;font-weight:800;margin-bottom:5px">${n.label}</div>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.6">${n.text}</div>
+        </div>`).join('')}
+      </div>`);
+  }
+
+  // ── SHOOTING SESSION (skill days) ─────────────────────
+  if (meta.shootingDay && meta.shootingSession) {
+    const ss = meta.shootingSession;
+    let ssHtml = '<div class="grid-2">';
+    ss.blocks.forEach(b => {
+      ssHtml += `<div class="session-block">
+        <div class="session-block-header">
+          <div class="session-num" style="background:rgba(68,136,255,0.15);color:var(--blue);font-size:16px">${b.icon}</div>
+          <h4>${b.name}</h4><span class="session-duration">${b.time}</span>
+        </div>
+        <div class="session-block-body">
+          <div style="font-size:13px;color:var(--text-secondary);line-height:1.6">${b.desc}</div>
+        </div>
+      </div>`;
+    });
+    ssHtml += '</div>';
+    html += buildDayBlock(`🎯 ${ss.title}`, 'var(--blue)', ssHtml);
+  }
+
+  // ── DUNK LAB (Friday) ─────────────────────────────────
+  if (meta.dunkDay) {
+    html += buildDayBlock('🏀 DUNK LAB — LOG THIS SESSION', 'var(--orange)',
+      `<div class="grid-2">
+        <div class="card" style="border-color:var(--orange)">
+          <div style="font-size:13px;font-weight:700;margin-bottom:10px">Log after every dunk session:</div>
+          <ul style="list-style:none;font-size:13px;color:var(--text-secondary);line-height:2.1">
+            <li><input type="checkbox" class="ex-check"> Standing reach (inches)</li>
+            <li><input type="checkbox" class="ex-check"> Max jump reach (inches)</li>
+            <li><input type="checkbox" class="ex-check"> Vertical jump (max reach − standing reach)</li>
+            <li><input type="checkbox" class="ex-check"> Best dunk stage achieved</li>
+            <li><input type="checkbox" class="ex-check"> Notes on approach feel + shoe worn</li>
+          </ul>
+          <button class="btn btn-primary mt-12" style="font-size:12px" onclick="document.querySelector('[data-section=dunk]').click()">→ Open Dunk Lab</button>
+        </div>
+        <div class="card" style="border-color:var(--green)">
+          <div style="font-size:13px;font-weight:700;margin-bottom:10px">Also log in Jump Science:</div>
+          <ul style="list-style:none;font-size:13px;color:var(--text-secondary);line-height:2.1">
+            <li><input type="checkbox" class="ex-check"> Ground contact time (film at 60fps)</li>
+            <li><input type="checkbox" class="ex-check"> Penultimate step quality (1–5)</li>
+            <li><input type="checkbox" class="ex-check"> Arm swing sync (1–5)</li>
+            <li><input type="checkbox" class="ex-check"> Ankle stiffness felt (1–5)</li>
+            <li><input type="checkbox" class="ex-check"> Notes on what improved</li>
+          </ul>
+          <button class="btn btn-secondary mt-12" style="font-size:12px" onclick="document.querySelector('[data-section=jumpscience]').click()">→ Open Jump Science Lab</button>
+        </div>
+      </div>`);
+  }
+
+  // ── NUTRITION ─────────────────────────────────────────
+  const mealTypeLabel = { training: 'TRAINING DAY', basketball: 'BASKETBALL DAY', recovery: 'RECOVERY DAY' }[meta.nutritionType];
+  html += buildDayBlock(
+    `🥗 NUTRITION — ${mealTypeLabel} · ${meals.kcal} kcal / P ${meals.protein}g / C ${meals.carbs}g / F ${meals.fat}g`,
+    mealColor,
+    `<div class="day-timeline">
+      ${meals.meals.map(m => `<div class="day-timeline-item">
+        <div class="day-timeline-time">${m.time}</div>
+        <div>
+          <div style="font-weight:700;font-size:13px;margin-bottom:2px">${m.name} <span style="color:${mealColor};font-size:11px;margin-left:4px">${m.kcal} kcal</span></div>
+          <div style="font-size:12px;color:var(--text-secondary);margin-bottom:5px;line-height:1.5">${m.foods}</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">
+            <span class="macro-pill p">P ${m.p}g</span>
+            <span class="macro-pill c">C ${m.c}g</span>
+            <span class="macro-pill f">F ${m.f}g</span>
+          </div>
+        </div>
+      </div>`).join('')}
+    </div>`);
+
+  // ── CONTENT ───────────────────────────────────────────
+  if (plan) {
+    html += buildDayBlock(
+      `🎬 CONTENT — Post at ${plan.postTime} · ${plan.platforms.join(' + ')}`,
+      'var(--purple)',
+      `<div class="card" style="border-color:rgba(168,85,247,0.3)">
+        <div style="font-size:14px;font-weight:800;margin-bottom:8px">${plan.session} · <span style="color:var(--orange)">${plan.type}</span></div>
+        <div class="brief-hook" style="margin-bottom:14px;font-size:13px">"${plan.hook}"</div>
+        <div style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px">5-Clip System — What to Film</div>
+        <ul style="list-style:none">
+          ${plan.filmList.map((f, idx) => `<li style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text-secondary)">
+            <span style="color:var(--purple);font-weight:900;flex-shrink:0;min-width:22px">0${idx+1}</span>${f}
+          </li>`).join('')}
+        </ul>
+        <div style="margin-top:12px;padding:10px 12px;background:rgba(168,85,247,0.06);border-radius:8px;font-size:12px;color:var(--text-muted)">
+          <strong style="color:var(--purple)">Caption:</strong> ${plan.caption.replace(/\n/g,'<br>')}
+        </div>
+      </div>`);
+  }
+
+  // ── DAILY RECOVERY STACK ──────────────────────────────
+  let recoveryExtra = isRecovery
+    ? `<div class="highlight-box mt-12" style="padding:10px 14px"><p style="font-size:12px"><strong>Recovery Day Add-ons:</strong> Zone 2 walk 25–35 min (talking pace) · Foam roll full body 90 sec each zone · Contrast shower: 3 min hot / 1 min cold × 3 · Light yoga 15 min · Epsom salt bath (weekly)</p></div>` : '';
+  html += buildDayBlock('🔄 DAILY RECOVERY STACK — Non-Negotiable Every Day',
+    'var(--green)',
+    `<div class="card">
+      <ul style="list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px">
+        ${DAILY_RECOVERY_STACK.map(r => `<li style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--text-secondary)">
+          <input type="checkbox" class="ex-check" style="margin-top:3px;flex-shrink:0"><span>${r}</span>
+        </li>`).join('')}
+      </ul>
+      ${recoveryExtra}
+    </div>`);
+
+  // ── SLEEP PROTOCOL ────────────────────────────────────
+  html += buildDayBlock('🌙 SLEEP PROTOCOL — 8 hrs 15 min target', 'var(--purple)',
+    `<div class="day-timeline">
+      ${SLEEP_PROTOCOL_TIMES.map(t => `<div class="day-timeline-item">
+        <div class="day-timeline-time">${t.time}</div>
+        <div class="day-timeline-text">${t.action}</div>
+      </div>`).join('')}
+    </div>`);
+
   box.innerHTML = html;
+}
+
+function buildDayBlock(title, color, innerHtml) {
+  return `<div class="day-block-section">
+    <div class="day-block-label" style="color:${color};border-left-color:${color}">${title}</div>
+    ${innerHtml}
+  </div>`;
 }
 
 // ── Meal Plan Data ────────────────────────────────────────────────────────────

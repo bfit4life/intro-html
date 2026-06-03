@@ -952,6 +952,46 @@ tbody td:first-child { color: var(--text-primary); font-weight: 600; }
   .js-tab { font-size: 11px; padding: 8px 12px; }
 }
 
+/* ── Full Day View ──────────────────────────────────────── */
+.day-block-section {
+  margin-bottom: 28px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+.day-block-section:last-child { border-bottom: none; }
+.day-block-label {
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  margin-bottom: 16px;
+  padding: 7px 0 7px 12px;
+  border-left: 3px solid;
+  line-height: 1.4;
+}
+.day-timeline { display: flex; flex-direction: column; }
+.day-timeline-item {
+  display: flex;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: flex-start;
+}
+.day-timeline-item:last-child { border-bottom: none; }
+.day-timeline-time {
+  min-width: 82px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+.day-timeline-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
 /* ── Utility ────────────────────────────────────────────── */
 .mt-20 { margin-top: 20px; }
 .ml-8 { margin-left: 8px; }
