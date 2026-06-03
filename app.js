@@ -338,6 +338,7 @@ const MORNING_RECOVERY_TIMES = [
   { time: '8:00 AM', action: 'Relaxed morning meal — see nutrition below' },
 ];
 const SLEEP_PROTOCOL_TIMES = [
+  { time: '8:45 PM', action: 'Feet Up Wall — 10 min. Lay on floor, legs straight up wall, nasal breathing only. Venous return + reduces lower leg swelling + calms nervous system.' },
   { time: '9:00 PM', action: 'Wind-down begins — dim all lights' },
   { time: '9:15 PM', action: 'Collagen + tart cherry juice (tendon synthesis window)' },
   { time: '9:30 PM', action: 'SCREENS OFF — no phone, no TV, no exceptions' },
@@ -352,7 +353,95 @@ const DAILY_RECOVERY_STACK = [
   'Foam roll: calves, quads, IT band — 60 sec each zone',
   'Hip flexor stretch — 60 sec each side',
   'Patellar tendon massage — 2 min each knee',
+  'Evening Mobility Reset 10 min — ankles, hips, thoracic (maintain jump positions, not flexibility)',
+  'Self-massage: lacrosse/tennis ball — glutes, hip flexors, feet, calves 5–10 min',
+  'Post-meal walks: 10 min after lunch AND dinner every single day',
 ];
+
+const RECOVERY_TIER1 = [
+  {
+    name: 'Feet Up Wall',
+    icon: '🦵',
+    time: '8:45 PM — Every Evening',
+    duration: '10 min',
+    color: 'var(--blue)',
+    protocol: 'Lay on floor. Legs straight up wall. Nasal breathing only. 5–10 minutes.',
+    benefits: ['Venous return — blood out of lower legs', 'Reduces swelling after court sessions', 'Calms nervous system before sleep', 'Zero cost, massive ROI'],
+    note: 'Do this before your 9 PM wind-down. Non-negotiable after Friday Dunk Day and Tuesday/Saturday court sessions.',
+  },
+  {
+    name: 'Contrast Shower',
+    icon: '🚿',
+    time: 'Post-Training — especially Fri + Sun',
+    duration: '12 min',
+    color: 'var(--orange)',
+    protocol: '3 min hot → 1 min cold. Repeat ×3. End cold.',
+    benefits: ['Soreness management', 'Reduced inflammation', 'Nervous system reset', 'Improved blood flow to tendons'],
+    note: 'Highest priority after Friday Dunk Day and Sunday HPT4. Also effective after Tuesday/Saturday court sessions.',
+  },
+  {
+    name: '10-Min Walk After Every Meal',
+    icon: '🚶',
+    time: 'After Lunch + After Dinner',
+    duration: '10 min ×2/day',
+    color: 'var(--green)',
+    protocol: 'Easy walk immediately after eating. Both lunch and dinner. No exceptions.',
+    benefits: ['Blood sugar management', 'Improved digestion', 'Extra daily movement (2,000+ steps)', 'Zone 2 base building'],
+    note: 'Most underrated recovery habit in the entire program. You are already doing it after dinner — add lunch too.',
+  },
+];
+
+const RECOVERY_TIER2 = [
+  {
+    name: 'Evening Mobility Reset',
+    icon: '🧘',
+    time: 'Daily — any time after 6 PM',
+    duration: '10 min',
+    color: 'var(--gold)',
+    protocol: 'Focus on ankles, hips, and thoracic spine. NOT stretching for flexibility — maintaining the positions required for jumping.',
+    benefits: ['Preserves jump mechanics', 'Prevents stiffness buildup', 'Cumulative range of motion over 16 weeks'],
+    note: 'Ankle dorsiflexion and hip mobility directly limit your jump height. 10 min daily here prevents lost inches at the rim.',
+  },
+  {
+    name: 'Foot Strength Circuit',
+    icon: '🦶',
+    time: '3×/week — Mon, Wed, Fri',
+    duration: '5 min (2 rounds)',
+    color: 'var(--orange)',
+    protocol: '2 rounds: towel scrunches → toe spreading → single-leg balance → barefoot calf raises',
+    benefits: ['Speed jumper suspension system', 'Reduces stress fracture risk', 'Improves ground contact mechanics', 'Supports ankle stiffness for reactive jumping'],
+    note: 'You are a speed jumper. Your feet ARE your elastic return system. 5 minutes 3×/week = direct jump height ROI.',
+  },
+  {
+    name: 'Self-Massage (No Massage Gun)',
+    icon: '🎾',
+    time: 'Post-training or evening',
+    duration: '5–10 min',
+    color: 'var(--purple)',
+    protocol: 'Lacrosse ball or tennis ball. Targets: glutes, hip flexors, feet (plantar fascia), calves.',
+    benefits: ['Trigger point release', 'Reduces DOMS by 20–30%', 'Hip flexor health = better penultimate step', 'Costs nothing'],
+    note: 'A lacrosse ball on your hip flexors for 2 min each side will do more for your penultimate step mechanics than any drill.',
+  },
+];
+
+const FOOT_STRENGTH_CIRCUIT = [
+  { name: 'Towel Scrunches', detail: '2×30 sec each foot — toes grip and pull towel toward heel' },
+  { name: 'Toe Spreading', detail: '2×10 — spread all 5 toes wide, hold 3 sec each' },
+  { name: 'Single-Leg Balance', detail: '2×30 sec each foot — barefoot, eyes open then closed' },
+  { name: 'Barefoot Calf Raises', detail: '2×15 slow — feel every part of the foot through the motion' },
+];
+
+const WEEKLY_AUDIT_QUESTIONS = [
+  { id: 'ankles', label: 'Ankle health', type: 'scale' },
+  { id: 'knees', label: 'Knee health', type: 'scale' },
+  { id: 'hips', label: 'Hip health', type: 'scale' },
+  { id: 'explosive', label: 'How explosive I felt this week', type: 'scale' },
+  { id: 'recovery', label: 'Recovery quality', type: 'scale' },
+  { id: 'energy', label: 'Energy levels', type: 'scale' },
+];
+
+let auditLog = JSON.parse(localStorage.getItem('trAuditLog') || '[]');
+let currentDayIndex = -1;
 
 const DAY_META = [
   { // MON — HPT 1
@@ -418,6 +507,7 @@ const DAY_META = [
 ];
 
 function showDayDetail(i) {
+  currentDayIndex = i;
   const day = WEEK[i];
   const meta = DAY_META[i];
   const plan = WEEKLY_PLAN[i];
@@ -429,11 +519,15 @@ function showDayDetail(i) {
   const mealColor = { training: 'var(--orange)', basketball: 'var(--blue)', recovery: 'var(--green)' }[meta.nutritionType];
   const morningTimes = isRecovery ? MORNING_RECOVERY_TIMES : MORNING_ACTIVATION_TIMES;
 
-  let html = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+  let html = `<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap">
     <div>
       <span class="tag" style="background:${typeColor}20;color:${typeColor};font-size:12px;margin-bottom:6px;display:inline-block">${day.pill}</span>
       <h2 style="font-size:22px;font-weight:900">${day.name} — ${day.focus}</h2>
       <div style="font-size:11px;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:.05em">Full daily plan · Training · Nutrition · Content · Recovery · Sleep</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0">
+      <button class="btn btn-secondary" style="font-size:11px;padding:8px 12px" onclick="exportDayWorkout(${i})">📥 Export Day</button>
+      <button class="btn btn-secondary" style="font-size:11px;padding:8px 12px" onclick="exportWeekWorkout()">📥 Export Week</button>
     </div>
   </div>`;
 
@@ -589,6 +683,87 @@ function showDayDetail(i) {
       </div>`);
   }
 
+  // ── FOOT STRENGTH CIRCUIT (Mon / Wed / Fri) ──────────
+  if ([0, 2, 4].includes(i)) {
+    html += buildDayBlock('🦶 FOOT STRENGTH CIRCUIT · 3×/week · 5 min', 'var(--gold)',
+      `<div class="card">
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;padding:8px 12px;background:rgba(255,215,0,0.06);border-radius:8px">
+          Speed jumpers: your feet are your suspension system. 2 rounds here = direct jump height ROI. Do this immediately post-session or at any point during the day.
+        </div>
+        <div class="grid-2">
+          ${FOOT_STRENGTH_CIRCUIT.map(ex => `<div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);align-items:flex-start">
+            <input type="checkbox" class="ex-check" style="flex-shrink:0;margin-top:3px">
+            <div>
+              <div style="font-size:13px;font-weight:700">${ex.name}</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${ex.detail}</div>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>`);
+  }
+
+  // ── WEEKLY ATHLETIC AUDIT (Sunday only) ──────────────
+  if (i === 6) {
+    const lastAudit = auditLog[0];
+    html += buildDayBlock('📋 WEEKLY ATHLETIC AUDIT · Sunday Evening · 15 min', 'var(--purple)',
+      `<div class="card" style="border-color:rgba(168,85,247,0.3)">
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px">For someone building toward dunking at 42 and beyond, this weekly audit is almost as important as the workouts. It tells you when to push and when to back off. 15 minutes of honest assessment = weeks of injury-free training.</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px">
+          <div>
+            <div style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Program Week</div>
+            <input type="number" id="audit-week" min="1" max="16" placeholder="1–16" style="width:100%;background:var(--bg-card-2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text-primary);font-size:13px">
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Best Jump This Week (inches)</div>
+            <input type="number" id="audit-jump" placeholder='e.g. 28' style="width:100%;background:var(--bg-card-2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text-primary);font-size:13px">
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:800;color:var(--red);text-transform:uppercase;margin-bottom:4px">Pain over 3/10?</div>
+            <select id="audit-pain" style="width:100%;background:var(--bg-card-2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text-primary);font-size:13px">
+              <option value="no">No — feeling good</option>
+              <option value="yes">Yes — note location below</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:16px">
+          ${WEEKLY_AUDIT_QUESTIONS.map(q => `<div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <div style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase">${q.label}</div>
+              <div style="font-size:14px;font-weight:900;color:var(--purple)" id="audit-${q.id}-val">7</div>
+            </div>
+            <input type="range" id="audit-${q.id}" min="1" max="10" value="7"
+              style="width:100%;accent-color:var(--purple)"
+              oninput="document.getElementById('audit-${q.id}-val').textContent=this.value">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted)"><span>1</span><span>10</span></div>
+          </div>`).join('')}
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Notes — Pain Locations / What Worked / What Didn't</div>
+          <textarea id="audit-notes" rows="3" placeholder="e.g. Left knee felt tight Wed. Best jump felt like 30in. Sleep was off Tue/Wed..." style="width:100%;background:var(--bg-card-2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text-primary);font-size:12px;resize:vertical"></textarea>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <button class="btn btn-primary" onclick="saveWeeklyAudit()">Save Audit</button>
+          <button class="btn btn-secondary" onclick="exportAuditLog()">📥 Export Audit History</button>
+          ${lastAudit ? `<span style="font-size:11px;color:var(--text-muted)">Last saved: ${lastAudit.date}</span>` : ''}
+        </div>
+        ${auditLog.length > 0 ? `<div style="margin-top:16px">
+          <div style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px">Recent Audits</div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Date</th><th>Wk</th><th>Best Jump</th><th>Ankles</th><th>Knees</th><th>Explosive</th><th>Recovery</th><th>Energy</th><th>Pain</th></tr></thead>
+            <tbody>${auditLog.slice(0, 5).map(a => `<tr>
+              <td>${a.date}</td><td>${a.week||'—'}</td>
+              <td style="color:var(--orange);font-weight:800">${a.jump ? a.jump+'"' : '—'}</td>
+              <td>${a.ankles}/10</td><td>${a.knees}/10</td>
+              <td style="color:var(--gold);font-weight:700">${a.explosive}/10</td>
+              <td style="color:var(--green)">${a.recovery}/10</td>
+              <td style="color:var(--blue)">${a.energy}/10</td>
+              <td style="color:${a.pain==='yes'?'var(--red)':'var(--green)'}">${a.pain==='yes'?'⚠️ Yes':'✓ No'}</td>
+            </tr>`).join('')}</tbody>
+          </table></div>
+        </div>` : ''}
+      </div>`);
+  }
+
   // ── DAILY RECOVERY STACK ──────────────────────────────
   let recoveryExtra = isRecovery
     ? `<div class="highlight-box mt-12" style="padding:10px 14px"><p style="font-size:12px"><strong>Recovery Day Add-ons:</strong> Zone 2 walk 25–35 min (talking pace) · Foam roll full body 90 sec each zone · Contrast shower: 3 min hot / 1 min cold × 3 · Light yoga 15 min · Epsom salt bath (weekly)</p></div>` : '';
@@ -620,6 +795,152 @@ function buildDayBlock(title, color, innerHtml) {
     <div class="day-block-label" style="color:${color};border-left-color:${color}">${title}</div>
     ${innerHtml}
   </div>`;
+}
+
+// ── Export Functions ──────────────────────────────────────────────────────────
+function exportDayWorkout(i) {
+  const day = WEEK[i];
+  const meta = DAY_META[i];
+  const meals = MEALS[meta.nutritionType];
+  const data = {
+    exportedAt: new Date().toISOString(),
+    program: 'Traction Report Performance OS',
+    day: day.name,
+    type: day.type,
+    pill: day.pill,
+    focus: day.focus,
+    trainWindow: meta.trainWindow,
+    nutrition: { type: meta.nutritionType, kcal: meals.kcal, protein: meals.protein, carbs: meals.carbs, fat: meals.fat, meals: meals.meals },
+    sessions: day.sessions,
+    jumpScienceFocus: meta.jsFocus || null,
+    shootingDay: meta.shootingDay || false,
+    dunkDay: meta.dunkDay || false,
+    shoppingDay: meta.shoppingDay || false,
+    footStrengthDay: [0, 2, 4].includes(i),
+    recovery: {
+      dailyStack: DAILY_RECOVERY_STACK,
+      tier1: RECOVERY_TIER1,
+      tier2: RECOVERY_TIER2,
+      footStrengthCircuit: [0, 2, 4].includes(i) ? FOOT_STRENGTH_CIRCUIT : null,
+    },
+    sleep: SLEEP_PROTOCOL_TIMES,
+  };
+  dlJSON(data, `workout-${day.name.toLowerCase()}-${new Date().toISOString().split('T')[0]}.json`);
+}
+
+function exportWeekWorkout() {
+  const data = {
+    exportedAt: new Date().toISOString(),
+    program: 'Traction Report Performance OS',
+    athlete: '42-year-old male, 5ft 11in, 168 lbs',
+    week: WEEK.map((day, i) => {
+      const meta = DAY_META[i];
+      const meals = MEALS[meta.nutritionType];
+      return {
+        day: day.name, type: day.type, pill: day.pill, focus: day.focus,
+        trainWindow: meta.trainWindow,
+        nutrition: { type: meta.nutritionType, kcal: meals.kcal, protein: meals.protein, carbs: meals.carbs, fat: meals.fat },
+        sessionCount: day.sessions.length,
+        sessions: day.sessions,
+        jumpScienceFocus: meta.jsFocus || null,
+        shootingDay: meta.shootingDay || false,
+        dunkDay: meta.dunkDay || false,
+        shoppingDay: meta.shoppingDay || false,
+        footStrengthDay: [0, 2, 4].includes(i),
+      };
+    }),
+    recoverySystem: { tier1: RECOVERY_TIER1, tier2: RECOVERY_TIER2, dailyStack: DAILY_RECOVERY_STACK, footStrengthCircuit: FOOT_STRENGTH_CIRCUIT },
+    sleepProtocol: SLEEP_PROTOCOL_TIMES,
+    auditHistory: auditLog,
+  };
+  dlJSON(data, `full-week-workout-${new Date().toISOString().split('T')[0]}.json`);
+}
+
+function exportAuditLog() {
+  if (!auditLog.length) { alert('No audit entries yet. Complete a Sunday audit first.'); return; }
+  dlJSON({ exportedAt: new Date().toISOString(), program: 'Traction Report Performance OS', audits: auditLog }, `audit-log-${new Date().toISOString().split('T')[0]}.json`);
+}
+
+function dlJSON(data, filename) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── Weekly Athletic Audit ─────────────────────────────────────────────────────
+function saveWeeklyAudit() {
+  const entry = {
+    date: new Date().toISOString().split('T')[0],
+    week: document.getElementById('audit-week')?.value || '',
+    jump: document.getElementById('audit-jump')?.value || '',
+    pain: document.getElementById('audit-pain')?.value || 'no',
+    notes: document.getElementById('audit-notes')?.value || '',
+    ankles: document.getElementById('audit-ankles')?.value || 7,
+    knees: document.getElementById('audit-knees')?.value || 7,
+    hips: document.getElementById('audit-hips')?.value || 7,
+    explosive: document.getElementById('audit-explosive')?.value || 7,
+    recovery: document.getElementById('audit-recovery')?.value || 7,
+    energy: document.getElementById('audit-energy')?.value || 7,
+  };
+  auditLog.unshift(entry);
+  localStorage.setItem('trAuditLog', JSON.stringify(auditLog));
+  alert(`Audit saved for ${entry.date}. Week ${entry.week || '?'} logged.`);
+  if (currentDayIndex === 6) showDayDetail(6);
+}
+
+function renderRecoveryTiers() {
+  const el = document.getElementById('recoveryTiersSection');
+  if (!el) return;
+  let html = `<div class="section-divider"><h2>Tier 1 — Highest ROI Recovery Practices</h2></div>
+  <div class="highlight-box mb-16" style="border-color:var(--green)"><p><strong>Priority order for the 42-year-old athlete:</strong> Sleep → Nutrition → Recovery Walks → Foot/Ankle Health → Mobility → Self-Massage. The biggest gains for your vertical and longevity come from these habits being locked in daily.</p></div>
+  <div class="grid-3 mb-24">`;
+
+  RECOVERY_TIER1.forEach(p => {
+    html += `<div class="card" style="border-left:4px solid ${p.color}">
+      <div style="font-size:28px;margin-bottom:8px">${p.icon}</div>
+      <div style="font-size:16px;font-weight:900;margin-bottom:4px">${p.name}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+        <span class="tag" style="background:${p.color}15;color:${p.color};font-size:10px">${p.time}</span>
+        <span class="tag tag-blue" style="font-size:10px">${p.duration}</span>
+      </div>
+      <div style="background:var(--bg-card-2);border-radius:8px;padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:11px;font-weight:800;color:${p.color};text-transform:uppercase;margin-bottom:4px">Protocol</div>
+        <div style="font-size:12px;color:var(--text-secondary)">${p.protocol}</div>
+      </div>
+      <ul style="list-style:none;margin-bottom:10px">
+        ${p.benefits.map(b => `<li style="font-size:12px;color:var(--text-secondary);padding:4px 0;display:flex;gap:6px"><span style="color:${p.color};flex-shrink:0">▸</span>${b}</li>`).join('')}
+      </ul>
+      <div style="font-size:11px;color:var(--text-muted);font-style:italic;border-left:2px solid ${p.color}40;padding-left:8px">${p.note}</div>
+    </div>`;
+  });
+
+  html += `</div>
+  <div class="section-divider"><h2>Tier 2 — Very Good Recovery Practices</h2></div>
+  <div class="grid-3 mb-24">`;
+
+  RECOVERY_TIER2.forEach(p => {
+    html += `<div class="card" style="border-left:4px solid ${p.color}">
+      <div style="font-size:28px;margin-bottom:8px">${p.icon}</div>
+      <div style="font-size:16px;font-weight:900;margin-bottom:4px">${p.name}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+        <span class="tag" style="background:${p.color}15;color:${p.color};font-size:10px">${p.time}</span>
+        <span class="tag tag-blue" style="font-size:10px">${p.duration}</span>
+      </div>
+      <div style="background:var(--bg-card-2);border-radius:8px;padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:11px;font-weight:800;color:${p.color};text-transform:uppercase;margin-bottom:4px">Protocol</div>
+        <div style="font-size:12px;color:var(--text-secondary)">${p.protocol}</div>
+      </div>
+      <ul style="list-style:none;margin-bottom:10px">
+        ${p.benefits.map(b => `<li style="font-size:12px;color:var(--text-secondary);padding:4px 0;display:flex;gap:6px"><span style="color:${p.color};flex-shrink:0">▸</span>${b}</li>`).join('')}
+      </ul>
+      <div style="font-size:11px;color:var(--text-muted);font-style:italic;border-left:2px solid ${p.color}40;padding-left:8px">${p.note}</div>
+    </div>`;
+  });
+
+  html += `</div>`;
+  el.innerHTML = html;
 }
 
 // ── Meal Plan Data ────────────────────────────────────────────────────────────
@@ -932,6 +1253,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderStoreGuide();
   renderShopSchedule();
   renderSupplementStack();
+  renderRecoveryTiers();
   // Show default platform guide
   const defaultPlatBtn = document.querySelector('.platform-tab-btn');
   if (defaultPlatBtn) showPlatform('tiktok', defaultPlatBtn);
