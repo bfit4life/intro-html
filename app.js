@@ -3783,10 +3783,14 @@ function openNutritionLog(dayIdx) {
       _nFieldRO('Protein Target (g)','nl2-pt',String(tgt.protein)) + _nField('Protein Consumed (g)','nl2-protein','number','') +
       _nFieldRO('Carbs Target (g)','nl2-ct',String(tgt.carbs)) + _nField('Carbs Consumed (g)','nl2-carbs','number','') +
       _nFieldRO('Fat Target (g)','nl2-ft',String(tgt.fat)) + _nField('Fat Consumed (g)','nl2-fat','number','') +
-      _nField('Water (oz)','nl2-water','number','100') +
+    '</div>' +
+    '<div style="font-size:11px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Hydration</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
+      _nFieldRO('Hydration Target (oz)','nl2-htgt','128') + _nField('Water Consumed (oz)','nl2-water','number','') +
     '</div>' +
     '<div style="font-size:11px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Completed</div>' +
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">' +
+      _nCheck('Electrolytes Taken','nl2-electrolytes',false) +
       _nCheck('Meal 1 Logged','nl2-m1',true) + _nCheck('Meal 2 Logged','nl2-m2',true) +
       _nCheck('Meal 3 Logged','nl2-m3',true) + _nCheck('Pre-Workout Nutrition','nl2-preworkout',false) +
       _nCheck('Post-Workout Nutrition','nl2-postworkout',true) + _nCheck('Collagen + Tart Cherry','nl2-collagen',true) +
@@ -3822,9 +3826,11 @@ async function sendNutritionLog() {
     'Supplements Taken': { checkbox: !!_getN('nl2-supps','check') },
   };
   if (week) props['Week'] = { number: week };
-  [['Calories Consumed','nl2-cal'],['Protein Consumed (g)','nl2-protein'],['Carbs Consumed (g)','nl2-carbs'],['Fat Consumed (g)','nl2-fat'],['Water (oz)','nl2-water']].forEach(([p,id]) => {
+  [['Calories Consumed','nl2-cal'],['Protein Consumed (g)','nl2-protein'],['Carbs Consumed (g)','nl2-carbs'],['Fat Consumed (g)','nl2-fat'],['Water Consumed (oz)','nl2-water']].forEach(([p,id]) => {
     const v = _getN(id,'number'); if (v !== null) props[p] = { number: v };
   });
+  props['Hydration Target (oz)'] = { number: 128 };
+  props['Electrolytes Taken'] = { checkbox: !!_getN('nl2-electrolytes','check') };
   const notes = _getN('nl2-notes','text'); if (notes) props['Notes'] = { rich_text: [{ text: { content: notes } }] };
   await _pillarPost(NOTION_NUTRITION_DB_ID, props, 'nlSendBtn2', 'nlStatus2');
 }
