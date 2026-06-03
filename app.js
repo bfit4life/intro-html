@@ -516,19 +516,19 @@ function showDayDetail(i) {
   const mealColor = { training: 'var(--orange)', basketball: 'var(--blue)', recovery: 'var(--green)' }[meta.nutritionType];
   const morningTimes = isRecovery ? MORNING_RECOVERY_TIMES : MORNING_ACTIVATION_TIMES;
 
-  let html = `<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap">
-    <div>
+  let html = `<div style="margin-bottom:20px">
+    <div style="margin-bottom:12px">
       <span class="tag" style="background:${typeColor}20;color:${typeColor};font-size:12px;margin-bottom:6px;display:inline-block">${day.pill}</span>
       <h2 style="font-size:22px;font-weight:900">${day.name} — ${day.focus}</h2>
       <div style="font-size:11px;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:.05em">Full daily plan · Training · Nutrition · Content · Recovery · Sleep</div>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0">
-      <button class="btn btn-primary" style="font-size:11px;padding:8px 14px" onclick="openNotionLog(${i})">🚀 Log to Notion</button>
-      <button class="btn btn-secondary" style="font-size:11px;padding:8px 12px" onclick="openSessionLog(${i})">💪 Session</button>
-      <button class="btn btn-secondary" style="font-size:11px;padding:8px 12px" onclick="openRecoveryLog(${i})">💤 Recovery</button>
-      <button class="btn btn-secondary" style="font-size:11px;padding:8px 12px;background:rgba(255,215,0,.12);color:var(--gold)" onclick="openNutritionLog(${i})">🥗 Nutrition</button>
-      <button class="btn btn-secondary" style="font-size:11px;padding:8px 12px" onclick="exportDayWorkout(${i})">📥 Export Day</button>
-      <button class="btn btn-secondary" style="font-size:11px;padding:8px 12px" onclick="exportWeekWorkout()">📥 Export Week</button>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+      <button class="btn btn-primary" style="font-size:11px;padding:8px 6px;white-space:nowrap" onclick="openNotionLog(${i})">🚀 Notion</button>
+      <button class="btn btn-secondary" style="font-size:11px;padding:8px 6px;white-space:nowrap" onclick="openSessionLog(${i})">💪 Session</button>
+      <button class="btn btn-secondary" style="font-size:11px;padding:8px 6px;white-space:nowrap" onclick="openRecoveryLog(${i})">💤 Recovery</button>
+      <button class="btn btn-secondary" style="font-size:11px;padding:8px 6px;white-space:nowrap;background:rgba(255,215,0,.12);color:var(--gold)" onclick="openNutritionLog(${i})">🥗 Nutrition</button>
+      <button class="btn btn-secondary" style="font-size:11px;padding:8px 6px;white-space:nowrap" onclick="exportDayWorkout(${i})">📥 Day</button>
+      <button class="btn btn-secondary" style="font-size:11px;padding:8px 6px;white-space:nowrap" onclick="exportWeekWorkout()">📥 Week</button>
     </div>
   </div>`;
 
