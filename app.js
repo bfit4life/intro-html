@@ -636,6 +636,11 @@ document.addEventListener('DOMContentLoaded', () => {
   renderAnalyticsHistory();
   renderReviewHistory();
   renderWeeklyPlanner();
+  renderShootingForm();
+  renderSpotShooting();
+  renderOffDribble();
+  renderFinishing();
+  renderCompetitiveShooting();
   renderJSDiagnostic();
   renderPenultimate();
   renderReactive();
@@ -1743,6 +1748,441 @@ function renderPowerTraining() {
         </div>
       </div>
     </div>`).join('')}
+  </div>`;
+  panel.innerHTML = html;
+}
+
+// ── Shooting & Finishing Lab ──────────────────────────────────────────────────
+
+const SHOT_FORM = {
+  intro: 'NBA shooting mechanics are not about being a "natural" shooter — they are a repeatable, learnable mechanical system. Every great NBA shooter has the same 7 checkpoints. Your job is to ingrain these checkpoints so deeply they become automatic under fatigue and pressure.',
+  checkpoints: [
+    { num: 1, label: 'Stance & Balance', color: 'var(--orange)',
+      detail: 'Feet shoulder-width apart. Shooting-foot toe slightly forward (staggered stance). Weight on the balls of your feet — never your heels. Knees slightly bent and springy. You should be able to catch a pass and shoot in one motion without resetting your feet.',
+      drill: 'Form Shooting: 5 feet from rim. Shoot 20 makes with complete attention to foot position only. Don\'t even look at your hands yet.',
+      nbaRef: 'Steph Curry\'s feet are always squared before the catch. He adjusts his stance on the catch, not after.' },
+    { num: 2, label: 'Ball Position (BEEF)', color: 'var(--blue)',
+      detail: 'B — Balance (set above). E — Eyes on target (pick a specific spot on the rim, not the whole basket). E — Elbow under the ball (shooting elbow bent at 90°, tucked in, directly under the ball). F — Follow through (hold your finish until the ball hits the net).',
+      drill: '1-Hand Form Shooting: Shoot with dominant hand only from 5 feet. Elbow must be directly under ball. Wrist must snap fully at release. 20 makes.',
+      nbaRef: 'Klay Thompson\'s elbow is so perfectly aligned that coaches use him as the textbook example for BEEF mechanics.' },
+    { num: 3, label: 'Grip & Hand Position', color: 'var(--green)',
+      detail: 'Guide hand (non-shooting) is on the SIDE of the ball — it does not push the ball. Shooting hand fingers are spread on the back of the ball with the seams running across your fingertips for control. The ball should sit on your fingertips, not your palm — you should be able to fit a finger between the ball and your palm.',
+      drill: 'Guide Hand Check: Place a piece of tape on your guide-hand thumb. If the tape ends up on the ball or your shot spins sideways, your guide hand is interfering. Shoot 10 shots checking guide hand placement.',
+      nbaRef: 'Kevin Durant famously has the ball resting on his fingertips only — zero palm contact. This gives him elite touch on pull-ups.' },
+    { num: 4, label: 'Load & Rhythm', color: 'var(--gold)',
+      detail: 'The shot begins from the catch or the top of your dribble — not from a static position. You dip slightly into your legs (not a full squat, just a coil) as you bring the ball to your shot pocket. The dip-and-drive is one continuous motion upward. You are not loading and then shooting — it is one fluid explosive motion.',
+      drill: '3-Step Rhythm Shooting: Catch → dip → rise → release. Film yourself from the side. There should be zero pause between the dip and the upward drive. 20 reps from the elbow.',
+      nbaRef: 'Jayson Tatum has a very deliberate but quick dip into every catch-and-shoot. It\'s his signature rhythm — gets his whole body into the shot.' },
+    { num: 5, label: 'Release Point', color: 'var(--orange)',
+      detail: 'Release the ball at the TOP of your jump — not on the way up, not on the way down. At maximum height, your arm should be fully extended above your head (elbow above eye level). The wrist snaps forward completely: your hand should end pointing DOWN at the floor (goose-neck finish). The ball comes off your index and middle fingers last.',
+      drill: 'Wall Shooting: Stand 2 feet from a wall and shoot straight up. The ball should hit the wall at maximum arm extension. This forces you to release at the peak. 15 reps.',
+      nbaRef: 'Damian Lillard\'s release is at 11 o\'clock (nearly straight up) and incredibly quick — from pocket to release is under 0.4 seconds.' },
+    { num: 6, label: 'Arc & Trajectory', color: 'var(--purple)',
+      detail: 'Target arc: 45–55° entry angle. Too flat = harder to go in (smaller target). Too high = too much distance variation. You want a "rainbow" arc — the ball should peak well above the rim and drop through. Think: if the ball goes in, it should barely touch the net from straight through, not rattle around. Swish = optimal arc.',
+      drill: 'Arc Awareness: Shoot 20 shots from the free throw line. Count your swishes vs. rattlers. Target: 60%+ swishes if mechanics are right. Film from the side to see your arc trajectory.',
+      nbaRef: 'Steph Curry shoots at a high arc (above 50°) which is why his shots look like they drop straight down into the basket.' },
+    { num: 7, label: 'Follow-Through & Hold', color: 'var(--blue)',
+      detail: 'Hold your follow-through until the ball hits the floor. This is not a feel-good habit — it trains your wrist and fingers to complete the release rather than flicking early. Your shooting hand should be relaxed, wrist fully bent forward (fingers pointing at the floor), for 2–3 seconds after every shot. If you drop it early, you\'re releasing early.',
+      drill: 'Follow-Through Freeze: Shoot 20 free throws. Hold your follow-through for a full 3-second count. Have a partner call you out if you drop it early. Non-negotiable for a consistent release.',
+      nbaRef: 'Every elite NBA shooter — Curry, Thompson, Durant, Lillard — holds their follow-through identically on every shot. It\'s the most consistent part of their mechanics.' },
+  ],
+  commonErrors: [
+    { error: 'Chicken Wing Elbow', fix: 'Elbow flares out to the side instead of staying tucked under the ball. Fix: 1-hand form shooting at 5 feet until elbow path is grooved. Use a wall to physically stop the elbow from flaring.' },
+    { error: 'Thumb Push', fix: 'Guide-hand thumb pushes the ball, causing left/right misses. Fix: Remove guide hand completely. Shoot one-handed until you trust the shooting hand. The guide hand catches the ball, it does not push it.' },
+    { error: 'Short Release', fix: 'Ball is released before your arm is fully extended — results in a flat shot that hits the front of the rim. Fix: Wall shooting drill until your extension is automatic.' },
+    { error: 'Rushing the Shot', fix: 'You coil and shoot too quickly without letting your legs load properly. Fix: Slow form shooting at 50% speed until the dip-and-rise rhythm is natural. Speed comes after mechanics are grooved.' },
+    { error: 'Landing Forward', fix: 'You drift forward on your shot — weight shifts onto your toes during the jump. Fix: Shoot against a wall (2 feet away). If you touch the wall, you\'re drifting. Land in the same spot you left from.' },
+    { error: 'Inconsistent Pocket', fix: 'You bring the ball to a different position every shot. Fix: Mark your shot pocket with your off hand. Ball goes to the same spot on your cheek/temple every single time before rising.' },
+  ]
+};
+
+const SPOT_SHOOTING = {
+  intro: 'Spot shooting builds the foundation of every other shooting skill. You need to own every spot on the floor before you can create shots from those spots. Volume + correct mechanics = muscle memory. Incorrect mechanics × volume = reinforcing bad habits. Film yourself from time to time to verify form.',
+  spots: ['Right Corner', 'Right Wing', 'Top of Key', 'Left Wing', 'Left Corner', 'Right Elbow', 'Left Elbow', 'Right Block', 'Left Block'],
+  workouts: [
+    {
+      name: '5-Spot Form Shooting', intensity: 'Low', time: '15–20 min', tag: 'Daily Foundation',
+      desc: 'Start every shooting session with this. No defense, no pressure — pure mechanics reinforcement.',
+      rounds: [
+        { spot: 'Start: 5 feet from rim', reps: '10 makes', focus: 'Form only — BEEF mechanics on every rep. No misses allowed at this range.' },
+        { spot: 'Free throw line', reps: '10 makes', focus: 'Establish your rhythm. Same pocket, same release, every time.' },
+        { spot: 'Right elbow', reps: '7 makes', focus: 'First "real" spot. Keep the rhythm from the FT line.' },
+        { spot: 'Left elbow', reps: '7 makes', focus: 'Weak side. Extra attention to guide hand on this side.' },
+        { spot: 'Top of key (3-point range)', reps: '5 makes', focus: 'Don\'t change mechanics for a 3. Same form, slightly more leg.' },
+      ],
+      coaching: 'If you miss 3 in a row at any spot, back up 2 feet and re-establish. Never fight through a slump by continuing from the same spot — reset the confidence first.'
+    },
+    {
+      name: 'Corner 3 Machine', intensity: 'Medium', time: '10–12 min', tag: 'Spot Specialist',
+      desc: 'The corner 3 is the highest-percentage 3-pointer in basketball (shortest distance). Own this shot — it is a career-making weapon.',
+      rounds: [
+        { spot: 'Right corner — catch & shoot', reps: '15 attempts', focus: 'Feet set before the catch. One motion from catch to release. No hesitation.' },
+        { spot: 'Left corner — catch & shoot', reps: '15 attempts', focus: 'Guide hand check — this side is harder for most right-hand shooters.' },
+        { spot: 'Right corner — off one dribble', reps: '10 attempts', focus: 'Catch → one side-step dribble → shoot. NBA: this is how you create space from a defender.' },
+        { spot: 'Left corner — off one dribble', reps: '10 attempts', focus: 'Same. Both corners must be equal threats.' },
+      ],
+      coaching: 'NBA corner 3s: Klay Thompson, Ray Allen, J.J. Redick. They all camp the corner and LIVE there. You don\'t need to be a volume scorer — corner 3 gravity changes a defense.'
+    },
+    {
+      name: 'Elbow Midrange System', intensity: 'Medium', time: '12–15 min', tag: 'NBA Midrange',
+      desc: 'The elbow (free-throw-line extended) is the most efficient midrange spot. It is unguardable off the dribble and perfect for your skill level — work toward 50%+ from both elbows.',
+      rounds: [
+        { spot: 'Right elbow — catch & shoot', reps: '15 attempts', focus: 'Square your shoulders to the basket on the catch. This is your automatic shot.' },
+        { spot: 'Left elbow — catch & shoot', reps: '15 attempts', focus: 'Same standard as right elbow. No comfort zone differences.' },
+        { spot: 'Right elbow — 1-dribble pull-up', reps: '10 attempts', focus: 'Catch → 1 dribble to the right → pull up. Footwork: hop-stop or 1-2 step.' },
+        { spot: 'Left elbow — 1-dribble pull-up', reps: '10 attempts', focus: 'Catch → 1 dribble left → pull up. This side takes more work.' },
+        { spot: 'Both elbows — alternate', reps: '10 attempts', focus: 'Random alternation. Simulates game situations where you don\'t know which side you\'re going.' },
+      ],
+      coaching: 'Kobe Bryant built his entire midrange game on the elbow. Paul Pierce lived there. The elbow is where you build shooter\'s reputation — defenses have to guard it.'
+    },
+    {
+      name: '3-Point Circuit', intensity: 'High', time: '15–20 min', tag: 'Range Extension',
+      desc: 'Systematic 3-point development from all 5 positions. Do not rush to the 3-point line until your form is solid inside — this workout assumes your mechanics are established.',
+      rounds: [
+        { spot: 'Right corner', reps: '10 attempts', focus: 'Shortest 3. Highest percentage. Own this spot first.' },
+        { spot: 'Right wing', reps: '10 attempts', focus: 'Catch off a skip pass simulation. Feet must beat the ball.' },
+        { spot: 'Top of key', reps: '10 attempts', focus: 'Longest 3. Most leg. Do NOT change your arm mechanics — add leg drive only.' },
+        { spot: 'Left wing', reps: '10 attempts', focus: 'Same as right wing. This side takes longer to trust.' },
+        { spot: 'Left corner', reps: '10 attempts', focus: 'Complete the circuit. If your percentage drops here, you\'re rushing on the weak side.' },
+      ],
+      coaching: 'Target percentage for a developing shooter: 33%+ from 3 in these workouts. 40%+ means your mechanics are translating. Track makes/attempts every session.'
+    },
+  ]
+};
+
+const OFF_DRIBBLE_SYSTEM = {
+  intro: 'Off-dribble shooting is where average players become threats. A player who can only shoot catch-and-shoot can be tagged and denied. A player who can create and shoot off the dribble must be guarded at all times — this changes how an entire defense operates.',
+  fundamentals: [
+    { label: 'Footwork: 1-2 Step', text: 'Left foot steps first (for right-handed), right foot plants as the shooting base. The right foot should land simultaneously with the ball going to your pocket. This is the most common NBA pull-up footwork.' },
+    { label: 'Footwork: Hop-Stop', text: 'Both feet land simultaneously at the end of your gather. Creates a perfectly squared stance. More powerful base but slightly slower. Use on pull-ups from distance.' },
+    { label: 'The Gather', text: 'The last dribble goes below your waist and the ball is caught at your shot pocket simultaneously with your footwork. If you catch the ball and THEN do your footwork, you\'re late.' },
+    { label: 'Shot Pocket', text: 'The ball goes to the same pocket location every time — doesn\'t matter if it\'s catch-and-shoot or off dribble. The pocket is your reset point. Build a path from dribble → pocket → release.' },
+    { label: 'Load with Legs', text: 'Your legs should be coiled in your athletic stance already. You don\'t extra-bend for an off-dribble shot — your stance keeps you ready. This is why defensive stance and shooting stance are nearly identical.' },
+  ],
+  shots: [
+    {
+      name: 'Pull-Up Jumper', icon: '⬆️', tag: 'Core NBA Skill',
+      when: 'You drive, defender backs off or you\'ve pulled them past their recovery point. The pull-up is your threat that keeps defenders from helping on drives.',
+      mechanics: 'Dribble hard → gather on your last step → 1-2 or hop-stop → rise and shoot. The gather is key — it is a legal move where you can take 2 steps after picking up your dribble.',
+      drills: [
+        { name: 'Elbow Pull-Up', reps: '4×10 each elbow', cue: 'Dribble from the wing, pull up at the elbow. Same spot every time. Build the muscle memory of pulling up at a specific spot.' },
+        { name: 'Mid-Lane Pull-Up', reps: '3×8 each side', cue: 'Drive the lane, pull up before the charge line. Real-game scenario. Defender forces you to pull up — own this shot.' },
+        { name: 'Top of Key Pull-Up', reps: '3×8', cue: 'Dribble from half court, pull up at the 3-point line. Tests your ability to pull up without a specific target spot.' },
+      ]
+    },
+    {
+      name: 'Step-Back Jumper', icon: '👣', tag: 'Separation Creator',
+      when: 'Defender is closing out too aggressively or has overplayed your drive. One step back creates instant separation from even the best defenders.',
+      mechanics: 'Attack the defender aggressively → plant your inside foot → push back 1–2 feet off the same foot → catch balance → shoot. The step-back foot must go STRAIGHT back — not at an angle. If it goes sideways, it reads as a travel.',
+      drills: [
+        { name: 'Step-Back to Midrange', reps: '4×8 each wing', cue: 'Wing → hard dribble at the defender (cone) → step-back → midrange pull-up. The attack must be REAL or the step-back doesn\'t create space.' },
+        { name: 'Step-Back 3 (Harden Pattern)', reps: '3×6 each wing', cue: 'Same but step back to 3-point range. Catch balance before rising. If you\'re off balance, shorten the step.' },
+        { name: 'Step-Back in Traffic', reps: '3×8', cue: 'Set up two cones 6 feet apart (simulating defenders). Dribble between them and step back. Creates the traffic scenario of a game.' },
+      ]
+    },
+    {
+      name: 'Spin Move Jumper', icon: '🔄', tag: 'Advanced',
+      when: 'Defender over-commits to your inside foot. Spin 180° back to your strong side and pull up.',
+      mechanics: 'Drive → feel defender on your hip → plant inside foot → spin AWAY from their body → gather → pull up. The spin must be tight — a wide spin loses the separation advantage.',
+      drills: [
+        { name: 'Spin to Midrange', reps: '3×6 each direction', cue: 'Start at wing. Dribble baseline → spin at the block → midrange pull-up. Right-hand drive → left-hand spin → right-hand pull-up.' },
+        { name: 'Spin + Counter (no spin)', reps: '3×5', cue: 'Alternate: one rep spin move, one rep no spin (go straight). Teaches you to read the defender and choose.' },
+      ]
+    },
+    {
+      name: 'Fadeaway Jumper', icon: '↗️', tag: 'Post Weapon',
+      when: 'Defender has body position in the post. You cannot drive forward — you must shoot backward over their reach.',
+      mechanics: 'Catch on the block → shot fake (makes defender jump) → one dribble into a one-foot fadeaway OR pivot and fadeaway without the dribble. The fade must be straight back (your strong-side shoulder) not sideways.',
+      drills: [
+        { name: 'Shot Fake → Fadeaway', reps: '3×8 each block', cue: 'Catch ball at block, hard shot fake, one step fadeaway. Make the fake so convincing that YOU almost shoot it.' },
+        { name: 'Drop-Step Counter', reps: '3×6 each side', cue: 'Drop-step drive (to establish the drive threat) OR fadeaway. Alternate. The drive threat is what makes the fadeaway open.' },
+      ]
+    },
+  ]
+};
+
+const FINISHING_SYSTEM = {
+  intro: 'Finishing at the rim is a complete skill set — not just "go up strong." Elite NBA finishers have 8+ distinct finishes they can execute at full speed under contact. The goal is to have an answer for every defensive position, every speed, every angle.',
+  tiers: [
+    {
+      tier: 1, label: 'Essential Finishes', color: 'var(--green)', tag: 'Master First',
+      desc: 'These 3 finishes cover 80% of game situations. If you own these, you\'re already a legitimate threat at the rim.',
+      moves: [
+        { name: 'Power Layup (Two Feet)', when: 'Driving through traffic with a defender on your body', mechanic: 'Gather off two feet from 1–2 steps out. Jump THROUGH the contact, not away from it. Use the backboard on the right side. Chin the ball — protect it with your chin and both arms before releasing at the peak.', drill: '10× straight-line drive + power layup each side. Focus: jump vertical, not forward.' },
+        { name: 'Finger Roll', when: 'Clear lane, high speed, defender chasing from behind', mechanic: 'Roll the ball off the tips of your fingers (not your palm) at peak height. Underhand or overhand — both are valid. The ball should roll forward with heavy backspin. High release point — at the top of the box on the backboard or above it.', drill: '3×10 each hand at full speed. Underhand finish only until touch is developed.' },
+        { name: 'Reverse Layup', when: 'Driving baseline with the defender between you and the basket', mechanic: 'Continue past the basket instead of stopping. Use the backboard from the other side. Right-hand drive → go under the basket → left-hand or right-hand reverse using the backboard. This makes the defender\'s position irrelevant.', drill: '3×8 each side. Drive baseline, reverse it. Film from above — your arc under the basket should be consistent.' },
+      ]
+    },
+    {
+      tier: 2, label: 'Game-Changing Finishes', color: 'var(--orange)', tag: 'Add These Next',
+      desc: 'These finishes create problems that defenses have no good answer for. Each one exploits a specific defensive mistake.',
+      moves: [
+        { name: 'Euro Step', when: 'Help defender commits to your initial driving line', mechanic: 'Two legal steps in DIFFERENT directions. Step 1: left (gather). Step 2: right (layup). Or reverse. The defender commits to step 1, you go step 2. The key is making step 1 LOOK like you\'re going straight — don\'t telegraph the counter step.', drill: '4×8 each direction. Set a cone at the charge circle — step one direction, Euro step around it. Game speed required — slow Euro steps don\'t work.' },
+        { name: 'Floater (Running)', when: 'Beat your defender but big is waiting in the paint', mechanic: 'Gather off one foot (running gather) and push the ball up softly over the extended defender. High arc, soft touch, minimal spin. The ball floats ABOVE the shot blocker\'s reach — aim for the top of the box on the backboard.', drill: '3×10 each side. Drive full speed, floater over a raised arm (partner or use a trash can). It must go over the obstacle.' },
+        { name: 'Pull-Up Floater', when: 'Defender cuts off your drive before the paint', mechanic: 'Two-foot stop (hop-stop gather) and push the ball up softly from behind the charge circle. Not a jump shot — no full rise. One quick push with a high release. Covers the area between the 3-point line and paint where no shot is easy.', drill: '3×8 each side. Drive → pull up at charge circle → floater. The hop-stop must be balanced or the floater has no touch.' },
+        { name: 'Contact Layup', when: 'Defender is in the lane and you must absorb contact', mechanic: 'Drive into the defender intentionally. Absorb the contact with your body (hip, shoulder) while your shooting arm stays free and extends through the contact. The ball still goes up after contact — practice NOT flinching. This gets you to the free throw line.', drill: '3×10 with a partner providing resistance on your shoulder. The ball must still go up cleanly. Start with light contact, add more as you develop.' },
+      ]
+    },
+    {
+      tier: 3, label: 'Elite Weapons', color: 'var(--gold)', tag: 'Add in Phase 3–4',
+      desc: 'These require foundational finishing to already be solid. They give you answers in the most extreme defensive situations.',
+      moves: [
+        { name: 'Up-and-Under', when: 'Shot blocker jumps to block a shot fake', mechanic: 'Drive → gather → pump fake (make them leave their feet) → one more step (step under their block) → finish on the other side. Time: you have 1 full second after the pump fake before you must release. Take it.', drill: '3×6 each side. Partner or coach: they must actually jump for the fake. If they don\'t jump, the up-and-under isn\'t earned.' },
+        { name: 'Scoop Shot', when: 'Off balance from a drive, defender underneath you', mechanic: 'One-handed underhand scoop with a sweeping motion. The ball scoops under or around the defender\'s outstretched arm. More wrist and less arm than a floater — think "scoop ice cream." Use your weak hand aggressively.', drill: '3×8 each hand. Drive baseline → weak-hand scoop under a raised barrier. Weak hand first — you must trust it.' },
+        { name: 'Spin Finish', when: 'Defender has position but you have the angle for a spin', mechanic: 'Catch at the block → back down the defender → spin and finish on the same side or the opposite side depending on where the help defender is. The key: the spin must be tight (1 step, not 2) and you must know where you\'re finishing BEFORE you start the spin.', drill: '3×8 each block. Back down (simulate), spin, finish. Alternate spin-to-same-side and spin-to-opposite.' },
+      ]
+    },
+  ]
+};
+
+const COMPETITIVE_SHOOTING = [
+  {
+    name: '21', type: 'Solo Game', time: '10–12 min', intensity: 'Medium', color: 'var(--blue)',
+    rules: 'Pick 7 spots around the floor. Shoot 3 shots from each spot = 21 total shots per round. Score: 1 point per make. Track score every round. Target: 14+/21 (67%). Elite: 17+/21 (80%).',
+    purpose: 'Builds accountability on every shot. You cannot hide a miss in this game. Creates game-like pressure because every miss costs you.',
+    progression: 'Week 1–4: 5 spots from midrange. Week 5–8: 7 spots (add corners). Week 9–12: 7 spots from 3. Week 13–16: 5 spots from 3, 2 off-dribble.',
+  },
+  {
+    name: 'Beat the Pro', type: 'Solo Competitive', time: '8–10 min', intensity: 'High', color: 'var(--orange)',
+    rules: 'You are playing against an imaginary NBA pro. Pro makes 70% of his shots. You shoot from 5 spots. Each round: 2 shots per spot (10 total). Pro scores 7/10 automatically. You must outscore or match the pro. Track W/L record.',
+    purpose: 'Creates the psychological experience of competing under pressure. Your score means nothing — winning or losing means everything.',
+    progression: 'Start with the pro at 60% (6/10). Raise to 70% when you win 3 consecutive rounds. Raise to 80% to become "elite."',
+  },
+  {
+    name: '5-Minute Shooter', type: 'Timed', time: '5 min exactly', intensity: 'High', color: 'var(--orange)',
+    rules: 'Set a 5-minute timer. Shoot from anywhere on the floor. Catch your own rebounds. Track total makes. No set spots — move around, create shots, shoot after movement. Target: 40 makes in 5 minutes. Elite: 50+ makes.',
+    purpose: 'Simulates game pace. You cannot control where the ball goes — you must reset, move, and shoot quickly. Builds shooting under physical fatigue.',
+    progression: 'Week 1: Count only midrange makes. Week 5+: Add 3s (count them as 2 points). Week 9+: Must include at least 5 off-dribble shots per session.',
+  },
+  {
+    name: 'Pressure Free Throws', type: 'Mental Toughness', time: '6–8 min', intensity: 'Low-Medium', color: 'var(--green)',
+    rules: 'Set a target: must make 10 consecutive free throws before leaving. No timer. For every miss: do 10 push-ups OR 5 burpees before resuming. Track total attempts needed to hit your 10 consecutive.',
+    purpose: 'Free throws are 100% repeatable mechanical shots — but most players miss them because of mental pressure. This game teaches you to perform your routine under self-imposed consequence.',
+    progression: 'Start at 5 consecutive. Move to 8 consecutive (3 weeks). Move to 10 consecutive (6 weeks). Advanced: 10 consecutive with 5 jumping jacks between each shot.',
+  },
+  {
+    name: 'One-On-One Shooting Game', type: 'Partner', time: '12–15 min', intensity: 'High', color: 'var(--purple)',
+    rules: 'Two players. Alternate shots from anywhere on the floor. First to 11 wins (win by 2). Only made shots count. Partner can challenge — if they yell "CALL" before you shoot, you must explain what shot you\'re taking. If you take a different shot, it counts as a miss even if it goes in.',
+    purpose: 'Shot selection under defensive pressure. Forces intentional shooting — you can\'t just chuck it and hope. Builds IQ on which shots are actually good shots.',
+    progression: 'Add a half-court line — can\'t shoot from the same side twice in a row. Or: 3-pointers count as 2 points to reward range.',
+  },
+  {
+    name: 'Mikan Sprint', type: 'Conditioning + Finishing', time: '8 min', intensity: 'Very High', color: 'var(--red)',
+    rules: 'Classic Mikan drill (alternate sides, bank off the backboard) — but add a sprint. After every make on the LEFT side, sprint to the half-court line and back before the next rep. Keep going for 8 minutes. Track total makes.',
+    purpose: 'Finishing under fatigue. Game finishing happens when you\'re tired. Your touch must work when your legs are burning. This is where weak finishers break down.',
+    progression: 'Start without the sprint (build touch). Add 5-yard sprint (2 weeks). Add half-court sprint (4 weeks). Add full-court sprint for truly elite conditioning.',
+  },
+];
+
+function switchShootingTab(tab, btn) {
+  document.querySelectorAll('#section-shooting .js-tab').forEach(b => b.classList.remove('active'));
+  ['form','spot','offdribble','finishing','competitive'].forEach(t => {
+    const el = document.getElementById('sh-' + t);
+    if (el) el.style.display = 'none';
+  });
+  btn.classList.add('active');
+  document.getElementById('sh-' + tab).style.display = 'block';
+}
+
+function renderShootingForm() {
+  const panel = document.getElementById('sh-form');
+  if (!panel) return;
+  const d = SHOT_FORM;
+  let html = `<div class="page-header" style="padding:0 0 16px">
+    <div class="badge">📐 The 7 NBA Shooting Checkpoints</div>
+    <h2 style="font-size:22px;font-weight:900">Form Foundation</h2>
+    <p class="text-sm text-muted">${d.intro}</p>
+  </div>
+  <div class="section-divider"><h2>The 7 Checkpoints</h2></div>`;
+
+  d.checkpoints.forEach(cp => {
+    html += `<div class="card mb-16" style="border-left:4px solid ${cp.color}">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div style="width:36px;height:36px;border-radius:50%;background:${cp.color}20;color:${cp.color};font-weight:900;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${cp.num}</div>
+        <div style="font-size:17px;font-weight:900;color:${cp.color}">${cp.label}</div>
+      </div>
+      <p class="text-sm" style="color:var(--text-secondary);line-height:1.7;margin-bottom:12px">${cp.detail}</p>
+      <div style="background:rgba(255,107,0,0.06);border:1px solid rgba(255,107,0,0.2);border-radius:8px;padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:11px;font-weight:800;color:var(--orange);text-transform:uppercase;margin-bottom:4px">Drill</div>
+        <div style="font-size:12px;color:var(--text-secondary)">${cp.drill}</div>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);font-style:italic">🏀 NBA Reference: ${cp.nbaRef}</div>
+    </div>`;
+  });
+
+  html += `<div class="section-divider mt-20"><h2>Common Errors & Fixes</h2></div>
+  <div class="grid-2 mb-20">`;
+  d.commonErrors.forEach(e => {
+    html += `<div class="card">
+      <div style="font-size:13px;font-weight:800;color:var(--red);margin-bottom:8px">❌ ${e.error}</div>
+      <div style="font-size:12px;color:var(--text-secondary);line-height:1.6"><strong style="color:var(--green)">Fix:</strong> ${e.fix}</div>
+    </div>`;
+  });
+  html += `</div>`;
+  panel.innerHTML = html;
+}
+
+function renderSpotShooting() {
+  const panel = document.getElementById('sh-spot');
+  if (!panel) return;
+  let html = `<div class="page-header" style="padding:0 0 16px">
+    <div class="badge">📍 Volume + Correct Mechanics = Muscle Memory</div>
+    <h2 style="font-size:22px;font-weight:900">Spot Shooting System</h2>
+    <p class="text-sm text-muted">${SPOT_SHOOTING.intro}</p>
+  </div>`;
+
+  SPOT_SHOOTING.workouts.forEach(w => {
+    const intColors = { Low: 'var(--green)', Medium: 'var(--blue)', High: 'var(--orange)', 'Very High': 'var(--red)' };
+    const col = intColors[w.intensity] || 'var(--orange)';
+    html += `<div class="card mb-20">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+        <div>
+          <div style="font-size:18px;font-weight:900">${w.name}</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:3px">${w.desc}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <span class="tag" style="background:${col}20;color:${col}">${w.intensity} Intensity</span>
+          <span class="tag tag-blue">${w.time}</span>
+          <span class="tag" style="background:rgba(255,215,0,0.1);color:var(--gold)">${w.tag}</span>
+        </div>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Spot</th><th>Target</th><th>Focus Cue</th></tr></thead>
+        <tbody>${w.rounds.map(r => `<tr>
+          <td style="font-weight:700;color:var(--orange)">${r.spot}</td>
+          <td><span class="tag tag-orange">${r.reps}</span></td>
+          <td class="text-sm" style="color:var(--text-secondary)">${r.focus}</td>
+        </tr>`).join('')}</tbody>
+      </table></div>
+      <div class="highlight-box mt-12" style="padding:10px 14px">
+        <p style="font-size:12px"><strong>Coach's Note:</strong> ${w.coaching}</p>
+      </div>
+    </div>`;
+  });
+  panel.innerHTML = html;
+}
+
+function renderOffDribble() {
+  const panel = document.getElementById('sh-offdribble');
+  if (!panel) return;
+  let html = `<div class="page-header" style="padding:0 0 16px">
+    <div class="badge">🏀 Create Your Own Shot — NBA Shooting System</div>
+    <h2 style="font-size:22px;font-weight:900">Off-Dribble Game</h2>
+    <p class="text-sm text-muted">${OFF_DRIBBLE_SYSTEM.intro}</p>
+  </div>
+  <div class="section-divider"><h2>Footwork Fundamentals</h2></div>
+  <div class="card mb-20">
+    ${OFF_DRIBBLE_SYSTEM.fundamentals.map(f => `<div style="display:flex;gap:16px;padding:12px 0;border-bottom:1px solid var(--border)">
+      <div style="min-width:140px;font-size:12px;font-weight:800;color:var(--orange);text-transform:uppercase">${f.label}</div>
+      <div style="font-size:13px;color:var(--text-secondary);line-height:1.6">${f.text}</div>
+    </div>`).join('')}
+  </div>
+  <div class="section-divider"><h2>Off-Dribble Shot Library</h2></div>`;
+
+  OFF_DRIBBLE_SYSTEM.shots.forEach(s => {
+    html += `<div class="card mb-16">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <span style="font-size:28px">${s.icon}</span>
+        <div>
+          <div style="font-size:17px;font-weight:900">${s.name}</div>
+          <span class="tag tag-orange">${s.tag}</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div>
+          <div style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:6px">When to Use</div>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.6">${s.when}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:6px">Mechanics</div>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.6">${s.mechanics}</div>
+        </div>
+      </div>
+      <div style="background:var(--bg-card-2);border-radius:8px;padding:12px">
+        <div style="font-size:12px;font-weight:800;color:var(--orange);margin-bottom:8px">DRILLS</div>
+        ${s.drills.map(d => `<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span class="tag tag-blue" style="flex-shrink:0;white-space:nowrap">${d.reps}</span>
+          <div>
+            <div style="font-size:12px;font-weight:700;margin-bottom:2px">${d.name}</div>
+            <div style="font-size:11px;color:var(--text-muted)">${d.cue}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  });
+  panel.innerHTML = html;
+}
+
+function renderFinishing() {
+  const panel = document.getElementById('sh-finishing');
+  if (!panel) return;
+  let html = `<div class="page-header" style="padding:0 0 16px">
+    <div class="badge">🔥 8+ Finishes = Complete Threat at the Rim</div>
+    <h2 style="font-size:22px;font-weight:900">Finishing System</h2>
+    <p class="text-sm text-muted">${FINISHING_SYSTEM.intro}</p>
+  </div>`;
+
+  FINISHING_SYSTEM.tiers.forEach(tier => {
+    html += `<div class="section-divider"><h2 style="display:flex;align-items:center;gap:10px">${tier.label} <span class="tag" style="background:${tier.color}20;color:${tier.color}">${tier.tag}</span></h2></div>
+    <div class="highlight-box mb-16" style="border-color:${tier.color}"><p>${tier.desc}</p></div>`;
+
+    tier.moves.forEach(move => {
+      html += `<div class="card mb-16">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <div style="font-size:16px;font-weight:900;color:${tier.color}">${move.name}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div style="background:var(--bg-card-2);border-radius:8px;padding:10px 12px">
+            <div style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:5px">When to Use</div>
+            <div style="font-size:12px;color:var(--text-secondary);line-height:1.6">${move.when}</div>
+          </div>
+          <div style="background:var(--bg-card-2);border-radius:8px;padding:10px 12px">
+            <div style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:5px">Mechanics</div>
+            <div style="font-size:12px;color:var(--text-secondary);line-height:1.6">${move.mechanic}</div>
+          </div>
+        </div>
+        <div style="background:rgba(255,107,0,0.06);border:1px solid rgba(255,107,0,0.2);border-radius:8px;padding:10px 12px">
+          <div style="font-size:11px;font-weight:800;color:var(--orange);text-transform:uppercase;margin-bottom:4px">Practice Drill</div>
+          <div style="font-size:12px;color:var(--text-secondary)">${move.drill}</div>
+        </div>
+      </div>`;
+    });
+  });
+  panel.innerHTML = html;
+}
+
+function renderCompetitiveShooting() {
+  const panel = document.getElementById('sh-competitive');
+  if (!panel) return;
+  let html = `<div class="page-header" style="padding:0 0 16px">
+    <div class="badge">🏆 Game-Pressure Shooting Development</div>
+    <h2 style="font-size:22px;font-weight:900">Competitive Shooting Reps</h2>
+    <p class="text-sm text-muted">The difference between a practice shooter and a game shooter is reps taken under pressure. These games simulate pressure without a defender. Train your mind to perform when it counts.</p>
+  </div>
+  <div class="grid-2">`;
+
+  COMPETITIVE_SHOOTING.forEach(g => {
+    html += `<div class="card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px">
+        <div style="font-size:16px;font-weight:900">${g.name}</div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <span class="tag" style="background:${g.color}20;color:${g.color};white-space:nowrap">${g.type}</span>
+          <span class="tag tag-blue" style="white-space:nowrap">${g.time}</span>
+        </div>
+      </div>
+      <div style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin-bottom:5px">Rules</div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;line-height:1.6">${g.rules}</div>
+      <div style="background:rgba(255,107,0,0.06);border-radius:6px;padding:8px 10px;margin-bottom:8px">
+        <div style="font-size:11px;font-weight:800;color:var(--orange);margin-bottom:3px">PURPOSE</div>
+        <div style="font-size:12px;color:var(--text-secondary)">${g.purpose}</div>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);font-style:italic"><strong style="color:var(--green);font-style:normal">Progression:</strong> ${g.progression}</div>
+    </div>`;
+  });
+
+  html += `</div>
+  <div class="highlight-box mt-20" style="border-color:var(--orange)">
+    <p><strong>The Session Template:</strong> Form Shooting (10 min) → Spot Work (15 min) → Off-Dribble (10 min) → Finishing (10 min) → Competitive Game (10 min) = 55-min complete shooting session. Do this 2× per week (Tuesday + Saturday skill days) and you will be a different shooter in 8 weeks.</p>
   </div>`;
   panel.innerHTML = html;
 }

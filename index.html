@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Traction Report | Performance OS</title>
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=5">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     /* Mobile bottom nav — inline to bypass cache */
@@ -38,6 +38,7 @@
     <button class="nav-item" data-section="training"><span class="nav-icon">⚡</span><span>16-Week Program</span></button>
     <button class="nav-item" data-section="dunk"><span class="nav-icon">🏀</span><span>Dunk Lab</span></button>
     <button class="nav-item" data-section="basketball"><span class="nav-icon">⛹️</span><span>Basketball Skills</span></button>
+    <button class="nav-item" data-section="shooting"><span class="nav-icon">🎯</span><span>Shooting & Finishing</span></button>
     <div class="nav-group-label">Lifestyle</div>
     <button class="nav-item" data-section="nutrition"><span class="nav-icon">🥗</span><span>Nutrition & Meals</span></button>
     <button class="nav-item" data-section="sleep"><span class="nav-icon">🌙</span><span>Sleep Protocol</span></button>
@@ -719,6 +720,29 @@
   </div>
 </section>
 
+<!-- ──────────────────── SHOOTING & FINISHING ─────────── -->
+<section id="section-shooting" class="section">
+  <div class="page-header">
+    <div class="badge">🎯 NBA Skill Development · Shooting & Finishing</div>
+    <h1>Shooting <span>&amp; Finishing Lab</span></h1>
+    <p>Form mechanics · Spot shooting · Off-dribble · Finishing at the rim · Competitive reps</p>
+  </div>
+
+  <div class="js-tabs mb-0">
+    <button class="js-tab active" onclick="switchShootingTab('form',this)">📐 Form Foundation</button>
+    <button class="js-tab" onclick="switchShootingTab('spot',this)">📍 Spot Shooting</button>
+    <button class="js-tab" onclick="switchShootingTab('offdribble',this)">🏀 Off-Dribble Game</button>
+    <button class="js-tab" onclick="switchShootingTab('finishing',this)">🔥 Finishing System</button>
+    <button class="js-tab" onclick="switchShootingTab('competitive',this)">🏆 Competitive Reps</button>
+  </div>
+
+  <div id="sh-form" class="js-panel"></div>
+  <div id="sh-spot" class="js-panel" style="display:none"></div>
+  <div id="sh-offdribble" class="js-panel" style="display:none"></div>
+  <div id="sh-finishing" class="js-panel" style="display:none"></div>
+  <div id="sh-competitive" class="js-panel" style="display:none"></div>
+</section>
+
 <!-- ──────────────────── RECOVERY ─────────────────────── -->
 <section id="section-recovery" class="section">
   <div class="page-header">
@@ -1147,7 +1171,7 @@
 
 </div>
 
-<script src="app.js?v=4"></script>
+<script src="app.js?v=5"></script>
 
 <!-- ══ MOBILE BOTTOM NAV ════════════════════════════════ -->
 <nav class="mobile-bottom-nav" id="mobileBottomNav">
