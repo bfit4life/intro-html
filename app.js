@@ -19,12 +19,8 @@ document.getElementById('menuBtn').addEventListener('click', () => {
 function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
 
 // ── Mobile Bottom Nav ─────────────────────────────────────────────────────────
-const MOB_SECTIONS = ['dashboard','schedule','training','dunk'];
+const MOB_SECTIONS = ['dashboard','schedule','training','dunk','coach'];
 function mobileNav(section, btn) {
-  if (section === 'more') {
-    document.getElementById('sidebar').classList.toggle('open');
-    return;
-  }
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   const navItem = document.querySelector('[data-section="' + section + '"]');
@@ -35,6 +31,7 @@ function mobileNav(section, btn) {
   btn.classList.add('active');
   closeSidebar();
   window.scrollTo(0, 0);
+  if (section === 'coach') setTimeout(renderCoachSection, 30);
 }
 function syncMobileNav(section) {
   document.querySelectorAll('.mob-nav-item').forEach(b => b.classList.remove('active'));
