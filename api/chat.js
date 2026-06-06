@@ -96,6 +96,22 @@ function buildSystem(ctx) {
     ).join('\n');
   }
 
+  if (ctx.drillScoreLog?.length) {
+    notionSection += '\n\nLOCAL DRILL SCORE LOG (recent):\n';
+    const byDate = {};
+    ctx.drillScoreLog.forEach(e => {
+      if (!byDate[e.date]) byDate[e.date] = [];
+      byDate[e.date].push(e);
+    });
+    Object.entries(byDate).slice(0, 5).forEach(([date, entries]) => {
+      notionSection += `  ${date}:\n`;
+      entries.forEach(e => {
+        const score = e.pct != null ? `${e.made}/${e.attempted} (${e.pct}%)` : (e.note || e.rawScore || '—');
+        notionSection += `    ${e.drillName || '?'}: ${score} [${e.sessionTitle || '?'}]\n`;
+      });
+    });
+  }
+
   if (ctx.exerciseRules?.length) {
     notionSection += '\n\nEXERCISE RELATIONSHIP RULES (follow these precisely):\n';
     notionSection += ctx.exerciseRules.map(e =>

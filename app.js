@@ -545,6 +545,7 @@ function showDayDetail(i) {
 
   // ── TRAINING ──────────────────────────────────────────
   const trainLabel = isRecovery ? 'ACTIVE RECOVERY SESSION' : isSkill ? 'BASKETBALL SKILL SESSION' : 'HIGH PERFORMANCE TRAINING';
+  const _today = new Date().toISOString().split('T')[0];
   let trainHtml = '';
   day.sessions.forEach(s => {
     trainHtml += `<div class="session-block">
@@ -554,16 +555,29 @@ function showDayDetail(i) {
       </div>
       <div class="session-block-body"><ul class="exercise-list">
         ${s.items.map((item, ii) => {
-          const _sk = 'ds_' + i + '_' + s.num + '_' + ii + '_' + new Date().toISOString().split('T')[0];
+          const _sk = 'ds_' + i + '_' + s.num + '_' + ii + '_' + _today;
           const _sv = localStorage.getItem(_sk) || '';
+          const _dn = item.name.replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+          const _st = s.title.replace(/"/g,'&quot;').replace(/'/g,'&#39;');
           return `<li><input type="checkbox" class="ex-check"><div style="flex:1">
             <div class="ex-name">${item.name}</div>
             <div class="ex-detail">${item.detail}</div>
-          </div><input type="text" class="drill-score" value="${_sv}" placeholder="0/0" title="Score (e.g. 7/10)" oninput="localStorage.setItem('ds_${i}_${s.num}_${ii}_'+new Date().toISOString().split('T')[0],this.value)"></li>`;
+          </div><input type="text" class="drill-score" value="${_sv}" placeholder="0/0"
+            title="Score e.g. 7/10"
+            data-drill="${_dn}" data-session="${_st}" data-day="${day.name}" data-dayidx="${i}" data-snum="${s.num}" data-ii="${ii}"
+            oninput="_saveDrillScore(this)"></li>`;
         }).join('')}
       </ul></div>
     </div>`;
   });
+  if (isSkill) {
+    trainHtml += `<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+      <button class="btn btn-primary" style="width:100%;font-size:13px;padding:12px;background:var(--orange)" onclick="bulkExportDrillScores(${i})">
+        📤 Export Today's Drill Scores → Athlete Zero
+      </button>
+      <div id="drillExportStatus_${i}" style="text-align:center;font-size:12px;margin-top:8px;min-height:16px"></div>
+    </div>`;
+  }
   html += buildDayBlock(`⚡ ${trainLabel} · ${meta.trainWindow}`, typeColor, trainHtml);
 
   // ── JUMP SCIENCE FOCUS ────────────────────────────────
@@ -3979,6 +3993,96 @@ async function sendNutritionLog() {
   await _pillarPost(NOTION_NUTRITION_DB_ID, props, 'nlSendBtn2', 'nlStatus2');
 }
 
+// ── Drill Score Engine ────────────────────────────────────────────────────────
+function _parseDrillScore(raw) {
+  if (!raw || !raw.trim()) return { made: null, attempted: null, pct: null };
+  const m = raw.trim().match(/^(\d+)\s*[\/\-of]+\s*(\d+)$/i);
+  if (m) {
+    const made = parseInt(m[1]), attempted = parseInt(m[2]);
+    return { made, attempted, pct: attempted > 0 ? Math.round((made / attempted) * 100) : 0 };
+  }
+  return { made: null, attempted: null, pct: null, note: raw.trim() };
+}
+
+function _saveDrillScore(input) {
+  const { drill, session, day: dayName, dayidx, snum, ii } = input.dataset;
+  const today = new Date().toISOString().split('T')[0];
+  const simpleKey = 'ds_' + dayidx + '_' + snum + '_' + ii + '_' + today;
+  localStorage.setItem(simpleKey, input.value);
+
+  const parsed = _parseDrillScore(input.value);
+  const entryKey = dayidx + '_' + snum + '_' + ii + '_' + today;
+  const entry = {
+    key: entryKey, drillName: drill, sessionTitle: session,
+    dayName, dayIdx: parseInt(dayidx), sessionNum: snum, itemIdx: parseInt(ii),
+    date: today, rawScore: input.value, ...parsed,
+  };
+  const log = JSON.parse(localStorage.getItem('trDrillScoreLog') || '[]');
+  const idx = log.findIndex(e => e.key === entryKey);
+  if (idx >= 0) log[idx] = entry; else log.unshift(entry);
+  localStorage.setItem('trDrillScoreLog', JSON.stringify(log.slice(0, 1000)));
+
+  // Live colour feedback on the input
+  if (parsed.pct !== null) {
+    input.style.color = parsed.pct >= 70 ? 'var(--green)' : parsed.pct >= 50 ? 'var(--gold)' : 'var(--red)';
+  } else {
+    input.style.color = 'var(--orange)';
+  }
+}
+
+async function bulkExportDrillScores(dayIdx) {
+  const today = new Date().toISOString().split('T')[0];
+  const token = localStorage.getItem('trNotionToken');
+  const statusEl = document.getElementById('drillExportStatus_' + dayIdx);
+  const day = WEEK[dayIdx];
+
+  if (!token) {
+    if (statusEl) statusEl.innerHTML = '<span style="color:var(--red)">❌ Set Notion token first via 🚀 Notion button.</span>';
+    return;
+  }
+
+  const log = JSON.parse(localStorage.getItem('trDrillScoreLog') || '[]');
+  const entries = log.filter(e => e.date === today && e.dayIdx === dayIdx && e.rawScore);
+
+  if (!entries.length) {
+    if (statusEl) statusEl.innerHTML = '<span style="color:var(--text-muted)">No scores entered yet today. Fill in some drills first.</span>';
+    return;
+  }
+
+  if (statusEl) statusEl.innerHTML = '<span style="color:var(--gold)">⏳ Sending ' + entries.length + ' drills to Athlete Zero…</span>';
+
+  const lastWeek = auditLog[0]?.week ? parseInt(auditLog[0].week) : null;
+  let sent = 0, failed = 0;
+
+  for (const e of entries) {
+    const props = {
+      'Entry':       { title: [{ text: { content: e.drillName + ' — ' + day.name + ' — ' + today } }] },
+      'Date':        { date: { start: today } },
+      'Drill Name':  { rich_text: [{ text: { content: e.drillName } }] },
+      'Session Type':{ select: { name: 'Skill Day' } },
+    };
+    if (e.made !== null)     props['Made']            = { number: e.made };
+    if (e.attempted !== null) props['Attempted']       = { number: e.attempted };
+    if (e.pct !== null)      props['Make Percentage'] = { number: e.pct / 100 };
+    if (lastWeek)            props['VPP Week']        = { number: lastWeek };
+    if (e.note)              props['Notes']           = { rich_text: [{ text: { content: e.note } }] };
+    try {
+      const r = await fetch('https://api.notion.com/v1/pages', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Notion-Version': '2022-06-28' },
+        body: JSON.stringify({ parent: { database_id: NOTION_SHOOTING_DB_ID }, properties: props }),
+      });
+      if (r.ok) sent++; else failed++;
+    } catch (_) { failed++; }
+  }
+
+  if (statusEl) {
+    statusEl.innerHTML = failed === 0
+      ? '<span style="color:var(--green);font-weight:900">✅ ' + sent + ' drills logged to Athlete Zero!</span>'
+      : '<span style="color:var(--gold)">⚠️ ' + sent + ' sent · ' + failed + ' failed</span>';
+  }
+}
+
 // ── Sleep Log → Readiness + Recovery Log ──────────────────────────────────────
 function openSleepLog(dayIdx) {
   _pillarDayIdx = dayIdx;
@@ -4288,6 +4392,8 @@ function _buildCoachContext() {
     exerciseRules:   nc?.exerciseRules || [],
     notionShooting:  nc?.shooting  || [],
     notionLoaded:    !!nc,
+    // Local drill score log (structured, parseable)
+    drillScoreLog: JSON.parse(localStorage.getItem('trDrillScoreLog') || '[]').slice(0, 30),
   };
 }
 
@@ -4351,6 +4457,23 @@ function _buildSystemPrompt(ctx) {
         (e.aiRule ? '\n    AI RULE: ' + e.aiRule : '')
       ).join('\n');
     }
+  }
+
+  // Local drill score log
+  if (ctx.drillScoreLog?.length) {
+    notionSection += '\n\nLOCAL DRILL SCORE LOG (recent sessions):\n';
+    const byDate = {};
+    ctx.drillScoreLog.forEach(e => {
+      if (!byDate[e.date]) byDate[e.date] = [];
+      byDate[e.date].push(e);
+    });
+    Object.entries(byDate).slice(0, 5).forEach(([date, entries]) => {
+      notionSection += '  ' + date + ':\n';
+      entries.forEach(e => {
+        const score = e.pct !== null ? e.made + '/' + e.attempted + ' (' + e.pct + '%)' : (e.note || e.rawScore || '—');
+        notionSection += '    ' + (e.drillName || '?') + ': ' + score + ' [' + (e.sessionTitle || '?') + ']\n';
+      });
+    });
   }
 
   return 'You are Coach B — an elite performance coach for Bryan, a 42-year-old male athlete training to dunk a basketball for the first time on a regulation 10-foot rim (need 114" standing touch).\n\nPROGRAM: VPP 3.0 — 16 weeks, 4 phases (Foundation → Force Dev → Elastic → Peak). Mon/Wed/Fri = HPT strength+power. Tue/Sat = Basketball skill. Thu/Sun = Active recovery.\n\nATHLETE DATA:\n- Best approach vertical: ' + (ctx.bestApproach || '?') + '"  | Est. inches to dunk: ' + (ctx.inchesToDunk || 'calculating') + '"' +
