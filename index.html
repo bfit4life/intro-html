@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traction Report | Performance OS</title>
+  <link rel="stylesheet" href="styles.css?v=18">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* Mobile bottom nav — inline to bypass cache */
+    .mobile-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#12121c;border-top:2px solid #ff6b00;padding:6px 0 env(safe-area-inset-bottom,6px);flex-direction:row;justify-content:space-around;align-items:stretch;}
+    .mob-nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;background:none;border:none;color:#888;font-size:9px;font-weight:700;letter-spacing:.04em;padding:6px 2px;cursor:pointer;-webkit-tap-highlight-color:transparent;text-transform:uppercase;}
+    .mob-nav-item .mob-icon{font-size:22px;line-height:1.2;}
+    .mob-nav-item.active{color:#ff6b00;}
+    @media(max-width:900px){.mobile-bottom-nav{display:flex!important;} .main-content{padding-bottom:90px!important;}}
+  </style>
+</head>
+<body>
+<button class="menu-btn" id="menuBtn">☰</button>
+<div id="app">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <span class="logo-ball">🏀</span>
+      <div>
+        <div class="logo-title">Traction Report</div>
+        <div class="logo-sub">Performance OS v1.1</div>
+      </div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group-label">Overview</div>
+    <button class="nav-item active" data-section="dashboard"><span class="nav-icon">📊</span><span>Dashboard</span></button>
+    <button class="nav-item" data-section="schedule"><span class="nav-icon">📅</span><span>Weekly Schedule</span></button>
+    <div class="nav-group-label">Training</div>
+    <button class="nav-item" data-section="training"><span class="nav-icon">⚡</span><span>16-Week Program</span></button>
+    <button class="nav-item" data-section="dunk"><span class="nav-icon">🏀</span><span>Dunk Lab</span></button>
+    <button class="nav-item" data-section="basketball"><span class="nav-icon">⛹️</span><span>Basketball Skills</span></button>
+    <button class="nav-item" data-section="shooting"><span class="nav-icon">🎯</span><span>Shooting & Finishing</span></button>
+    <div class="nav-group-label">Lifestyle</div>
+    <button class="nav-item" data-section="nutrition"><span class="nav-icon">🥗</span><span>Nutrition & Meals</span></button>
+    <button class="nav-item" data-section="sleep"><span class="nav-icon">🌙</span><span>Sleep Protocol</span></button>
+    <button class="nav-item" data-section="recovery"><span class="nav-icon">🔄</span><span>Recovery System</span></button>
+    <button class="nav-item" data-section="shopping"><span class="nav-icon">🛒</span><span>Shopping List</span></button>
+    <div class="nav-group-label">Brand</div>
+    <button class="nav-item" data-section="content"><span class="nav-icon">🎬</span><span>Content Studio</span></button>
+    <button class="nav-item" data-section="calendar"><span class="nav-icon">📆</span><span>Calendar Export</span></button>
+    <div class="nav-group-label">Intelligence</div>
+    <button class="nav-item" data-section="coach"><span class="nav-icon">🤖</span><span>AI Coach</span></button>
+    <div class="nav-group-label">v1.1 Upgrade</div>
+    <button class="nav-item" data-section="jumpscience"><span class="nav-icon">⚡</span><span>Jump Science Lab</span></button>
+  </nav>
+  <button class="help-btn" onclick="openHowTo()">❓ How to Use This App</button>
+</aside>
+
+<!-- ══ MAIN CONTENT ══════════════════════════════════════ -->
+<main class="main-content" id="mainContent">
+
+<!-- ──────────────────── DASHBOARD ──────────────────── -->
+<section id="section-dashboard" class="section active">
+  <div class="page-header">
+    <div class="badge">🏀 42-Year-Old Athlete · NBA Development Model</div>
+    <h1>Performance <span>Operating System</span></h1>
+    <p>16-Week Dunk Development · Explosive Athleticism · Traction Report Content Engine</p>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card orange"><div class="kpi-value" id="kpi-week">1</div><div class="kpi-label">Current Week</div><div class="kpi-sub">of 16</div></div>
+    <div class="kpi-card gold"><div class="kpi-value" id="kpi-phase">1</div><div class="kpi-label">Phase</div><div class="kpi-sub">Foundation</div></div>
+    <div class="kpi-card green"><div class="kpi-value" id="kpi-vj">—"</div><div class="kpi-label">Vert Jump</div><div class="kpi-sub">Log in Dunk Lab</div></div>
+    <div class="kpi-card blue"><div class="kpi-value" id="kpi-streak">0</div><div class="kpi-label">Day Streak</div><div class="kpi-sub">sessions complete</div></div>
+    <div class="kpi-card purple"><div class="kpi-value" id="kpi-dunk">—</div><div class="kpi-label">Dunk Stage</div><div class="kpi-sub">Rim Touch → Dunk</div></div>
+  </div>
+
+  <div class="grid-2 mb-24">
+    <div class="card card-lg">
+      <div class="card-title">Vertical Jump Progress</div>
+      <div class="chart-wrap"><canvas id="vjChart"></canvas></div>
+    </div>
+    <div class="card card-lg">
+      <div class="card-title">Weekly Training Load</div>
+      <div class="chart-wrap"><canvas id="loadChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="section-divider"><h2>System Overview</h2></div>
+  <div class="grid-3 mb-24">
+    <div class="card">
+      <div class="card-title">🏋️ Training Structure</div>
+      <ul class="recovery-items" style="list-style:none">
+        <li>4 High Performance Training Days</li>
+        <li>2 Basketball Skill Days</li>
+        <li>1 Active Recovery Day</li>
+        <li>Deload every 4th week</li>
+        <li>7 components per session</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">🎯 Primary Objectives</div>
+      <ul class="recovery-items" style="list-style:none">
+        <li>Dunk consistently by Week 14</li>
+        <li>+6–8" vertical jump gain</li>
+        <li>NBA-style athleticism</li>
+        <li>Joint &amp; tendon longevity</li>
+        <li>Explosive through age 50+</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">🎬 Content Engine</div>
+      <ul class="recovery-items" style="list-style:none">
+        <li>Daily content capture plan</li>
+        <li>1 workout = 5+ pieces</li>
+        <li>TikTok · Reels · Shorts</li>
+        <li>Dunk Data Log series</li>
+        <li>Traction Report shoe testing</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <p><strong>Core Philosophy:</strong> You are not training to be a weight-room athlete. You are training to be explosive, elastic, reactive, durable, skilled, and athletic. Every session is built around basketball performance — not aesthetics.</p>
+  </div>
+
+  <div class="section-divider"><h2>16-Week Phases</h2></div>
+  <div class="grid-2">
+    <div class="card"><div style="display:flex;gap:12px;align-items:center;margin-bottom:10px"><div class="phase-num" style="background:rgba(255,107,0,0.2);color:var(--orange)">1</div><div><strong>Foundation</strong> &nbsp;<span class="tag tag-orange">Weeks 1–4</span></div></div><p class="text-sm text-muted">Movement quality, tendon prep, baseline testing. Low plyometric amplitude, high frequency. Slant board intro, joint priming, proprioception.</p></div>
+    <div class="card"><div style="display:flex;gap:12px;align-items:center;margin-bottom:10px"><div class="phase-num" style="background:rgba(68,136,255,0.2);color:var(--blue)">2</div><div><strong>Build</strong> &nbsp;<span class="tag tag-blue">Weeks 5–8</span></div></div><p class="text-sm text-muted">Strength accumulation, tendon loading, jump volume. Heavier trap bar work, progressive slant board loading, depth drops introduced.</p></div>
+    <div class="card"><div style="display:flex;gap:12px;align-items:center;margin-bottom:10px"><div class="phase-num" style="background:rgba(255,215,0,0.2);color:var(--gold)">3</div><div><strong>Peak</strong> &nbsp;<span class="tag tag-gold">Weeks 9–12</span></div></div><p class="text-sm text-muted">Power expression, reactive strength, dunk conversion. Band-assisted dunks, max-effort jumps, approach work. Volume drops, intensity climbs.</p></div>
+    <div class="card"><div style="display:flex;gap:12px;align-items:center;margin-bottom:10px"><div class="phase-num" style="background:rgba(0,204,136,0.2);color:var(--green)">4</div><div><strong>Express</strong> &nbsp;<span class="tag tag-green">Weeks 13–16</span></div></div><p class="text-sm text-muted">Maximum power output, dunk execution. Low volume, peak intensity. Document everything. Regulation dunk target: Week 14–16.</p></div>
+  </div>
+</section>
+
+<!-- ──────────────────── WEEKLY SCHEDULE ──────────────── -->
+<section id="section-schedule" class="section">
+  <div class="page-header">
+    <div class="badge">📅 Repeating Weekly Template</div>
+    <h1>Weekly <span>Schedule</span></h1>
+    <p>4 HPT days · 2 skill days · 1 active recovery · 7 components per session</p>
+  </div>
+
+  <div class="week-grid" id="weekGrid"></div>
+
+  <div class="card card-lg mb-24" id="dayDetail">
+    <div class="card-title">Select a day above to view its full session plan</div>
+  </div>
+
+  <div class="section-divider"><h2>Session Architecture</h2></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Every HPT Session (90 min)</div>
+      <table><tbody>
+        <tr><td><span class="tag tag-orange">1</span></td><td><strong>Movement Prep</strong></td><td class="text-muted text-sm">10 min — dynamic warm-up, activation</td></tr>
+        <tr><td><span class="tag tag-orange">2</span></td><td><strong>Mobility</strong></td><td class="text-muted text-sm">10 min — ankle, hip, thoracic</td></tr>
+        <tr><td><span class="tag tag-orange">3</span></td><td><strong>Jump Development</strong></td><td class="text-muted text-sm">15–20 min — pogos, drops, bands</td></tr>
+        <tr><td><span class="tag tag-orange">4</span></td><td><strong>Strength Development</strong></td><td class="text-muted text-sm">30–35 min — trap bar, slant board</td></tr>
+        <tr><td><span class="tag tag-orange">5</span></td><td><strong>Athletic Development</strong></td><td class="text-muted text-sm">15 min — speed, COD, lateral</td></tr>
+        <tr><td><span class="tag tag-orange">6</span></td><td><strong>Basketball Transfer</strong></td><td class="text-muted text-sm">10 min — court movements, jumps</td></tr>
+        <tr><td><span class="tag tag-orange">7</span></td><td><strong>Recovery Protocol</strong></td><td class="text-muted text-sm">10 min — tissue work, tibialis, foot</td></tr>
+      </tbody></table>
+    </div>
+    <div class="card">
+      <div class="card-title">Every Basketball Session (75 min)</div>
+      <table><tbody>
+        <tr><td><span class="tag tag-blue">1</span></td><td><strong>Movement Prep</strong></td><td class="text-muted text-sm">8 min — court warm-up</td></tr>
+        <tr><td><span class="tag tag-blue">2</span></td><td><strong>Ball Handling</strong></td><td class="text-muted text-sm">15 min — stationary + moving</td></tr>
+        <tr><td><span class="tag tag-blue">3</span></td><td><strong>Finishing</strong></td><td class="text-muted text-sm">15 min — layups, floaters, dunks</td></tr>
+        <tr><td><span class="tag tag-blue">4</span></td><td><strong>Shooting</strong></td><td class="text-muted text-sm">15 min — pull-up, catch &amp; shoot</td></tr>
+        <tr><td><span class="tag tag-blue">5</span></td><td><strong>Footwork</strong></td><td class="text-muted text-sm">10 min — game-speed movements</td></tr>
+        <tr><td><span class="tag tag-blue">6</span></td><td><strong>Transition/Conditioning</strong></td><td class="text-muted text-sm">12 min — basketball conditioning</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────────── TRAINING PROGRAM ─────────────── -->
+<section id="section-training" class="section">
+  <div class="page-header">
+    <div class="badge">⚡ Science-Backed Vertical Development</div>
+    <h1>16-Week <span>Training Program</span></h1>
+    <p>Slant board · Plyometrics · Reactive Strength · NBA Athletic Development</p>
+  </div>
+
+  <div class="slant-spotlight mb-24">
+    <h3>🛹 Slant Board Training — The Science</h3>
+    <div class="grid-2">
+      <div>
+        <p class="text-sm mb-8"><strong class="text-orange">Why Slant Board?</strong> A 15–25° heel-elevated board increases ankle dorsiflexion, shifts load to the quadriceps, allows deeper knee flexion without lumbar stress, and directly trains the elastic tendon system basketball jumpers rely on.</p>
+        <p class="text-sm mb-8"><strong class="text-gold">Quad Activation:</strong> Research shows slant board squats activate the VMO (vastus medialis) 20–30% more than flat squats — critical for knee stability, patellar tracking, and jump power.</p>
+        <p class="text-sm"><strong class="text-green">Tendon Protocol:</strong> Isometrics at 70–90° knee angle reduce patellar tendon pain by 40%+ immediately (Rio et al.). 5×45 sec at 4/10 max pain. This is your tendon armor.</p>
+      </div>
+      <div>
+        <p class="text-sm mb-8"><strong class="text-blue">For a 42-Year-Old:</strong> Collagen synthesis slows with age. Slow, loaded tendon work (isometrics + eccentrics) on the slant board is the most evidence-based approach to keeping knees explosive AND pain-free through your 50s.</p>
+        <p class="text-sm mb-8"><strong class="text-orange">Progressions:</strong> BW squats → Goblet → Barbell front load → Single-leg. Always lead with movement quality over load.</p>
+        <p class="text-sm"><strong class="text-gold">Key Rule:</strong> Isometrics LAST in the session (post-fatigue tendon loading). Plyometrics FIRST when CNS is fresh.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 1 -->
+  <div class="phase-header open" onclick="togglePhase(this)">
+    <div class="phase-title">
+      <div class="phase-num" style="background:rgba(255,107,0,0.2);color:var(--orange)">1</div>
+      <div><strong>FOUNDATION</strong> &nbsp;<span class="tag tag-orange">Weeks 1–4</span></div>
+    </div>
+    <div><span class="text-muted text-sm">Tendon prep · Movement quality · Baseline</span> &nbsp;▾</div>
+  </div>
+  <div class="phase-body open mb-24">
+    <div class="highlight-box mb-16"><p><strong>Phase Goal:</strong> Build the base. Prime tendons and fascia. Establish movement patterns. Assess baseline vertical. Volume is moderate, intensity is 60–70%. No ego lifting.</p></div>
+    <div class="section-divider"><h2>HPT Session Template — Weeks 1–4</h2></div>
+    <div class="grid-2">
+      <div>
+        <div class="session-block">
+          <div class="session-block-header"><div class="session-num">1</div><h4>Movement Preparation</h4><span class="session-duration">10 min</span></div>
+          <div class="session-block-body"><ul class="exercise-list">
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Ankle Circles + Alphabet</div><div class="ex-detail">2×10 each direction</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Hip Circles (standing)</div><div class="ex-detail">2×10 each direction</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Leg Swings (front/side)</div><div class="ex-detail">2×15 each leg</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">High Knees + Butt Kicks</div><div class="ex-detail">2×20m each</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Lateral Shuffle + Carioca</div><div class="ex-detail">2×10m each direction</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Glute Bridge Activation</div><div class="ex-detail">2×15 reps</div></div></li>
+          </ul></div>
+        </div>
+        <div class="session-block">
+          <div class="session-block-header"><div class="session-num">2</div><h4>Mobility Protocol</h4><span class="session-duration">10 min</span></div>
+          <div class="session-block-body"><ul class="exercise-list">
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Ankle Mobility — Wall Drill</div><div class="ex-detail">3×10 each ankle, 5cm from wall</div><div class="ex-note">Knee tracking over pinky toe</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Banded Ankle Distraction</div><div class="ex-detail">2×30 sec each side</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">90/90 Hip Stretch</div><div class="ex-detail">2×45 sec each side</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Hip Flexor Lunge Stretch</div><div class="ex-detail">2×45 sec each side</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Thoracic Rotation (seated)</div><div class="ex-detail">2×10 each side</div></div></li>
+          </ul></div>
+        </div>
+        <div class="session-block">
+          <div class="session-block-header"><div class="session-num">3</div><h4>Jump Development</h4><span class="session-duration">15 min</span></div>
+          <div class="session-block-body"><ul class="exercise-list">
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Pogo Jumps</div><div class="ex-detail">Wk 1–2: 3×20 · Wk 3–4: 3×25</div><div class="ex-note">Minimal knee bend, stiff ankles, rapid ground contact</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Depth Drops</div><div class="ex-detail">Wk 1–2: 3×5 off 12" · Wk 3–4: 3×8 off 15"</div><div class="ex-note">Land soft, absorb, NO jump — learn landing mechanics</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Band Assisted Jumps</div><div class="ex-detail">3×8 reps</div><div class="ex-note">Band overhead reduces 20% bodyweight — programs dunk feel</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Broad Jumps</div><div class="ex-detail">3×5 max effort</div><div class="ex-note">Full arm swing, stick landing 2 sec</div></div></li>
+          </ul></div>
+        </div>
+      </div>
+      <div>
+        <div class="session-block">
+          <div class="session-block-header"><div class="session-num">4</div><h4>Strength Development</h4><span class="session-duration">30 min</span></div>
+          <div class="session-block-body"><ul class="exercise-list">
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Trap Bar Deadlift</div><div class="ex-detail">Wk 1–2: 3×10 @60% · Wk 3–4: 3×8 @65%</div><div class="ex-note">Maintain neutral spine. This is your primary power builder.</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Slant Board Squat</div><div class="ex-detail">Wk 1–2: 3×10 BW · Wk 3–4: 3×12 +25lb</div><div class="ex-note">15–25° board. Full depth. Upright torso. Knees track toes.</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Slant Board Isometric</div><div class="ex-detail">5×45 sec at 90° knee angle</div><div class="ex-note">LAST in strength block. Pain ≤4/10. Rest 2 min between sets.</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Copenhagen Plank</div><div class="ex-detail">Wk 1–2: 3×20 sec · Wk 3–4: 3×25 sec</div><div class="ex-note">Adductor armor. Critical for groin injury prevention.</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Single-Leg RDL (BW)</div><div class="ex-detail">3×8 each leg</div></div></li>
+          </ul></div>
+        </div>
+        <div class="session-block">
+          <div class="session-block-header"><div class="session-num">5</div><h4>Athletic Development</h4><span class="session-duration">12 min</span></div>
+          <div class="session-block-body"><ul class="exercise-list">
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Linear Acceleration Runs</div><div class="ex-detail">5×20m — focus first 3 steps</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Pro Agility Shuffle (5-10-5)</div><div class="ex-detail">4× each direction</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Lateral Defensive Slides</div><div class="ex-detail">3×10m each direction</div></div></li>
+          </ul></div>
+        </div>
+        <div class="session-block">
+          <div class="session-block-header"><div class="session-num">6+7</div><h4>Basketball Transfer + Recovery</h4><span class="session-duration">20 min</span></div>
+          <div class="session-block-body"><ul class="exercise-list">
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Approach Jump to Rim</div><div class="ex-detail">10× max reach attempts</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Tibialis Raises</div><div class="ex-detail">3×20 reps — heel on edge</div><div class="ex-note">Shin armor. Reduces stress fracture risk by 50%+.</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Soleus Calf Raises (bent knee)</div><div class="ex-detail">3×15 slow · 2 sec hold at top</div><div class="ex-note">Achilles tendon health. Seated or wall-supported.</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Foot Strength — Towel Scrunches</div><div class="ex-detail">2×30 sec each foot</div></div></li>
+            <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Foam Roll — Calves/Quads/IT</div><div class="ex-detail">60 sec each zone</div></div></li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="phase-header" onclick="togglePhase(this)">
+    <div class="phase-title">
+      <div class="phase-num" style="background:rgba(68,136,255,0.2);color:var(--blue)">2</div>
+      <div><strong>BUILD</strong> &nbsp;<span class="tag tag-blue">Weeks 5–8</span></div>
+    </div>
+    <div><span class="text-muted text-sm">Strength accumulation · Tendon loading · Jump volume</span> &nbsp;▾</div>
+  </div>
+  <div class="phase-body mb-24">
+    <div class="highlight-box mb-16"><p><strong>Phase Goal:</strong> Build the engine. Heavier trap bar loads, progressive slant board loading, increased plyometric volume. Introduce depth drop-to-jump. <strong>Week 8 = DELOAD</strong> (50% volume).</p></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Exercise</th><th>Weeks 5–6</th><th>Weeks 7–8</th><th>Key Note</th></tr></thead>
+        <tbody>
+          <tr><td>Trap Bar Deadlift</td><td>4×5 @75%</td><td>4×4 @80%</td><td>Reset between reps. Explosive concentric.</td></tr>
+          <tr><td>Slant Board Squat</td><td>4×8 +45lb</td><td>4×6 +65lb</td><td>Add load gradually. Form before weight.</td></tr>
+          <tr><td>Slant Board Isometric</td><td>5×45 sec @80°</td><td>5×45 sec @70° (harder)</td><td>Harder angle = more tendon stress. Monitor soreness.</td></tr>
+          <tr><td>Pogo Jumps</td><td>4×20 + intro single-leg</td><td>4×25 + single-leg 3×10</td><td>Ankle stiffness is the goal. NO heel contact.</td></tr>
+          <tr><td>Depth Drops</td><td>4×6 off 18"</td><td>4×8 off 20"</td><td>Week 7: introduce depth drop → immediate jump</td></tr>
+          <tr><td>Band Assisted Jumps</td><td>4×10 — approach jump</td><td>4×12 — band dunk attempts</td><td>Begin filming dunk attempts with band!</td></tr>
+          <tr><td>Broad Jumps</td><td>4×6 max effort</td><td>4×6 triple broad jump</td><td>Triple broad jump = reactive power test</td></tr>
+          <tr><td>Copenhagen Plank</td><td>4×30 sec</td><td>4×35 sec + slight hip dip</td><td>Progress by adding hip drop ROM</td></tr>
+          <tr><td>Single-Leg RDL</td><td>3×10 @25lb KB</td><td>3×8 @35lb KB</td><td>Glute-hamstring chain for jump power</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="phase-header" onclick="togglePhase(this)">
+    <div class="phase-title">
+      <div class="phase-num" style="background:rgba(255,215,0,0.2);color:var(--gold)">3</div>
+      <div><strong>PEAK</strong> &nbsp;<span class="tag tag-gold">Weeks 9–12</span></div>
+    </div>
+    <div><span class="text-muted text-sm">Power expression · Reactive strength · Dunk conversion</span> &nbsp;▾</div>
+  </div>
+  <div class="phase-body mb-24">
+    <div class="highlight-box mb-16"><p><strong>Phase Goal:</strong> Convert strength to power. Volume drops 30%. Intensity climbs to 85–90%. Every session has max-effort jumps. <strong>Week 12 = DELOAD</strong> (40% volume). Target: first regulation ball dunk attempt.</p></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Exercise</th><th>Weeks 9–10</th><th>Weeks 11–12</th><th>Key Note</th></tr></thead>
+        <tbody>
+          <tr><td>Trap Bar Deadlift</td><td>3×3 @85%</td><td>3×3 @88%</td><td>Maximum velocity intent. No grinding reps.</td></tr>
+          <tr><td>Slant Board Squat</td><td>3×5 +85lb</td><td>3×4 +95lb</td><td>Reduce volume, maintain load</td></tr>
+          <tr><td>Slant Board Isometric</td><td>4×30 sec @60°</td><td>3×30 sec @60°</td><td>Reduce frequency, maintain angle</td></tr>
+          <tr><td>Depth Drop → Jump</td><td>4×5 off 20"</td><td>5×5 off 24"</td><td>Ground contact &lt;0.2 sec. Film every set.</td></tr>
+          <tr><td>Band Assisted Dunks</td><td>5×5 — tennis ball</td><td>5×8 — volleyball size</td><td>Get the feel of going above the rim</td></tr>
+          <tr><td>Max Vertical Attempts</td><td>3×5 measured</td><td>5×5 measured</td><td>Log every session in Dunk Lab</td></tr>
+          <tr><td>Reactive Lateral Bounds</td><td>4×5 each leg</td><td>4×6 each leg</td><td>Rotational power — hips drive everything</td></tr>
+          <tr><td>Pogo Jumps (single-leg)</td><td>3×15 each</td><td>3×20 each</td><td>Build elastic stiffness unilaterally</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div class="phase-header" onclick="togglePhase(this)">
+    <div class="phase-title">
+      <div class="phase-num" style="background:rgba(0,204,136,0.2);color:var(--green)">4</div>
+      <div><strong>EXPRESS</strong> &nbsp;<span class="tag tag-green">Weeks 13–16</span></div>
+    </div>
+    <div><span class="text-muted text-sm">Maximum output · Dunk execution · Document everything</span> &nbsp;▾</div>
+  </div>
+  <div class="phase-body mb-24">
+    <div class="highlight-box mb-16"><p><strong>Phase Goal:</strong> Execute. Low volume, maximum intensity. Every session includes dunk attempts with a regulation basketball. Week 16 = full video documentation of your dunk milestone for Traction Report.</p></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Exercise</th><th>Weeks 13–14</th><th>Weeks 15–16</th><th>Key Note</th></tr></thead>
+        <tbody>
+          <tr><td>Trap Bar Deadlift</td><td>2×3 @90%</td><td>1×3 @90% (maintenance)</td><td>Strength is built. Maintain, don't fatigue.</td></tr>
+          <tr><td>Slant Board Squat</td><td>3×3 +105lb</td><td>3×3 +105lb</td><td>Maintenance load</td></tr>
+          <tr><td>Depth Drop → Jump</td><td>5×5 off 24"</td><td>4×4 off 24"</td><td>Freshness matters most now</td></tr>
+          <tr><td>Regulation Dunk Attempts</td><td>10–15 attempts/session</td><td>Max attempts — FILM ALL</td><td>Week 16: content documentation day</td></tr>
+          <tr><td>Approach Jumps (measured)</td><td>5×max effort</td><td>5×max effort</td><td>Test personal best each session</td></tr>
+          <tr><td>Slant Board Isometric</td><td>3×30 sec (recovery)</td><td>2×30 sec</td><td>Knee health maintenance only</td></tr>
+          <tr><td>Tibialis / Soleus</td><td>Keep daily</td><td>Keep daily</td><td>Never skip — joint armor for life</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-divider"><h2>Exercise Science Library</h2></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Plyometric Hierarchy</div>
+      <table><tbody>
+        <tr><td><span class="tag tag-green">Low</span></td><td><strong>Pogo Jumps</strong></td><td class="text-sm text-muted">Ankle stiffness, elastic energy</td></tr>
+        <tr><td><span class="tag tag-gold">Med</span></td><td><strong>Depth Drops</strong></td><td class="text-sm text-muted">Landing mechanics, eccentric load</td></tr>
+        <tr><td><span class="tag tag-gold">Med</span></td><td><strong>Broad Jumps</strong></td><td class="text-sm text-muted">Horizontal power, hip extension</td></tr>
+        <tr><td><span class="tag tag-orange">High</span></td><td><strong>Depth Jump</strong></td><td class="text-sm text-muted">Reactive strength, SSC training</td></tr>
+        <tr><td><span class="tag tag-red">Max</span></td><td><strong>Band Dunks</strong></td><td class="text-sm text-muted">Specificity — train the exact motion</td></tr>
+      </tbody></table>
+    </div>
+    <div class="card">
+      <div class="card-title">NBA Athletic Requirements</div>
+      <ul class="exercise-list" style="list-style:none">
+        <li><input type="checkbox" class="ex-check" disabled><div><div class="ex-name">Linear Speed — 5/10/20m sprints</div><div class="ex-detail">First-step explosion off the blocks</div></div></li>
+        <li><input type="checkbox" class="ex-check" disabled><div><div class="ex-name">Change of Direction — 5-10-5, T-drill</div><div class="ex-detail">Decelerate → reaccelerate in 1 step</div></div></li>
+        <li><input type="checkbox" class="ex-check" disabled><div><div class="ex-name">Reactive Lateral Movement</div><div class="ex-detail">Mirror drills, defensive slides</div></div></li>
+        <li><input type="checkbox" class="ex-check" disabled><div><div class="ex-name">Rotational Athleticism</div><div class="ex-detail">Hip-driven rotation for finishing</div></div></li>
+        <li><input type="checkbox" class="ex-check" disabled><div><div class="ex-name">Single-Leg Deceleration</div><div class="ex-detail">Land safely at game speed</div></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────────── NUTRITION ────────────────────── -->
+<section id="section-nutrition" class="section">
+  <div class="page-header">
+    <div class="badge">🥗 Performance Fuel · Not Bodybuilding</div>
+    <h1>Nutrition <span>&amp; Meal Plan</span></h1>
+    <p>Anti-inflammatory · Tendon support · Explosive performance · Lean body composition</p>
+  </div>
+
+  <div class="day-type-tabs">
+    <button class="day-tab active" onclick="switchMealPlan('training',this)">⚡ Training Day</button>
+    <button class="day-tab" onclick="switchMealPlan('basketball',this)">🏀 Basketball Day</button>
+    <button class="day-tab" onclick="switchMealPlan('recovery',this)">🔄 Recovery Day</button>
+  </div>
+
+  <div id="mealPlanContent"></div>
+
+  <div class="section-divider"><h2>Micronutrient Protocol</h2></div>
+  <div class="micro-grid mb-24">
+    <div class="micro-item"><div class="micro-name">Magnesium Glycinate</div><div class="micro-dose">400<span class="micro-unit">mg</span></div><div class="micro-why">Sleep quality, muscle recovery, reduces cramps. Take 30 min before bed.</div></div>
+    <div class="micro-item"><div class="micro-name">Vitamin D3 + K2</div><div class="micro-dose">3000<span class="micro-unit">IU</span></div><div class="micro-why">Testosterone support, bone density, immune function, muscle strength. With fat.</div></div>
+    <div class="micro-item"><div class="micro-name">Omega-3 (EPA+DHA)</div><div class="micro-dose">3<span class="micro-unit">g/day</span></div><div class="micro-why">Reduces systemic inflammation, supports tendon health. With largest meal.</div></div>
+    <div class="micro-item"><div class="micro-name">Zinc</div><div class="micro-dose">20<span class="micro-unit">mg</span></div><div class="micro-why">Testosterone production, immune, wound healing. Take away from calcium.</div></div>
+    <div class="micro-item"><div class="micro-name">Potassium</div><div class="micro-dose">4700<span class="micro-unit">mg</span></div><div class="micro-why">Electrolyte balance, reduces cramping. Get from food: banana, sweet potato, spinach.</div></div>
+    <div class="micro-item"><div class="micro-name">Sodium</div><div class="micro-dose">2500<span class="micro-unit">mg</span></div><div class="micro-why">Elevated on training/bball days. Critical for performance hydration.</div></div>
+    <div class="micro-item"><div class="micro-name">Calcium</div><div class="micro-dose">1000<span class="micro-unit">mg</span></div><div class="micro-why">Bone density (joint longevity priority), muscle contraction. Dairy + greens.</div></div>
+    <div class="micro-item"><div class="micro-name">Collagen + Vit C</div><div class="micro-dose">15<span class="micro-unit">g</span></div><div class="micro-why">Tendon synthesis. Take 30–60 min PRE-training. Game changer at 42.</div></div>
+  </div>
+
+  <div class="section-divider"><h2>Hydration Targets</h2></div>
+  <div class="grid-3 mb-24">
+    <div class="card" style="border-color:var(--orange)">
+      <div class="card-title">⚡ Training Days</div>
+      <div style="font-size:36px;font-weight:900;color:var(--orange);margin:8px 0">128 oz</div>
+      <div class="text-sm text-muted mb-8">≈ 3.8 liters / 16 cups</div>
+      <ul class="recovery-items" style="list-style:none">
+        <li>16 oz on waking (+ lemon)</li>
+        <li>24 oz pre-workout (with electrolytes)</li>
+        <li>24 oz during training</li>
+        <li>24 oz post-workout</li>
+        <li>Remaining through day</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color:var(--blue)">
+      <div class="card-title">🏀 Basketball Days</div>
+      <div style="font-size:36px;font-weight:900;color:var(--blue);margin:8px 0">140 oz</div>
+      <div class="text-sm text-muted mb-8">≈ 4.1 liters</div>
+      <ul class="recovery-items" style="list-style:none">
+        <li>16 oz on waking</li>
+        <li>20 oz pre-court</li>
+        <li>32 oz during (sip every timeout)</li>
+        <li>20 oz post-court</li>
+        <li>Add electrolyte tab if sweating heavy</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color:var(--green)">
+      <div class="card-title">🔄 Recovery Days</div>
+      <div style="font-size:36px;font-weight:900;color:var(--green);margin:8px 0">100 oz</div>
+      <div class="text-sm text-muted mb-8">≈ 3.0 liters</div>
+      <ul class="recovery-items" style="list-style:none">
+        <li>16 oz on waking</li>
+        <li>Steady intake through day</li>
+        <li>Herbal tea counts</li>
+        <li>Urine color = pale yellow target</li>
+        <li>Tart cherry juice for recovery</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-divider"><h2>Nutrient Timing</h2></div>
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Window</th><th>Timing</th><th>Priority Nutrients</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>Pre-Training</td><td>60–90 min before</td><td>Carbs + moderate protein + Collagen/Vit C</td><td>Oats + whey + banana + collagen peptides</td></tr>
+          <tr><td>During Training</td><td>If &gt;75 min</td><td>Fast carbs + sodium + water</td><td>½ banana or dates + electrolyte water</td></tr>
+          <tr><td>Post-Training</td><td>Within 45 min</td><td>Fast protein + carbs (3:1 ratio)</td><td>40g whey + rice + berries</td></tr>
+          <tr><td>Pre-Basketball</td><td>2–3 hr before</td><td>Complex carbs + lean protein + low fat</td><td>Chicken + rice + greens</td></tr>
+          <tr><td>Pre-Bed</td><td>60 min before sleep</td><td>Slow protein + low glycemic carbs + Magnesium</td><td>Cottage cheese + berries + magnesium</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────────── SLEEP ────────────────────────── -->
+<section id="section-sleep" class="section">
+  <div class="page-header">
+    <div class="badge">🌙 Sleep is Training</div>
+    <h1>Sleep <span>Protocol</span></h1>
+    <p>8–9 hours · Hormonal optimization · HGH release · Nervous system recovery</p>
+  </div>
+
+  <div class="grid-2 mb-24">
+    <div class="card card-lg">
+      <div class="card-title">Target Sleep Schedule</div>
+      <div class="sleep-timeline">
+        <div class="sleep-bar"><div class="sleep-fill"></div></div>
+        <div class="sleep-marker"><div class="sleep-dot" style="background:var(--orange)"></div><div class="sleep-marker-time">9:00 PM</div><div class="sleep-marker-label">Wind Down</div></div>
+        <div class="sleep-marker"><div class="sleep-dot" style="background:var(--purple)"></div><div class="sleep-marker-time">10:15 PM</div><div class="sleep-marker-label">Lights Out</div></div>
+        <div class="sleep-marker"><div class="sleep-dot" style="background:var(--blue)"></div><div class="sleep-marker-time">6:30 AM</div><div class="sleep-marker-label">Wake Up</div></div>
+        <div class="sleep-marker"><div class="sleep-dot" style="background:var(--green)"></div><div class="sleep-marker-time">8 hr 15 min</div><div class="sleep-marker-label">Sleep Time</div></div>
+      </div>
+      <div class="grid-2 mt-12">
+        <div class="micro-item"><div class="micro-name">Target Sleep</div><div class="micro-dose" style="color:var(--blue)">8–9<span class="micro-unit"> hrs</span></div><div class="micro-why">Non-negotiable for HGH release, tendon repair, CNS reset</div></div>
+        <div class="micro-item"><div class="micro-name">Room Temp</div><div class="micro-dose" style="color:var(--green)">65–68°<span class="micro-unit">F</span></div><div class="micro-why">Cool room = deeper sleep, faster REM onset</div></div>
+      </div>
+    </div>
+    <div class="card card-lg">
+      <div class="card-title">Pre-Sleep Stack (9:00–10:00 PM)</div>
+      <table><tbody>
+        <tr><td>9:00 PM</td><td><strong>Dim all lights</strong></td><td class="text-sm text-muted">Trigger melatonin production</td></tr>
+        <tr><td>9:15 PM</td><td><strong>Collagen + tart cherry</strong></td><td class="text-sm text-muted">Overnight tendon synthesis</td></tr>
+        <tr><td>9:30 PM</td><td><strong>SCREENS OFF</strong></td><td class="text-sm text-muted">No phone/TV — blue light blocks HGH</td></tr>
+        <tr><td>9:45 PM</td><td><strong>Magnesium 400mg</strong></td><td class="text-sm text-muted">Glycinate form — GABA activation</td></tr>
+        <tr><td>9:50 PM</td><td><strong>Light mobility/stretching</strong></td><td class="text-sm text-muted">10 min — hip flexors, calves, thoracic</td></tr>
+        <tr><td>10:00 PM</td><td><strong>Read (physical book)</strong></td><td class="text-sm text-muted">Downregulate nervous system</td></tr>
+        <tr><td>10:15 PM</td><td><strong>Lights out</strong></td><td class="text-sm text-muted">Cool, dark, quiet room</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="section-divider"><h2>Sleep Quality Checklist</h2></div>
+  <div class="grid-3 mb-24">
+    <div class="recovery-card">
+      <div class="recovery-icon">🌡️</div>
+      <div class="recovery-title">Environment</div>
+      <ul class="recovery-items">
+        <li>Room: 65–68°F (18–20°C)</li>
+        <li>Blackout curtains or sleep mask</li>
+        <li>White noise machine or fan</li>
+        <li>Phone out of bedroom</li>
+        <li>Blue light glasses 2 hrs pre-bed</li>
+      </ul>
+    </div>
+    <div class="recovery-card">
+      <div class="recovery-icon">📱</div>
+      <div class="recovery-title">Screen Management</div>
+      <ul class="recovery-items">
+        <li>Hard stop: screens off 9:30 PM</li>
+        <li>Night mode on all devices by 8 PM</li>
+        <li>No social media within 1 hr of bed</li>
+        <li>No stressful content pre-sleep</li>
+        <li>Charge phone outside bedroom</li>
+      </ul>
+    </div>
+    <div class="recovery-card">
+      <div class="recovery-icon">📊</div>
+      <div class="recovery-title">Recovery Metrics</div>
+      <ul class="recovery-items">
+        <li>Track HRV (Whoop/Oura/Garmin)</li>
+        <li>Log sleep score daily</li>
+        <li>Note if &lt;7 hrs → reduce training load</li>
+        <li>Note if HRV drops 10%+ → deload</li>
+        <li>Rate morning energy 1–10 daily</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <p><strong>The 42-Year-Old Advantage:</strong> HGH (human growth hormone) peaks during deep sleep stages 3–4. This is your primary anabolic window — more important than any supplement. Protecting 8–9 hours of sleep IS your recovery protocol. Missing sleep is like skipping training.</p>
+  </div>
+
+  <div class="section-divider"><h2>Morning Activation (6:30–7:00 AM)</h2></div>
+  <div class="card">
+    <table><tbody>
+      <tr><td style="width:90px">6:30 AM</td><td><strong>Wake — no snooze alarm</strong></td><td class="text-sm text-muted">Consistent wake time stabilizes circadian rhythm</td></tr>
+      <tr><td>6:32 AM</td><td><strong>16 oz water + electrolytes</strong></td><td class="text-sm text-muted">Rehydrate from 8 hrs of breathing</td></tr>
+      <tr><td>6:35 AM</td><td><strong>Morning sunlight 5–10 min</strong></td><td class="text-sm text-muted">Anchor circadian rhythm, cortisol reset</td></tr>
+      <tr><td>6:45 AM</td><td><strong>Mobility work (10 min)</strong></td><td class="text-sm text-muted">Hips, ankles, thoracic — get joints flowing</td></tr>
+      <tr><td>6:55 AM</td><td><strong>Pre-training nutrition</strong></td><td class="text-sm text-muted">If training within 90 min — start fueling</td></tr>
+      <tr><td>7:00 AM</td><td><strong>Mental prep — review training goals</strong></td><td class="text-sm text-muted">Read your dunk targets. Visualize the approach.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<!-- ──────────────────── DUNK LAB ─────────────────────── -->
+<section id="section-dunk" class="section">
+  <div class="page-header">
+    <div class="badge">🏀 Road to Dunking Again</div>
+    <h1>Dunk <span>Lab</span></h1>
+    <p>Progressive dunk system · Data logging · Traction Report content series</p>
+  </div>
+
+  <div class="section-divider"><h2>Dunk Progression Ladder</h2></div>
+  <div class="dunk-progression mb-24" id="dunkLadder">
+    <div class="dunk-stage current" data-stage="0"><div class="dunk-stage-icon">✋</div><div class="dunk-stage-name">Rim Touch</div><div class="dunk-stage-week">Wk 1–2</div></div>
+    <div class="dunk-stage" data-stage="1"><div class="dunk-stage-icon">🪃</div><div class="dunk-stage-name">Backboard Touch</div><div class="dunk-stage-week">Wk 3–4</div></div>
+    <div class="dunk-stage" data-stage="2"><div class="dunk-stage-icon">🎾</div><div class="dunk-stage-name">Tennis Ball</div><div class="dunk-stage-week">Wk 5–6</div></div>
+    <div class="dunk-stage" data-stage="3"><div class="dunk-stage-icon">🏐</div><div class="dunk-stage-name">Volleyball</div><div class="dunk-stage-week">Wk 7–9</div></div>
+    <div class="dunk-stage" data-stage="4"><div class="dunk-stage-icon">🟠</div><div class="dunk-stage-name">Small Ball</div><div class="dunk-stage-week">Wk 10–13</div></div>
+    <div class="dunk-stage" data-stage="5"><div class="dunk-stage-icon">🏀</div><div class="dunk-stage-name">Regulation</div><div class="dunk-stage-week">Wk 14–16</div></div>
+  </div>
+
+  <div class="section-divider"><h2>Weekly Dunk Session (Friday — HPT Day 3)</h2></div>
+  <div class="card mb-24">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Block</th><th>Activity</th><th>Sets × Reps</th><th>Details</th></tr></thead>
+        <tbody>
+          <tr><td>Warm-Up</td><td>Mini trampoline / pogo jumps</td><td>5 min</td><td>Prime elastic system</td></tr>
+          <tr><td>Measurement</td><td>Standing reach + max jump reach</td><td>3 attempts</td><td>Record EVERY week — this is your data</td></tr>
+          <tr><td>Approach Work</td><td>1-step → 2-step → 3-step approach</td><td>5 each</td><td>Master the footwork pattern first</td></tr>
+          <tr><td>Band Assisted</td><td>Current stage + next stage attempts</td><td>5×5</td><td>Band removes 15–25% BW — feel success</td></tr>
+          <tr><td>Max Attempts</td><td>Current progression target</td><td>10–15 total</td><td>Rest 90 sec between max attempts</td></tr>
+          <tr><td>Film Review</td><td>Watch back 3 best attempts</td><td>—</td><td>Check approach angle, jump timing, arm swing</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-divider"><h2>Dunk Progress Tracker</h2></div>
+  <div class="tracker-form">
+    <h3 class="mb-12 font-heavy">Log This Session</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Date</label><input type="date" id="logDate"></div>
+      <div class="form-group"><label>Week #</label><input type="number" id="logWeek" min="1" max="16" placeholder="1"></div>
+      <div class="form-group"><label>Standing Reach (in)</label><input type="number" id="logReach" placeholder="95" step="0.5"></div>
+      <div class="form-group"><label>Max Jump Reach (in)</label><input type="number" id="logMax" placeholder="110" step="0.5"></div>
+      <div class="form-group"><label>Vertical Jump (in)</label><input type="number" id="logVJ" placeholder="15" step="0.5"></div>
+      <div class="form-group"><label>Best Dunk Attempt</label>
+        <select id="logDunk">
+          <option value="none">— No attempt —</option>
+          <option value="Rim Touch">Rim Touch ✋</option>
+          <option value="Backboard Touch">Backboard Touch 🪃</option>
+          <option value="Tennis Ball">Tennis Ball 🎾</option>
+          <option value="Volleyball">Volleyball 🏐</option>
+          <option value="Small Ball">Small Ball 🟠</option>
+          <option value="Regulation">Regulation Ball 🏀 🔥</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group mb-12"><label>Notes</label><input type="text" id="logNotes" placeholder="How it felt, what to improve, shoe worn..." style="width:100%"></div>
+    <button class="btn btn-primary" onclick="logDunkSession()">+ Log Session</button>
+  </div>
+
+  <div class="card mb-24">
+    <div class="card-title">Vertical Jump Progress</div>
+    <div class="chart-wrap"><canvas id="dunkChart"></canvas></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Session Log <span id="logCount" class="text-muted text-sm"></span></div>
+    <div class="table-wrap">
+      <table id="dunkLogTable">
+        <thead><tr><th>Date</th><th>Wk</th><th>Standing Reach</th><th>Max Reach</th><th>Vertical</th><th>Dunk Stage</th><th>Notes</th></tr></thead>
+        <tbody id="dunkLogBody"><tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px">No sessions logged yet. Start tracking your progress!</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────────── BASKETBALL SKILLS ────────────── -->
+<section id="section-basketball" class="section">
+  <div class="page-header">
+    <div class="badge">⛹️ NBA Skill Development</div>
+    <h1>Basketball <span>Skills</span></h1>
+    <p>Ball handling · Finishing · Shooting · Footwork · Game-speed conditioning</p>
+  </div>
+
+  <div class="highlight-box mb-24"><p><strong>Philosophy:</strong> Basketball conditioning comes from basketball activity — NOT generic cardio. Every skill session is a conditioning session. You are training to play, not to look like you play.</p></div>
+
+  <div class="section-divider"><h2>Skill Session 1 — Tuesday (Ball Handling + Finishing)</h2></div>
+  <div class="grid-2 mb-24">
+    <div class="session-block">
+      <div class="session-block-header"><div class="session-num">1</div><h4>Ball Handling (15 min)</h4></div>
+      <div class="session-block-body"><ul class="exercise-list">
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Stationary Two-Ball Dribbling</div><div class="ex-detail">3×30 sec — alternating, simultaneous, stagger</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Figure-8 Low Dribble</div><div class="ex-detail">3×20 sec each direction — stay low</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Full-Court Dribble Moves</div><div class="ex-detail">5× — crossover, between-legs, behind-back</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Chair Drills / Cone Work</div><div class="ex-detail">Attack, crossover, pull back × 10 reps</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Speed Dribble + Stop Jumper</div><div class="ex-detail">5× each wing — game speed</div></div></li>
+      </ul></div>
+    </div>
+    <div class="session-block">
+      <div class="session-block-header"><div class="session-num">2</div><h4>Finishing at the Rim (15 min)</h4></div>
+      <div class="session-block-body"><ul class="exercise-list">
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Mikan Drill (both hands)</div><div class="ex-detail">3×10 each side — focus lay-in touch</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Euro-step Layup</div><div class="ex-detail">5× each side at game speed</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Reverse Layup</div><div class="ex-detail">5× each side — practice weak hand</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Floater (running + pull-up)</div><div class="ex-detail">5× each side — soft touch over length</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Power Layup / Dunk Approach</div><div class="ex-detail">10× — max effort finish + dunk attempt</div></div></li>
+      </ul></div>
+    </div>
+    <div class="session-block">
+      <div class="session-block-header"><div class="session-num">3</div><h4>Footwork (10 min)</h4></div>
+      <div class="session-block-body"><ul class="exercise-list">
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Drop-Step Post Move</div><div class="ex-detail">5× each block</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Step-Back Jumper (off dribble)</div><div class="ex-detail">5× each wing</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Spin Move Drive</div><div class="ex-detail">5× each direction</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Transition Run + Finish</div><div class="ex-detail">5× full court</div></div></li>
+      </ul></div>
+    </div>
+    <div class="session-block">
+      <div class="session-block-header"><div class="session-num">4</div><h4>Basketball Conditioning (15 min)</h4></div>
+      <div class="session-block-body"><ul class="exercise-list">
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Suicide Sprints</div><div class="ex-detail">4× — rest = walk back</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">3-Man Weave (solo simulation)</div><div class="ex-detail">5× full court</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Defensive Slide + Sprint Back</div><div class="ex-detail">4× baseline to half court</div></div></li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="section-divider"><h2>Skill Session 2 — Saturday (Shooting + Game Speed)</h2></div>
+  <div class="grid-2 mb-24">
+    <div class="session-block">
+      <div class="session-block-header"><div class="session-num">1</div><h4>Catch &amp; Shoot (15 min)</h4></div>
+      <div class="session-block-body"><ul class="exercise-list">
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Corner Catch &amp; Shoot</div><div class="ex-detail">10× each corner — off pass simulation</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Wing Relocate &amp; Shoot</div><div class="ex-detail">5× each wing — run into catch</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Elbow Catch &amp; Shoot</div><div class="ex-detail">10× each elbow</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Transition 3 (run + catch)</div><div class="ex-detail">5× each wing — game speed</div></div></li>
+      </ul></div>
+    </div>
+    <div class="session-block">
+      <div class="session-block-header"><div class="session-num">2</div><h4>Pull-Up Game (15 min)</h4></div>
+      <div class="session-block-body"><ul class="exercise-list">
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Midrange Pull-Up (off dribble)</div><div class="ex-detail">10× each elbow — 1 dribble then shoot</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Step-Back 3 (Harden drill)</div><div class="ex-detail">5× each wing</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">45° Pull-Up</div><div class="ex-detail">5× each side — NBA mid-range range</div></div></li>
+        <li><input type="checkbox" class="ex-check"><div><div class="ex-name">Moving Jumper off Screen</div><div class="ex-detail">5× each side — Klay-style curl</div></div></li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="section-divider"><h2>Basketball Skill Progression Map</h2></div>
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Skill Area</th><th>Phase 1 Focus</th><th>Phase 2 Focus</th><th>Phase 3–4 Focus</th></tr></thead>
+        <tbody>
+          <tr><td>Ball Handling</td><td>Stationary control, basic moves</td><td>Speed + pressure, two-ball</td><td>Game-speed, combo moves</td></tr>
+          <tr><td>Finishing</td><td>Layup touch, weak hand</td><td>Contact finishes, floaters</td><td>Dunk finishing, power layup</td></tr>
+          <tr><td>Shooting</td><td>Form + rhythm, catch &amp; shoot</td><td>Off dribble, pull-up mechanics</td><td>Game-speed, off screens</td></tr>
+          <tr><td>Footwork</td><td>Basic pivots, drop step</td><td>Euro step, step-back</td><td>Combo footwork, transition</td></tr>
+          <tr><td>Conditioning</td><td>Sub-max basketball work</td><td>Full-court intensity</td><td>Game-simulation conditioning</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────────── SHOOTING & FINISHING ─────────── -->
+<section id="section-shooting" class="section">
+  <div class="page-header">
+    <div class="badge">🎯 NBA Skill Development · Shooting & Finishing</div>
+    <h1>Shooting <span>&amp; Finishing Lab</span></h1>
+    <p>Form mechanics · Spot shooting · Off-dribble · Finishing at the rim · Competitive reps</p>
+  </div>
+
+  <div class="js-tabs mb-0">
+    <button class="js-tab active" onclick="switchShootingTab('form',this)">📐 Form Foundation</button>
+    <button class="js-tab" onclick="switchShootingTab('spot',this)">📍 Spot Shooting</button>
+    <button class="js-tab" onclick="switchShootingTab('offdribble',this)">🏀 Off-Dribble Game</button>
+    <button class="js-tab" onclick="switchShootingTab('finishing',this)">🔥 Finishing System</button>
+    <button class="js-tab" onclick="switchShootingTab('competitive',this)">🏆 Competitive Reps</button>
+  </div>
+
+  <div id="sh-form" class="js-panel"></div>
+  <div id="sh-spot" class="js-panel" style="display:none"></div>
+  <div id="sh-offdribble" class="js-panel" style="display:none"></div>
+  <div id="sh-finishing" class="js-panel" style="display:none"></div>
+  <div id="sh-competitive" class="js-panel" style="display:none"></div>
+</section>
+
+<!-- ──────────────────── RECOVERY ─────────────────────── -->
+<section id="section-recovery" class="section">
+  <div class="page-header">
+    <div class="badge">🔄 Longevity Architecture</div>
+    <h1>Recovery <span>System</span></h1>
+    <p>Active recovery · Soft tissue · Nervous system management · Deload protocol</p>
+  </div>
+
+  <div class="section-divider"><h2>Thursday — Active Recovery Day Protocol</h2></div>
+  <div class="grid-2 mb-24">
+    <div class="card">
+      <div class="card-title">Morning (30–45 min)</div>
+      <ul class="recovery-items">
+        <li>10 min morning sun walk (barefoot if possible)</li>
+        <li>Full-body mobility flow — hip/ankle/thoracic</li>
+        <li>Slant board mobility (NOT strength work)</li>
+        <li>Light tibialis + soleus activation (1×15 each)</li>
+        <li>Foot self-massage with lacrosse ball (5 min)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Evening (20–30 min)</div>
+      <ul class="recovery-items">
+        <li>20–30 min zone 2 walk (2–2.5 mph — talking pace)</li>
+        <li>Target 8,000–10,000 steps total on recovery day</li>
+        <li>Foam roll full lower body (calves, quads, IT, glutes)</li>
+        <li>Light yoga or hip stretching routine</li>
+        <li>Contrast shower (3 min hot / 1 min cold × 3)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-divider"><h2>Daily Recovery Stack</h2></div>
+  <div class="recovery-grid mb-24">
+    <div class="recovery-card">
+      <div class="recovery-icon">🦶</div>
+      <div class="recovery-title">Foot Strength (Daily)</div>
+      <ul class="recovery-items">
+        <li>Towel scrunches 2×30 sec</li>
+        <li>Marble pickups (dexterity)</li>
+        <li>Single-leg balance 3×30 sec</li>
+        <li>Short-foot exercise 2×15</li>
+        <li>Lacrosse ball plantar massage</li>
+      </ul>
+    </div>
+    <div class="recovery-card">
+      <div class="recovery-icon">🦵</div>
+      <div class="recovery-title">Tendon Care (Daily)</div>
+      <ul class="recovery-items">
+        <li>Tibialis raises 3×20 (every day)</li>
+        <li>Soleus raises 3×15 (every day)</li>
+        <li>Slant board mobility (not strength)</li>
+        <li>Calf stretching 3×45 sec each</li>
+        <li>Patellar tendon massage</li>
+      </ul>
+    </div>
+    <div class="recovery-card">
+      <div class="recovery-icon">🧘</div>
+      <div class="recovery-title">Soft Tissue Protocol</div>
+      <ul class="recovery-items">
+        <li>Foam roll: calves, quads, IT band</li>
+        <li>Lacrosse ball: glutes, plantar fascia</li>
+        <li>Hip flexor trigger point release</li>
+        <li>Thoracic spine mobility roll</li>
+        <li>Post-session: 10 min minimum</li>
+      </ul>
+    </div>
+    <div class="recovery-card">
+      <div class="recovery-icon">🧊</div>
+      <div class="recovery-title">Cold / Heat Protocols</div>
+      <ul class="recovery-items">
+        <li>Cold shower 3–5 min post-training</li>
+        <li>Contrast shower on heavy days</li>
+        <li>Ice bath option: 10–15 min @55°F</li>
+        <li>Heat: sauna 15–20 min on recovery days</li>
+        <li>Epsom salt bath weekly (recovery boost)</li>
+      </ul>
+    </div>
+    <div class="recovery-card">
+      <div class="recovery-icon">🚶</div>
+      <div class="recovery-title">Walking Goals</div>
+      <ul class="recovery-items">
+        <li>Training days: 6,000–8,000 steps</li>
+        <li>Basketball days: 8,000–10,000 steps</li>
+        <li>Recovery days: 8,000–12,000 steps</li>
+        <li>Morning walk: non-negotiable daily</li>
+        <li>Post-meal walk: 10 min after dinner</li>
+      </ul>
+    </div>
+    <div class="recovery-card">
+      <div class="recovery-icon">🧠</div>
+      <div class="recovery-title">Nervous System Management</div>
+      <ul class="recovery-items">
+        <li>Limit max-effort sessions to 4/week</li>
+        <li>HRV monitoring — if &lt;baseline, reduce load</li>
+        <li>No high-intensity 2 days consecutive</li>
+        <li>Deload when 2+ joints aching together</li>
+        <li>Mental stress = physical recovery cost</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- JS-rendered: Tier 1 + Tier 2 recovery practices -->
+  <div id="recoveryTiersSection"></div>
+
+  <div class="section-divider"><h2>Deload Protocol</h2></div>
+  <div class="card mb-24">
+    <div class="card-title">Scheduled Deloads (Weeks 4, 8, 12) + Auto-Regulation</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Deload Type</th><th>Volume</th><th>Intensity</th><th>Plyos</th><th>Keep</th></tr></thead>
+        <tbody>
+          <tr><td>Week 4 (Phase 1 end)</td><td>50% of Wk 3</td><td>60% of max</td><td>Pogo jumps only</td><td>Tibialis, soleus, foot work</td></tr>
+          <tr><td>Week 8 (Phase 2 end)</td><td>50% of Wk 7</td><td>65% of max</td><td>Low amplitude only</td><td>Slant board isometrics (maintenance)</td></tr>
+          <tr><td>Week 12 (Phase 3 end)</td><td>40% of Wk 11</td><td>70% of max</td><td>Band assisted jumps only</td><td>Technical work, skill sessions</td></tr>
+          <tr><td>Auto (when needed)</td><td>Drop 40%</td><td>70% of max</td><td>Cut depth drops</td><td>Everything soft tissue + mobility</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <p><strong>The 42-Year-Old Recovery Rule:</strong> You recover 30–40% slower than a 22-year-old. This is not a limitation — it is a design parameter. Every deload week, your tendons and fascia are catching up to the training stress. The athletes who stay explosive at 50 are the ones who made recovery non-negotiable at 42.</p>
+  </div>
+</section>
+
+<!-- ──────────────────── SHOPPING LIST ───────────────────── -->
+<section id="section-shopping" class="section">
+  <div class="page-header">
+    <div class="badge">🛒 Affordable · Macro-Complete · Performance Fuel</div>
+    <h1>Shopping <span>List</span></h1>
+    <p>Weekly grocery guide — organized by category, store, and prep schedule. ~$100–160/week all-in.</p>
+  </div>
+  <div class="js-tabs mb-0">
+    <button class="js-tab active" onclick="switchShoppingListTab('list',this)">🛒 Weekly List</button>
+    <button class="js-tab" onclick="switchShoppingListTab('stores',this)">🏪 Store Guide</button>
+    <button class="js-tab" onclick="switchShoppingListTab('schedule',this)">📅 Schedule</button>
+    <button class="js-tab" onclick="switchShoppingListTab('supplements',this)">💊 Supplements</button>
+  </div>
+  <div id="sl-list" class="js-panel"></div>
+  <div id="sl-stores" class="js-panel" style="display:none"></div>
+  <div id="sl-schedule" class="js-panel" style="display:none"></div>
+  <div id="sl-supplements" class="js-panel" style="display:none"></div>
+</section>
+
+<!-- ──────────────────── CONTENT STUDIO ──────────────────── -->
+<section id="section-content" class="section">
+  <div class="page-header">
+    <div class="badge">🎬 Traction Report · Content Studio</div>
+    <h1>Content <span>Studio</span></h1>
+    <p>Plan · Script · Post · Analyze · Review — one system, every week</p>
+  </div>
+
+  <div class="studio-tabs mb-0">
+    <button class="studio-tab active" onclick="switchStudioTab('planner',this)">📅 Weekly Planner</button>
+    <button class="studio-tab" onclick="switchStudioTab('scripts',this)">📝 Script Library</button>
+    <button class="studio-tab" onclick="switchStudioTab('analytics',this)">📊 Analytics</button>
+    <button class="studio-tab" onclick="switchStudioTab('review',this)">✍️ Weekly Review</button>
+  </div>
+
+  <!-- ① WEEKLY PLANNER -->
+  <div id="studio-planner" class="studio-panel">
+    <div class="flex-between mb-16">
+      <h2 style="font-size:16px;font-weight:800">This Week's Content Calendar</h2>
+      <div class="flex gap-8" style="align-items:flex-end">
+        <div><div style="font-size:10px;color:var(--text-muted);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px">WEEK #</div>
+        <input type="number" id="plannerWeek" min="1" max="16" value="1" style="width:70px;padding:7px 10px;font-size:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);outline:none;font-weight:800" oninput="renderWeeklyPlanner()"></div>
+      </div>
+    </div>
+    <div id="weeklyPlannerGrid" class="planner-grid mb-16"></div>
+    <div id="dayContentBrief" style="display:none"></div>
+
+    <div class="section-divider mt-16"><h2>One Workout → 5 Pieces</h2></div>
+    <div class="content-pipeline mb-20">
+      <div class="pipeline-step"><div class="pipeline-icon">🏋️</div><div class="pipeline-label">Train</div></div>
+      <div class="pipeline-step"><div class="pipeline-icon">📹</div><div class="pipeline-label">Capture</div></div>
+      <div class="pipeline-step"><div class="pipeline-icon">✂️</div><div class="pipeline-label">Clip</div></div>
+      <div class="pipeline-step"><div class="pipeline-icon">📲</div><div class="pipeline-label">Post</div></div>
+      <div class="pipeline-step"><div class="pipeline-icon">📊</div><div class="pipeline-label">Analyze</div></div>
+    </div>
+
+    <div class="section-divider"><h2>Platform Strategy</h2></div>
+    <div class="platform-tabs mb-0">
+      <button class="platform-tab-btn active" onclick="showPlatform('tiktok', this)">🎵 TikTok</button>
+      <button class="platform-tab-btn" onclick="showPlatform('instagram', this)">📸 Instagram Reels</button>
+      <button class="platform-tab-btn" onclick="showPlatform('youtube', this)">▶️ YouTube Shorts</button>
+      <button class="platform-tab-btn" onclick="showPlatform('threads', this)">🧵 Threads</button>
+    </div>
+    <div id="platformDetail" class="mb-16"></div>
+  </div>
+
+  <!-- ② SCRIPT LIBRARY -->
+  <div id="studio-scripts" class="studio-panel" style="display:none">
+    <div class="highlight-box mb-20">
+      <p><strong>How to use these scripts:</strong> Replace <strong>[brackets]</strong> with your real numbers. Read each out loud before filming. Your authentic delivery beats a perfect script every time.</p>
+    </div>
+    <div id="scriptLibrary"></div>
+  </div>
+
+  <!-- ③ ANALYTICS TRACKER -->
+  <div id="studio-analytics" class="studio-panel" style="display:none">
+    <div class="flex-between mb-20">
+      <h2 style="font-size:16px;font-weight:800">Weekly Analytics Entry</h2>
+      <div class="flex gap-8">
+        <input type="number" id="analyticsWeek" min="1" max="16" placeholder="Wk #" style="width:70px;padding:7px 10px;font-size:13px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);outline:none">
+        <button class="btn btn-primary" onclick="saveAnalytics()" style="padding:8px 16px;font-size:12px">Save Week</button>
+      </div>
+    </div>
+    <div class="analytics-platforms" id="analyticsInputs"></div>
+    <div class="review-field mb-20">
+      <label>🏆 Best Performing Post This Week</label>
+      <input type="text" id="bestPost" placeholder="e.g. Friday dunk attempt clip — 24k views on TikTok">
+    </div>
+    <div class="card mb-20">
+      <div class="card-title">Platform Performance Trends (by week)</div>
+      <div class="chart-wrap"><canvas id="analyticsChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Analytics History</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Wk</th><th>TikTok Views</th><th>IG Reach</th><th>YT Views</th><th>Threads</th><th>Followers+</th><th>Best Post</th></tr></thead>
+          <tbody id="analyticsBody"><tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px">No analytics saved yet. Enter week data above.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ WEEKLY REVIEW -->
+  <div id="studio-review" class="studio-panel" style="display:none">
+    <div class="highlight-box mb-20">
+      <p><strong>Weekly Review = Content Intelligence.</strong> The creators who grow fastest aren't the ones who post the most — they're the ones who <strong>learn the fastest</strong>. 10 minutes every Sunday. Compounds every week.</p>
+    </div>
+    <div class="tracker-form mb-24">
+      <div class="flex-between mb-16">
+        <h3 style="font-weight:800;font-size:16px">Write This Week's Review</h3>
+        <div class="flex gap-8">
+          <input type="number" id="reviewWeek" min="1" max="16" placeholder="Wk" style="width:58px;padding:7px 10px;font-size:13px;background:var(--bg-card-2);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);outline:none">
+          <input type="date" id="reviewDate" style="padding:7px 10px;font-size:13px;background:var(--bg-card-2);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);outline:none">
+        </div>
+      </div>
+      <div class="review-field"><label>⚡ Training performance (sessions hit, energy, PRs broken)</label><textarea id="rv1" rows="2" placeholder="How many sessions did you hit? Any PRs? Energy levels high or low?"></textarea></div>
+      <div class="review-field"><label>📏 Vertical jump measurement this week (in inches)</label><input id="rv2" type="text" placeholder="e.g. 28.5 inches — up 0.5 from last week"></div>
+      <div class="review-field"><label>🥗 Nutrition adherence (% of meals on plan, any deviations)</label><textarea id="rv3" rows="2" placeholder="e.g. 90% on plan. Missed post-workout meal twice. No major deviations."></textarea></div>
+      <div class="review-field"><label>😴 Sleep compliance (avg hours, nights below target)</label><input id="rv4" type="text" placeholder="e.g. Avg 7.2 hrs. 2 nights under 7. Need to fix Thursday nights."></div>
+      <div class="review-field"><label>📈 Best performing content (platform + why it worked)</label><textarea id="rv5" rows="2" placeholder="Platform + why it worked. What was the hook? What got the most engagement?"></textarea></div>
+      <div class="review-field"><label>📉 What flopped (be specific — hook? timing? topic?)</label><textarea id="rv6" rows="2" placeholder="Be honest. What didn't work? Static post? Bad hook? Wrong time?"></textarea></div>
+      <div class="review-field"><label>💬 Audience signals (comments, DMs, requests, brand interest)</label><textarea id="rv7" rows="2" placeholder="Questions asked, requests for more content, shoe brands reaching out, etc."></textarea></div>
+      <div class="review-field"><label>🔁 Double down next week (content format that worked)</label><input id="rv8" type="text" placeholder="e.g. Raw dunk attempts with real-time measurements on screen"></div>
+      <div class="review-field"><label>🚫 Stop or change (what wasted your time)</label><input id="rv9" type="text" placeholder="e.g. Stop posting static images — video only going forward."></div>
+      <div class="review-field"><label>👟 Traction Report notes (brands, opportunities, shoes to test)</label><textarea id="rv10" rows="2" placeholder="Brand outreach, affiliate opportunities, shoes to test next, partnership conversations."></textarea></div>
+      <div class="review-field"><label>🎯 3 specific goals for next week</label><textarea id="rv11" rows="3" placeholder="1. Dunk Data Log — Week [X] measurements with on-screen overlay&#10;2. Slant board science explainer — 45 sec educational&#10;3. Shoe test — [Brand] on [surface]"></textarea></div>
+      <div class="review-field"><label>📋 Overall honest summary (2-3 sentences)</label><textarea id="rv12" rows="3" placeholder="How was the week overall? What story are you telling? What momentum are you building?"></textarea></div>
+      <div class="flex gap-8" style="flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="saveReview()">Save Weekly Review</button>
+        <button class="btn btn-secondary" onclick="exportReviewToNotion()">📋 Copy to Notion</button>
+      </div>
+    </div>
+    <div class="section-divider"><h2>Review History</h2></div>
+    <div id="reviewHistory"><p class="text-sm text-muted" style="padding:10px 0">No reviews saved yet. Write your first review above.</p></div>
+    <div class="highlight-box mt-20" style="border-color:var(--blue)">
+      <p><strong>📱 Where is this saved?</strong> All your reviews, analytics, and dunk logs are saved to your browser's <strong>localStorage</strong> — they persist between visits on the same device and browser. Use <strong>"Copy to Notion"</strong> to back up your reviews. <em>Tip: If you clear your browser data, this data clears too. Export regularly.</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────────── CALENDAR ─────────────────────── -->
+<section id="section-calendar" class="section">
+  <div class="page-header">
+    <div class="badge">📆 Google Calendar Integration</div>
+    <h1>Schedule <span>Calendar Export</span></h1>
+    <p>Download your 16-week Performance OS as a .ics file and import to Google Calendar</p>
+  </div>
+
+  <div class="grid-2 mb-24">
+    <div class="card card-lg">
+      <div class="card-title mb-12">Export Options</div>
+      <p class="text-sm text-muted mb-16">Generate your complete 16-week training schedule as an industry-standard .ics calendar file. Import directly into Google Calendar, Apple Calendar, or Outlook.</p>
+      <div class="form-group mb-12">
+        <label>Program Start Date</label>
+        <input type="date" id="calStartDate" style="width:100%;max-width:260px">
+      </div>
+      <div class="form-group mb-16">
+        <label>Training Start Time</label>
+        <select id="calStartTime" style="width:100%;max-width:260px">
+          <option value="06:00">6:00 AM</option>
+          <option value="07:00" selected>7:00 AM</option>
+          <option value="08:00">8:00 AM</option>
+          <option value="09:00">9:00 AM</option>
+          <option value="10:00">10:00 AM</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="exportICS()">⬇ Download 16-Week .ics</button>
+        <button class="btn btn-secondary" onclick="previewCalendar()">👁 Preview Events</button>
+      </div>
+    </div>
+    <div class="card card-lg">
+      <div class="card-title">Import Instructions — Google Calendar</div>
+      <ol style="list-style:decimal;padding-left:20px;font-size:13px;line-height:2;color:var(--text-secondary)">
+        <li>Click <strong style="color:var(--text-primary)">"Download 16-Week .ics"</strong> above</li>
+        <li>Open <strong style="color:var(--orange)">Google Calendar</strong> on desktop (calendar.google.com)</li>
+        <li>Click the <strong style="color:var(--text-primary)">gear icon</strong> → Settings</li>
+        <li>Select <strong style="color:var(--text-primary)">"Import &amp; Export"</strong></li>
+        <li>Click <strong style="color:var(--text-primary)">"Select file"</strong> → choose your .ics file</li>
+        <li>Select which calendar to import to</li>
+        <li>Click <strong style="color:var(--orange)">"Import"</strong> — done! 🎉</li>
+        <li>All 112 sessions will appear in your calendar</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="section-divider"><h2>Scheduled Events Preview</h2></div>
+  <div class="card mb-24">
+    <div class="calendar-event-list" id="calPreview">
+      <p class="text-muted text-sm" style="padding:10px 0">Set your start date above and click "Preview Events" to see your schedule.</p>
+    </div>
+  </div>
+
+  <div class="section-divider"><h2>Daily Schedule at a Glance</h2></div>
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Time</th><th>Activity</th><th>Duration</th><th>Priority</th></tr></thead>
+        <tbody>
+          <tr><td>6:30 AM</td><td>Wake · Water · Sunlight · Morning mobility</td><td>30 min</td><td><span class="tag tag-green">Daily</span></td></tr>
+          <tr><td>7:00 AM</td><td>Pre-training nutrition (training/basketball days)</td><td>—</td><td><span class="tag tag-orange">HPT / BBall</span></td></tr>
+          <tr><td>7:30 AM</td><td>High Performance Training OR Basketball Skill Session</td><td>75–90 min</td><td><span class="tag tag-orange">6 days</span></td></tr>
+          <tr><td>9:00 AM</td><td>Post-workout nutrition + content caption writing</td><td>30 min</td><td><span class="tag tag-blue">Post-session</span></td></tr>
+          <tr><td>9:30 AM</td><td>Content editing — clip yesterday's footage</td><td>30–45 min</td><td><span class="tag tag-purple">Daily</span></td></tr>
+          <tr><td>10:30 AM</td><td>Job search / employment activities</td><td>2–3 hrs</td><td><span class="tag tag-gold">Daily</span></td></tr>
+          <tr><td>1:00 PM</td><td>Lunch + post-meal walk (10 min)</td><td>30 min</td><td><span class="tag tag-green">Daily</span></td></tr>
+          <tr><td>2:00 PM</td><td>Content posting + engagement / brand work</td><td>45 min</td><td><span class="tag tag-purple">Daily</span></td></tr>
+          <tr><td>3:00 PM</td><td>Job search / networking / applications</td><td>2 hrs</td><td><span class="tag tag-gold">Daily</span></td></tr>
+          <tr><td>5:00 PM</td><td>Afternoon snack + short walk</td><td>20 min</td><td><span class="tag tag-green">Daily</span></td></tr>
+          <tr><td>7:00 PM</td><td>Dinner + family time</td><td>1 hr</td><td><span class="tag tag-green">Daily</span></td></tr>
+          <tr><td>8:30 PM</td><td>Evening mobility / recovery stack</td><td>20 min</td><td><span class="tag tag-blue">Daily</span></td></tr>
+          <tr><td>9:00 PM</td><td>Wind-down routine begins (screens dim)</td><td>—</td><td><span class="tag tag-purple">Daily</span></td></tr>
+          <tr><td>9:30 PM</td><td>Screens OFF · Magnesium · Light reading</td><td>—</td><td><span class="tag tag-orange">Non-negotiable</span></td></tr>
+          <tr><td>10:15 PM</td><td>Lights out</td><td>—</td><td><span class="tag tag-orange">Non-negotiable</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────────── JUMP SCIENCE LAB ─────────────── -->
+<section id="section-jumpscience" class="section">
+  <div class="page-header">
+    <div class="badge">⚡ Speed-Dominant Reactive Jumper · v1.1 Upgrade</div>
+    <h1>Jump <span>Science Lab</span></h1>
+    <p>Penultimate Step · Reactive Stiffness · Arm Swing · Ground Contact · Power Training</p>
+  </div>
+
+  <div class="js-tabs mb-0">
+    <button class="js-tab active" onclick="switchJSTab('profile',this)">🧬 Jumper Profile</button>
+    <button class="js-tab" onclick="switchJSTab('penultimate',this)">👟 Penultimate Step</button>
+    <button class="js-tab" onclick="switchJSTab('reactive',this)">⚡ Reactive Stiffness</button>
+    <button class="js-tab" onclick="switchJSTab('armswing',this)">💪 Arm Swing</button>
+    <button class="js-tab" onclick="switchJSTab('groundcontact',this)">🦶 Ground Contact</button>
+    <button class="js-tab" onclick="switchJSTab('powertraining',this)">🏋️ Power Training</button>
+  </div>
+
+  <div id="js-profile" class="js-panel"></div>
+  <div id="js-penultimate" class="js-panel" style="display:none"></div>
+  <div id="js-reactive" class="js-panel" style="display:none"></div>
+  <div id="js-armswing" class="js-panel" style="display:none"></div>
+  <div id="js-groundcontact" class="js-panel" style="display:none"></div>
+  <div id="js-powertraining" class="js-panel" style="display:none"></div>
+</section>
+
+<section id="section-coach" class="section">
+</section>
+
+</main>
+
+<!-- ══ HOW-TO MODAL ═════════════════════════════════════ -->
+<div class="modal-overlay" id="howToModal" onclick="closeHowTo(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeHowTo()">✕</button>
+    <div class="badge mb-12">🏀 Traction Report Performance OS</div>
+    <h2 style="font-size:22px;font-weight:900;margin-bottom:6px">How to Use This App</h2>
+    <p class="text-sm text-muted mb-20">Your complete 16-week performance system. Here's exactly how to engage with each part.</p>
+
+    <div class="how-to-step">
+      <div class="how-to-num">1</div>
+      <div class="how-to-content">
+        <h4>📊 Dashboard — Your Mission Control</h4>
+        <p>Start here every day. Check your current week &amp; phase. The KPI cards update automatically once you log sessions in the Dunk Lab. The charts show your projected vertical gains and training load by phase. Bookmark this page — open it every morning.</p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">2</div>
+      <div class="how-to-content">
+        <h4>📅 Weekly Schedule — Click Your Day</h4>
+        <p>Go to Weekly Schedule and click today's day card (MON–SUN). The full session plan appears below with every exercise, set, rep, and coaching note. <strong>Check off each exercise as you complete it</strong> — the checkboxes track your progress during the session.</p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">3</div>
+      <div class="how-to-content">
+        <h4>⚡ Training Program — Your 16-Week Blueprint</h4>
+        <p>Go to 16-Week Program to see your current phase. Click each phase accordion to expand it. <strong>Phase 1 is already open.</strong> The slant board science section at the top tells you exactly how to set up and execute every slant board exercise safely.</p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">4</div>
+      <div class="how-to-content">
+        <h4>🏀 Dunk Lab — Log Every Friday Session</h4>
+        <p>After every Friday Dunk Session, go to Dunk Lab and fill in the form: standing reach, max jump reach, vertical jump (in inches), and your best dunk stage achieved. Hit <strong>+ Log Session</strong>. Your vertical jump progress chart updates instantly. This is your Dunk Data Log — it also feeds your Traction Report content.</p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">5</div>
+      <div class="how-to-content">
+        <h4>🥗 Nutrition &amp; Meals — Toggle Your Day Type</h4>
+        <p>Click the three buttons at the top: <strong>⚡ Training Day</strong>, <strong>🏀 Basketball Day</strong>, or <strong>🔄 Recovery Day</strong>. The full meal plan for that day type appears — including every meal with foods, calories, and macros (P/C/F). Scroll down to see the micronutrient protocol and hydration targets.</p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">6</div>
+      <div class="how-to-content">
+        <h4>🎬 Content Studio — 4 Tabs, Weekly Workflow</h4>
+        <p><strong>📅 Weekly Planner:</strong> Set your week number, click each day card to see your content brief for that day.<br>
+        <strong>📝 Script Library:</strong> Click any script to expand it. Copy sections with one click. Fill in [brackets] with real data.<br>
+        <strong>📊 Analytics:</strong> After each week, enter your platform numbers and save. Track growth over all 16 weeks.<br>
+        <strong>✍️ Weekly Review:</strong> Every Sunday, fill in the 8 review questions and save. This is your content learning engine.</p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">7</div>
+      <div class="how-to-content">
+        <h4>📆 Calendar Export — Import to Google Calendar</h4>
+        <p>Set your program start date (next Monday works). Click <strong>Download 16-Week .ics</strong>. Open Google Calendar on desktop → Settings → Import &amp; Export → Import. All 112 training sessions (+ daily morning routine and sleep wind-down reminders) are already in your calendar from the initial setup.</p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">8</div>
+      <div class="how-to-content">
+        <h4>🌙 Sleep &amp; 🔄 Recovery — Daily Non-Negotiables</h4>
+        <p>Check the Sleep Protocol for your nightly wind-down routine (9 PM start, lights out 10:15 PM). The Recovery System tab has your Thursday active recovery protocol and the deload schedule. <strong>Tibialis raises and soleus raises are daily exercises</strong> — they're in every session for a reason.</p>
+      </div>
+    </div>
+
+    <div style="background:var(--orange-glow);border:1px solid var(--orange);border-radius:var(--radius);padding:14px;margin-top:16px">
+      <p style="font-size:13px"><strong style="color:var(--orange)">The Loop:</strong> Train → Film → Log in Dunk Lab → Write Script → Post Content → Enter Analytics → Write Sunday Review → Repeat. That's the full system. Everything connects.</p>
+    </div>
+    <button class="btn btn-primary mt-16" onclick="closeHowTo()" style="width:100%;justify-content:center">Let's Go 🏀</button>
+  </div>
+</div>
+
+</div>
+
+<script src="app.js?v=18"></script>
+
+<!-- ══ MOBILE BOTTOM NAV ════════════════════════════════ -->
+<nav class="mobile-bottom-nav" id="mobileBottomNav">
+  <button class="mob-nav-item active" onclick="mobileNav('dashboard',this)">
+    <span class="mob-icon">📊</span>Dashboard
+  </button>
+  <button class="mob-nav-item" onclick="mobileNav('schedule',this)">
+    <span class="mob-icon">📅</span>Schedule
+  </button>
+  <button class="mob-nav-item" onclick="mobileNav('training',this)">
+    <span class="mob-icon">⚡</span>Training
+  </button>
+  <button class="mob-nav-item" onclick="mobileNav('dunk',this)">
+    <span class="mob-icon">🏀</span>Dunk Lab
+  </button>
+  <button class="mob-nav-item" onclick="mobileNav('coach',this)">
+    <span class="mob-icon">🤖</span>Coach
+  </button>
+</nav>
+
+</body>
+</html>

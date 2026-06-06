@@ -1,0 +1,364 @@
+{
+  "meta": {
+    "instructions": "This is a weekly repeating athletic training schedule. Use this JSON to: (1) generate Google Apps Script code that creates all events as recurring weekly events in Google Calendar, OR (2) generate an .ics file the user can import directly. Each event has a recurrence rule (RRULE) for weekly repeat. Replace START_DATE with the user's next upcoming Monday in YYYY-MM-DD format. All times are local — ask the user for their timezone if unknown. Group events by calendarName to create separate Google Calendars for each category.",
+    "program": "Traction Report Performance OS",
+    "athlete": "42-year-old male, 5ft 11in, 168 lbs",
+    "weekStructure": "Mon=HPT1, Tue=Skill1, Wed=HPT2, Thu=Recovery, Fri=HPT3+Dunk, Sat=Skill2, Sun=HPT4",
+    "startDate": "START_DATE",
+    "timezone": "America/Chicago"
+  },
+
+  "events": [
+
+
+    {
+      "summary": "Morning Activation",
+      "calendarName": "LIFESTYLE",
+      "colorName": "Banana",
+      "day": "Monday",
+      "startTime": "06:30",
+      "endTime": "07:00",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,FR,SA,SU",
+      "description": "06:30 Wake — no snooze. 16 oz water + electrolytes\n06:35 5–10 min morning sunlight outside\n06:45 10 min mobility flow — hips, ankles, thoracic\n06:55 Pre-training fuel\n07:00 Mental prep — review today's training goals"
+    },
+
+    {
+      "summary": "HPT 1 — Strength + Lower Power",
+      "calendarName": "TRAINING",
+      "colorName": "Tomato",
+      "day": "Monday",
+      "startTime": "07:30",
+      "endTime": "09:00",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=MO",
+      "description": "90-MIN HIGH PERFORMANCE TRAINING\n\n[1] Movement Prep (10 min)\nHip circles, ankle circles, leg swings 2x10 each\nHigh knees + butt kicks 2x20m\nLateral shuffle + carioca 2x10m\nGlute bridge activation 2x15\n\n[2] Mobility (10 min)\nAnkle wall drill 3x10 each\nBanded ankle distraction 2x30 sec\n90/90 hip stretch 2x45 sec each side\nHip flexor lunge stretch 2x45 sec each side\n\n[3] Jump Development (15 min)\nPogo Jumps 3x20-25 — stiff ankles, rapid contact\nDepth Drops 3x5-8 off 12-15in box — land soft\nBroad Jumps 3x5 max effort — arm swing, stick landing\n\n[4] Strength (30 min)\nTrap Bar Deadlift — phase-dependent sets/reps\nSlant Board Squat — 15-25deg board, full depth\nSingle-Leg RDL 3x8-10 each leg\nCopenhagen Plank 3x20-35 sec\nSlant Board Isometric 5x45 sec at 70-90deg — LAST exercise\n\n[5] Athletic Development (12 min)\nAcceleration Runs 5x20m — focus first 3 steps\nPro Agility 5-10-5 — 4x each direction\nLateral Defensive Slides 3x10m\n\n[6] Basketball Transfer (8 min)\nApproach jump to rim 10x max reach\nJump stop + explode 5x game speed\n\n[7] Recovery Protocol (10 min)\nTibialis Raises 3x20\nSoleus Raises 3x15 bent knee\nFoot strength towel scrunches 2x30 sec\nFoam roll calves/quads 60 sec each\n\nJUMP SCIENCE FOCUS:\n- Reactive Stiffness: pogo stiff ankles, shorten contact each week\n- Penultimate Step: extend 2nd-to-last step 10-15%\n- Arm Load: arms back behind hips, drive UP at takeoff"
+    },
+
+    {
+      "summary": "Post-Workout Nutrition",
+      "calendarName": "NUTRITION",
+      "colorName": "Sage",
+      "day": "Monday",
+      "startTime": "09:00",
+      "endTime": "09:20",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR,SU",
+      "description": "Post-Workout Recovery Meal — 520 kcal | P48 C42 F14\n3 whole eggs + 2 whites scrambled\n1 cup low-fat Greek yogurt\n1 cup mixed berries\n1 slice Ezekiel bread"
+    },
+
+    {
+      "summary": "Performance Lunch",
+      "calendarName": "NUTRITION",
+      "colorName": "Sage",
+      "day": "Monday",
+      "startTime": "12:30",
+      "endTime": "12:50",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR,SU",
+      "description": "Performance Lunch — 640 kcal | P52 C68 F18\n6 oz grilled chicken breast\n1.5 cups cooked brown rice\n2 cups mixed greens\n1/2 avocado\nOlive oil + lemon dressing"
+    },
+
+    {
+      "summary": "Athletic Snack",
+      "calendarName": "NUTRITION",
+      "colorName": "Sage",
+      "day": "Monday",
+      "startTime": "15:30",
+      "endTime": "15:40",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR,SU",
+      "description": "Athletic Snack — 320 kcal | P28 C24 F10\n1 cup low-fat cottage cheese\n1/2 cup blueberries\n1 oz almonds"
+    },
+
+    {
+      "summary": "Recovery Dinner + 10-min Walk",
+      "calendarName": "NUTRITION",
+      "colorName": "Sage",
+      "day": "Monday",
+      "startTime": "19:00",
+      "endTime": "19:40",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR,SU",
+      "description": "Recovery Dinner — 720 kcal | P52 C64 F24\n7 oz Atlantic salmon\n1.5 cups roasted sweet potato\n2 cups steamed broccoli + 1 tsp olive oil\nLemon + herbs\n\nPost-meal: 10-min walk (every single day)"
+    },
+
+    {
+      "summary": "Sleep Wind-Down",
+      "calendarName": "LIFESTYLE",
+      "colorName": "Blueberry",
+      "day": "Monday",
+      "startTime": "21:00",
+      "endTime": "22:15",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR,SA,SU",
+      "description": "SLEEP PROTOCOL — 8 hrs 15 min target\n\n09:00 PM Wind-down begins — dim all lights\n09:10 PM No screens (phone + TV off)\n09:20 PM Light stretch or yoga 10 min\n09:30 PM Read physical book or journal\n09:45 PM Tart cherry juice 4 oz + magnesium glycinate 400mg\n10:00 PM Final hygiene — no bright lights\n10:15 PM LIGHTS OUT"
+    },
+
+
+    {
+      "summary": "Basketball Skill Day 1 — Ball Handling + Finishing",
+      "calendarName": "TRAINING",
+      "colorName": "Peacock",
+      "day": "Tuesday",
+      "startTime": "07:30",
+      "endTime": "08:45",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=TU",
+      "description": "75-MIN BASKETBALL SKILL SESSION\n\n[1] Court Warm-Up (8 min)\nFull-court jog + back-pedal 3 laps\nDefensive slides baseline to baseline 4x\nDynamic layup series 5x each side\n\n[2] Ball Handling (15 min)\nTwo-ball stationary dribbling 3x30 sec\nFigure-8 low dribble 3x20 sec each direction\nFull-court combo moves 5x — crossover, between-legs, behind-back\nChair drills attack + crossover + pullback x10\n\n[3] Finishing (15 min)\nMikan drill both hands 3x10 each side\nEuro-step layup 5x each side game speed\nFloater running + pull-up 5x each side\nPower layup / dunk approach 10x max effort\n\n[4] Footwork (10 min)\nDrop-step post move 5x each block\nStep-back jumper 5x each wing\nTransition run + finish 5x full court\n\n[5] Conditioning (15 min)\nSuicide sprints 4x — walk back rest\nDefensive slide + sprint back 4x\nTransition finishing drill 5x full court both ways"
+    },
+
+    {
+      "summary": "Shooting & Finishing Session",
+      "calendarName": "TRAINING",
+      "colorName": "Peacock",
+      "day": "Tuesday",
+      "startTime": "08:45",
+      "endTime": "09:40",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=TU",
+      "description": "55-MIN SHOOTING & FINISHING SESSION\n\n[1] Form Shooting — Foundation (10 min)\n5 feet from rim: 10 makes — BEEF mechanics only\nFree throw line: 10 makes\nRight elbow: 7 makes. Left elbow: 7 makes\nElbow under ball, full goose-neck wrist snap every rep\n\n[2] Spot Shooting — 5-Spot Foundation (15 min)\nFT line 10 makes → Right elbow 7 → Left elbow 7\nRight wing 3pt 5 makes → Left wing 3pt 5 makes\nMiss 3 in a row? Move 2 feet closer, rebuild, come back\n\n[3] Finishing Tier 1 — Essential (15 min)\nPower layup 10x each side — jump THROUGH contact\nFinger roll 3x10 each hand\nReverse layup 3x8 each side — use the backboard\n\n[4] Competitive: Game of 21 (10 min)\n7 spots x 3 shots = 21 total\nTarget: 14+/21 — record score every session\nHit 17+? Add 2 spots from 3-point range next session"
+    },
+
+    {
+      "summary": "Post-Session Nutrition (Basketball)",
+      "calendarName": "NUTRITION",
+      "colorName": "Sage",
+      "day": "Tuesday",
+      "startTime": "09:30",
+      "endTime": "09:50",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=TU,SA",
+      "description": "Mid-Morning Meal — 480 kcal | P40 C55 F8\n4 oz chicken breast\n1 cup white rice (fast digesting)\n1 cup steamed vegetables\n1 tsp olive oil"
+    },
+
+    {
+      "summary": "Pre-Court Meal",
+      "calendarName": "NUTRITION",
+      "colorName": "Sage",
+      "day": "Tuesday",
+      "startTime": "12:30",
+      "endTime": "12:50",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=TU,SA",
+      "description": "Pre-Court Meal (2-3 hrs before) — 600 kcal | P50 C58 F12\n6 oz turkey breast\n1 cup cooked quinoa\nMixed greens + cherry tomatoes\nBalsamic drizzle"
+    },
+
+    {
+      "summary": "Pre-Game Snack",
+      "calendarName": "NUTRITION",
+      "colorName": "Sage",
+      "day": "Tuesday",
+      "startTime": "15:30",
+      "endTime": "15:40",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=TU,SA",
+      "description": "Pre-Game Snack (30-60 min before court) — 180 kcal | P4 C32 F5\n2 Medjool dates + 1 tbsp peanut butter\n1/2 banana\n16 oz water with electrolytes"
+    },
+
+    {
+      "summary": "Post-Court Recovery Dinner",
+      "calendarName": "NUTRITION",
+      "colorName": "Sage",
+      "day": "Tuesday",
+      "startTime": "19:00",
+      "endTime": "19:40",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=TU,SA",
+      "description": "Post-Court Recovery Dinner — 680 kcal | P52 C58 F22\n8 oz grilled chicken thigh\n1.5 cups roasted potatoes\n2 cups asparagus + olive oil\n\nPost-meal: 10-min walk"
+    },
+
+
+    {
+      "summary": "HPT 2 — Speed + Jump Development",
+      "calendarName": "TRAINING",
+      "colorName": "Tomato",
+      "day": "Wednesday",
+      "startTime": "07:30",
+      "endTime": "09:00",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=WE",
+      "description": "90-MIN HIGH PERFORMANCE TRAINING\n\n[1] Movement Prep (10 min)\nDynamic warm-up: high knees, butt kicks, A-skip, B-skip\nHip activation band work: clamshells, monster walks 2x15\nAnkle circles + calf raises 2x15\n\n[2] Mobility (8 min)\nWorld greatest stretch 5 each side\nAnkle mobility seated band distraction 2x30 sec\nPigeon pose 60 sec each side\n\n[3] Jump Development (20 min)\nBand Assisted Jumps 4x8-12 — approach jumps, dunk attempts\nPogo Jumps → Single-Leg Pogos 3x20 bilateral + 3x12 each leg\nReactive lateral bounds 4x5 each leg — land and explode\nVertical jump max efforts 5x measured — RECORD IN DUNK LAB\n\n[4] Speed Development (20 min)\nFirst step explosion 6x10m standing start\nFlying 20m sprints 4x rolling start\nT-drill change of direction 4x each way\nDeceleration → reacceleration 5x 10m stop/start\n\n[5] Strength Supplemental (15 min)\nSlant Board Squat 2x8 maintenance volume\nTibialis Raises 3x20\nSoleus Raises 3x15\nFoot strength scrunches 2x30 sec\n\n[6+7] Transfer + Recovery (15 min)\nDunk approach footwork 1-step, 2-step, 3-step x5 each\nFoam roll full lower body 60 sec per zone\nHip flexor stretch 60 sec each side\n\nJUMP SCIENCE FOCUS:\n- Arm Swing Activation: wall arm swing 3x20 BEFORE approach jumps\n- Reactive Bounds: <0.3 sec contact, arms cross and UP each bound\n- Film 3 approach jumps from the side — check arm peak timing"
+    },
+
+
+    {
+      "summary": "Morning Activation (Recovery Day)",
+      "calendarName": "LIFESTYLE",
+      "colorName": "Banana",
+      "day": "Thursday",
+      "startTime": "07:00",
+      "endTime": "07:15",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=TH",
+      "description": "Recovery Day — Later, easier start\n07:00 Wake — no alarm pressure. 16 oz water + electrolytes\n07:05 Morning sun walk (barefoot if possible)\n07:15 Full-body mobility flow 20 min\n07:40 Slant board mobility only — NOT strength — 2x10 controlled no load\n07:50 Foot massage lacrosse ball 3 min each foot"
+    },
+
+    {
+      "summary": "Active Recovery Session",
+      "calendarName": "TRAINING",
+      "colorName": "Basil",
+      "day": "Thursday",
+      "startTime": "07:00",
+      "endTime": "08:30",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=TH",
+      "description": "90-MIN ACTIVE RECOVERY\n\nMorning Flow (30 min)\n- Morning sun walk 10 min\n- Full-body mobility flow 20 min — hip, ankle, thoracic\n- Slant board mobility (NOT strength) 2x10\n- Foot massage lacrosse ball 3 min each foot\n\nTissue Work (20 min)\n- Foam roll: calves, quads, IT band, glutes — 90 sec each\n- Hip flexor trigger point lacrosse ball 2 min each side\n- Thoracic extension over roller 2 min\n- Tibialis raises light 1x15 maintenance only\n\nZone 2 Walk (25-35 min)\n- Easy walking pace — able to hold a full conversation\n- Target 8,000-10,000 total steps today\n- Post-dinner walk 10 min after dinner (every day)\n\nEvening Recovery\n- Light yoga or hip stretching 15 min yin style\n- Contrast shower: 3 min hot / 1 min cold x3 rounds\n- Recovery stack: magnesium + omega-3 + tart cherry\n- Epsom salt bath (weekly, optional)"
+    },
+
+    {
+      "summary": "Weekly Grocery Shop",
+      "calendarName": "LIFESTYLE",
+      "colorName": "Flamingo",
+      "day": "Thursday",
+      "startTime": "10:00",
+      "endTime": "11:30",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=TH",
+      "description": "MAIN WEEKLY SHOP — 60-90 min\nStores: Walmart/ALDI (primary) + Costco on monthly bulk run\n\nChecklist:\n- Proteins: chicken breast, salmon, eggs, turkey, cottage cheese, Greek yogurt\n- Produce: bananas, berries, greens, broccoli, sweet potato, avocado, lemons\n- Carbs: oats, brown rice, quinoa, Ezekiel bread, potatoes\n- Pantry: olive oil, nuts, honey, peanut butter (restock only when low)\n- Hydration: electrolytes, tart cherry juice, orange juice\n\nBudget target: $100-140/week"
+    },
+
+    {
+      "summary": "Recovery Day Lunch",
+      "calendarName": "NUTRITION",
+      "colorName": "Sage",
+      "day": "Thursday",
+      "startTime": "13:00",
+      "endTime": "13:20",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=TH",
+      "description": "Anti-Inflammatory Lunch — 560 kcal | P48 C48 F18\n6 oz wild salmon\n1 cup cooked lentils\n2 cups spinach salad\nOlive oil + apple cider vinegar dressing + lemon"
+    },
+
+    {
+      "summary": "Recovery Snack",
+      "calendarName": "NUTRITION",
+      "colorName": "Sage",
+      "day": "Thursday",
+      "startTime": "16:00",
+      "endTime": "16:10",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=TH",
+      "description": "Recovery Snack — 220 kcal | P5 C36 F12\n1 oz mixed nuts\n1 apple\n4 oz tart cherry juice — reduces DOMS significantly"
+    },
+
+    {
+      "summary": "Recovery Dinner",
+      "calendarName": "NUTRITION",
+      "colorName": "Sage",
+      "day": "Thursday",
+      "startTime": "19:00",
+      "endTime": "19:40",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=TH",
+      "description": "Repair Dinner — 680 kcal | P52 C52 F20\n7 oz chicken breast\n1 cup sweet potato\n2 cups broccoli with garlic + olive oil\nSide salad\n\nPost-meal: 10-min walk"
+    },
+
+
+    {
+      "summary": "HPT 3 + DUNK SESSION",
+      "calendarName": "TRAINING",
+      "colorName": "Tangerine",
+      "day": "Friday",
+      "startTime": "07:30",
+      "endTime": "09:30",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=FR",
+      "description": "120-MIN HPT 3 + WEEKLY DUNK SESSION\n\n[1] CNS Warm-Up (12 min)\nMini trampoline OR pogo jumps 5 min — prime elastic system\nAnkle + hip mobility fast circuit 7 min\nAnkle alphabet + calf raises 1x15\n\n[2] DUNK SESSION — WEEKLY (25 min)\nStanding reach measurement 3 attempts — RECORD\nMax jump reach measurement 3 attempts — RECORD\n1/2/3-step approach work 5x each — master footwork\nBand assisted dunks current + next stage 5x5\nMax dunk attempts current stage 10-15 reps — rest 90 sec each\nFilm review: watch 3 best attempts — approach angle + arm swing\n\n[3] Power Strength (20 min)\nTrap Bar Deadlift explosive intent — phase-dependent\nJump squat light bar or BW 4x5 — explode through floor\nDepth drop → jump — phase-dependent off 18-24in box\n\n[4] Rotational Athleticism (12 min)\nRotational med ball throw 10-15lb 4x6 each side\nHip-driven lateral bound 3x5 each side\nSingle-leg landing → explode 4x5 each leg\n\n[5+6] Shoe Testing + Recovery (15 min)\nTRACTION REPORT: shoe test on court — rate traction, lockdown, response\nTibialis raises 3x20 + Soleus raises 3x15\nFoam roll + cool down 8 min\nLOG SESSION IN DUNK LAB: vertical jump, stage, shoe worn, notes\n\nJUMP SCIENCE FOCUS:\n- Penultimate Step max effort: LONG penultimate, hips drop 4-6in\n- Ground Contact: film at 60fps, count frames, target <0.20 sec\n- Arm Sync: arms must still travel UP at moment feet leave ground"
+    },
+
+    {
+      "summary": "Log Dunk Session",
+      "calendarName": "TRAINING",
+      "colorName": "Tangerine",
+      "day": "Friday",
+      "startTime": "09:30",
+      "endTime": "09:45",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=FR",
+      "description": "LOG IN APP — Required after every Friday session\n\nDunk Lab:\n- Standing reach (inches)\n- Max jump reach (inches)\n- Vertical jump (max minus standing)\n- Best dunk stage achieved\n- Shoe worn + traction rating\n\nJump Science Ground Contact Tracker:\n- Ground contact time (from 60fps film)\n- Penultimate step quality 1-5\n- Arm swing sync 1-5\n- Ankle stiffness felt 1-5"
+    },
+
+
+    {
+      "summary": "Quick Grocery Refresh (Optional)",
+      "calendarName": "LIFESTYLE",
+      "colorName": "Flamingo",
+      "day": "Saturday",
+      "startTime": "08:00",
+      "endTime": "08:30",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=SA",
+      "description": "MIDWEEK PERISHABLE REFRESH — 20-30 min\nBefore court — quick stop only\nStore: ALDI or Walmart (closest)\n\nIf needed:\n- Fresh salmon (Sat/Sun dinner)\n- Avocados (buy firm — ripens by Monday)\n- Bananas or berries if running low\n- Extra eggs or chicken if needed"
+    },
+
+    {
+      "summary": "Basketball Skill Day 2 — Shooting + Game Speed",
+      "calendarName": "TRAINING",
+      "colorName": "Peacock",
+      "day": "Saturday",
+      "startTime": "07:30",
+      "endTime": "08:45",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=SA",
+      "description": "75-MIN BASKETBALL SKILL SESSION\n\n[1] Court Warm-Up (8 min)\nFull-court layup series 5x each side both hands\nForm shooting 5 ft — 20 makes\nDynamic court warm-up — slides, shuffles, back-pedal 3 laps\n\n[2] Catch and Shoot (15 min)\nCorner catch + shoot 10x each corner\nWing relocate + shoot 5x each wing — run into catch\nTransition 3 run + catch 5x each wing — game speed\n\n[3] Pull-Up Game (15 min)\nElbow pull-up 5x each wing\nStep-back 3 from wing 5x each side\nMidrange pull-up off 1 dribble 5x each side\n\n[4] Finishing (15 min)\nDunk approach work 10x max reach\nOff-two-feet jumper at rim 10x\nPower layup game speed 5x each side\n\n[5] Competitive Shooting (12 min)\nSpot shooting challenge — see Shooting Lab\n\n[6] Conditioning (10 min)\nFull-court sprints 4x, slides, transition finishing"
+    },
+
+    {
+      "summary": "Shooting & Finishing Session",
+      "calendarName": "TRAINING",
+      "colorName": "Peacock",
+      "day": "Saturday",
+      "startTime": "08:45",
+      "endTime": "09:35",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=SA",
+      "description": "50-MIN SHOOTING SESSION\n\n[1] Corner 3 Machine (12 min)\nRight corner 15 attempts → Left corner 15\nRight corner off 1-dribble 10 → Left off 1-dribble 10\nFeet set BEFORE the catch — stance beats the ball\n\n[2] Off-Dribble: Elbow Pull-Ups + Step-Back (15 min)\nRight elbow pull-up 10x 1-2 step footwork\nLeft elbow pull-up 10x\nRight wing step-back 8x — attack hard, step straight back\nLeft wing step-back 8x\n\n[3] Finishing Tier 2 — Game Changers (10 min)\nEuro step 4x8 each direction around cone at charge circle\nRunning floater 3x10 each side — must go over raised barrier\nContact layup 3x10 with partner resistance\n\n[4] Competitive: Beat the Pro (10 min)\nPro scores 7/10 automatically\nYou: 5 spots x 2 shots = 10\nMust match or beat 7 — track W/L\nWin 3 consecutive? Raise pro to 8/10"
+    },
+
+
+    {
+      "summary": "HPT 4 — Strength + Reactive Maintenance",
+      "calendarName": "TRAINING",
+      "colorName": "Tomato",
+      "day": "Sunday",
+      "startTime": "07:30",
+      "endTime": "09:00",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=SU",
+      "description": "90-MIN HIGH PERFORMANCE TRAINING\n\n[1] Movement Prep (10 min)\nDynamic warm-up circuit\nHip activation band work\nAnkle circles + calf raises 2x15\n\n[2] Mobility (10 min)\nHip mobility flow — world greatest stretch\nAnkle mobility\nPigeon pose 60 sec each side\n\n[3] Jump Development (15 min)\nApproach jumps to rim 10x max reach\nPogo progressions — fast pogos 2x10 as primer\nSingle-leg depth drops 3x5 each — control landing\n\n[4] Strength Development (30 min)\nTrap Bar Deadlift — phase-dependent\nSlant Board Squat — phase-dependent\nSlant Board Isometric 5x45 sec LAST\nCopenhagen Plank 3x25-35 sec\nSingle-Leg RDL 3x8-10 each\n\n[5] Athletic Development (12 min)\nLinear acceleration runs 5x20m\nPro agility 5-10-5 4x each direction\nLateral defensive slides 3x10m\n\n[6+7] Basketball Transfer + Recovery (13 min)\nApproach jumps + arm swing sync test\nFoam roll full lower body\nHip flexor stretch\n\nJUMP SCIENCE FOCUS:\n- Reactive Activation: fast pogos 2x10 before every plyometric set\n- Arm Sync Test: 3 jumps no arm swing vs 3 full swing — feel the difference\n- Weekly Vertical Check: mark wall, 3 max jumps, record best, LOG IN DUNK LAB"
+    },
+
+    {
+      "summary": "Weekly Meal Prep",
+      "calendarName": "LIFESTYLE",
+      "colorName": "Flamingo",
+      "day": "Sunday",
+      "startTime": "16:00",
+      "endTime": "17:30",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=SU",
+      "description": "MEAL PREP — Sets up Mon through Wed on autopilot\n\nChecklist:\n- Grill or air-fry 3-4 lbs chicken breast — portion into 6 oz containers\n- Cook large batch brown rice 4-6 servings — fridge safe 5 days\n- Roast 4-5 sweet potatoes at 400F for 45 min\n- Hard-boil 8 eggs for backup protein\n- Pre-wash and dry salad greens — store with paper towel to stay crisp\n- Measure and bag oat portions for Mon-Wed mornings (50g each)"
+    },
+
+    {
+      "summary": "Content Review + Weekly Script",
+      "calendarName": "CONTENT",
+      "colorName": "Grape",
+      "day": "Sunday",
+      "startTime": "10:00",
+      "endTime": "11:00",
+      "recurrence": "RRULE:FREQ=WEEKLY;BYDAY=SU",
+      "description": "CONTENT ENGINE — Sunday Review\n\n- Review week's training footage\n- Select best 3-5 clips for content\n- Script next week's posts\n- Post Sunday progress update or weekly review video\n- Log weekly analytics in app\n- Complete 8-question Sunday review in Traction Report app\n\nPlatforms: TikTok, Instagram Reels, YouTube Shorts\nPost time target: 7:00-8:00 PM"
+    }
+
+  ],
+
+  "calendarColors": {
+    "TRAINING": "Tomato",
+    "NUTRITION": "Sage",
+    "LIFESTYLE": "Banana",
+    "CONTENT": "Grape",
+    "RECOVERY": "Basil"
+  },
+
+  "colorIdMap": {
+    "Tomato": "11",
+    "Flamingo": "4",
+    "Tangerine": "6",
+    "Banana": "5",
+    "Sage": "2",
+    "Basil": "9",
+    "Peacock": "7",
+    "Blueberry": "8",
+    "Lavender": "1",
+    "Grape": "3"
+  },
+
+  "weeklyTotals": {
+    "trainingHours": 9.5,
+    "committedLifestyleHours": 14,
+    "caloriesByDay": {
+      "Monday": 3150,
+      "Tuesday": 2950,
+      "Wednesday": 3150,
+      "Thursday": 2350,
+      "Friday": 3150,
+      "Saturday": 2950,
+      "Sunday": 3150
+    }
+  }
+}
