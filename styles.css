@@ -345,13 +345,29 @@ tbody td:first-child { color: var(--text-primary); font-weight: 600; }
 .exercise-list { list-style: none; }
 .exercise-list li {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
   padding: 6px 0;
   border-bottom: 1px solid var(--border);
   font-size: 13px;
 }
 .exercise-list li:last-child { border-bottom: none; }
+.drill-score {
+  width: 52px;
+  flex-shrink: 0;
+  background: var(--bg-card-2);
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 5px;
+  color: var(--orange);
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+  font-family: inherit;
+  transition: border-color .2s;
+}
+.drill-score:focus { outline: none; border-color: var(--orange); }
+.drill-score::placeholder { color: var(--text-muted); font-weight: 400; }
 .ex-check {
   width: 16px; height: 16px;
   border: 1.5px solid var(--border-light);

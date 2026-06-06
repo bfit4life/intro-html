@@ -553,10 +553,14 @@ function showDayDetail(i) {
         <h4>${s.title}</h4><span class="session-duration">${s.dur}</span>
       </div>
       <div class="session-block-body"><ul class="exercise-list">
-        ${s.items.map(item => `<li><input type="checkbox" class="ex-check"><div>
-          <div class="ex-name">${item.name}</div>
-          <div class="ex-detail">${item.detail}</div>
-        </div></li>`).join('')}
+        ${s.items.map((item, ii) => {
+          const _sk = 'ds_' + i + '_' + s.num + '_' + ii + '_' + new Date().toISOString().split('T')[0];
+          const _sv = localStorage.getItem(_sk) || '';
+          return `<li><input type="checkbox" class="ex-check"><div style="flex:1">
+            <div class="ex-name">${item.name}</div>
+            <div class="ex-detail">${item.detail}</div>
+          </div><input type="text" class="drill-score" value="${_sv}" placeholder="0/0" title="Score (e.g. 7/10)" oninput="localStorage.setItem('ds_${i}_${s.num}_${ii}_'+new Date().toISOString().split('T')[0],this.value)"></li>`;
+        }).join('')}
       </ul></div>
     </div>`;
   });
