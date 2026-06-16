@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basketball Archetype Assessment — Traction Report</title>
+  <meta name="description" content="Take the 3-minute assessment to discover your basketball movement archetype and get personalized shoe recommendations.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">TRACTION<span>REPORT</span></a>
+      <span style="font-size:.8125rem; color:rgba(255,255,255,.35);">Free Assessment</span>
+    </div>
+  </div>
+</nav>
+
+<div class="assessment-page">
+
+  <!-- Header -->
+  <div class="assessment-header">
+    <h1>ARCHETYPE ASSESSMENT</h1>
+    <p>Answer honestly. The more accurate your answers, the better your shoe match.</p>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-container" id="progressContainer">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div class="progress-meta">
+      <span id="progressStep">Question 1 of 12</span>
+      <span id="progressText">0% complete</span>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="quiz-wrap" id="quizWrap"></div>
+
+  <!-- Email Gate (shown after final question) -->
+  <div class="email-gate-wrap" id="gateWrap">
+    <div class="gate-card">
+      <div class="gate-emoji">🏀</div>
+      <h2>YOUR ARCHETYPE IS READY.</h2>
+      <p>Enter your name and email to unlock your personalized archetype report, shoe recommendations at every budget, and characteristics to look for and avoid.</p>
+      <ul class="gate-benefits">
+        <li>Your full archetype profile and movement description</li>
+        <li>Shoe characteristics matched to how you play</li>
+        <li>Ranked recommendations at 4 price points (under $80 to $200+)</li>
+        <li>Shoes you should actively avoid and why</li>
+        <li>Your Archetype Score (0–100)</li>
+      </ul>
+      <form class="gate-form" id="gateForm">
+        <input type="text" class="gate-input" id="gateName" placeholder="First name (optional)" autocomplete="given-name">
+        <input type="email" class="gate-input" id="gateEmail" placeholder="Your email address" required autocomplete="email">
+        <button type="submit" class="btn btn-primary btn-block btn-lg">Reveal My Archetype →</button>
+      </form>
+      <p class="gate-privacy">🔒 No spam. No credit card. Unsubscribe anytime.</p>
+    </div>
+  </div>
+
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">Analyzing your movement profile…</div>
+    <div class="loading-sub">Running your data through 200+ shoe profiles</div>
+  </div>
+
+</div>
+
+<script src="js/quiz.js"></script>
+</body>
+</html>

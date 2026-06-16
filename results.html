@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Archetype Results — Traction Report</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Archetype Score Card ── */
+    .score-card {
+      display: inline-flex; flex-direction: column; align-items: flex-start;
+      background: rgba(255,107,0,.1); border: 1px solid rgba(255,107,0,.25);
+      border-radius: var(--r-lg); padding: 20px 28px; margin: 28px 0;
+    }
+    .score-label-sm { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,.5); margin-bottom: 4px; }
+    .score-display { font-family: var(--font-display); font-size: 4rem; color: var(--orange); letter-spacing: 2px; line-height: 1; }
+    .score-max { font-size: 1rem; color: rgba(255,255,255,.35); }
+    .score-bar-outer { width: 200px; height: 8px; background: rgba(255,255,255,.08); border-radius: 100px; overflow: hidden; margin-top: 12px; }
+    .score-bar-inner { height: 100%; background: var(--gradient); border-radius: 100px; width: 0; transition: width 1.5s ease; }
+    .score-descriptor { font-size: .8rem; color: rgba(255,255,255,.55); margin-top: 8px; }
+
+    /* ── Modifier Badge ── */
+    .modifier-banner {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+      border-radius: var(--r-md); padding: 12px 20px; margin-bottom: 20px;
+    }
+    .modifier-banner .m-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,.35); }
+    .modifier-banner .m-name { font-size: .9375rem; font-weight: 700; color: var(--white); }
+    .modifier-banner .m-badge { background: rgba(255,107,0,.15); border: 1px solid rgba(255,107,0,.3); color: var(--orange); font-size: .75rem; font-weight: 700; padding: 3px 10px; border-radius: 100px; }
+
+    /* ── Trait Tags ── */
+    .traits-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+    .trait-tag { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: var(--r-md); padding: 8px 14px; font-size: .8125rem; color: rgba(255,255,255,.75); }
+    .trait-tag .t-icon { font-size: 1rem; }
+
+    /* ── Paid CTA ── */
+    .paid-cta-section { padding: 80px 0; background: #0D0D0D; border-top: 1px solid rgba(255,107,0,.15); }
+    .paid-cta-card {
+      max-width: 620px; margin: 0 auto; padding: 0 24px;
+    }
+    .paid-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,107,0,.15); border: 1px solid rgba(255,107,0,.3); color: var(--orange); padding: 6px 14px; border-radius: 100px; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+    .paid-cta-card h2 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3rem); color: var(--white); letter-spacing: 2px; margin-bottom: 16px; }
+    .paid-cta-card .sub { color: rgba(255,255,255,.6); font-size: 1rem; margin-bottom: 32px; line-height: 1.7; }
+    .paid-includes { list-style: none; margin-bottom: 32px; }
+    .paid-includes li { display: flex; align-items: flex-start; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: .875rem; color: rgba(255,255,255,.75); }
+    .paid-includes li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+    .price-block { display: flex; align-items: baseline; gap: 8px; margin-bottom: 20px; }
+    .price-main { font-family: var(--font-display); font-size: 3.5rem; color: var(--white); letter-spacing: 2px; }
+    .price-cross { font-size: 1.5rem; color: rgba(255,255,255,.25); text-decoration: line-through; }
+    .price-note { font-size: .8rem; color: rgba(255,255,255,.35); }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">TRACTION<span>REPORT</span></a>
+      <a href="assessment.html" class="btn btn-outline" style="padding:8px 18px; font-size:.8125rem;">Retake Assessment</a>
+    </div>
+  </div>
+</nav>
+
+<div class="results-page">
+
+  <!-- ── Archetype Hero ─────────────────────────────────── -->
+  <section class="archetype-hero">
+    <div class="container">
+
+      <!-- Modifier Banner (shown when modifier is active) -->
+      <div class="modifier-banner" id="modifierBanner" style="display:none;">
+        <div>
+          <div class="m-label">Primary Archetype</div>
+          <div class="m-name" id="modifierPrimary"></div>
+        </div>
+        <div class="m-badge" id="modifierBadge"></div>
+      </div>
+
+      <div class="archetype-badge" id="archetypeBadge">Guards Archetype</div>
+      <div class="archetype-emoji-large" id="archetypeEmoji">⚡</div>
+      <h1 class="archetype-name-display" id="archetypeName">THE SHIFTY GUARD</h1>
+      <p class="archetype-tagline-display" id="archetypeTagline"></p>
+      <p class="archetype-desc-display" id="archetypeDesc"></p>
+
+      <!-- Archetype Score -->
+      <div class="score-card">
+        <div class="score-label-sm">Your Archetype Score</div>
+        <div>
+          <span class="score-display" id="archetypeScoreNum">—</span>
+          <span class="score-max">/100</span>
+        </div>
+        <div class="score-bar-outer"><div class="score-bar-inner" id="archetypeScoreBar"></div></div>
+        <div class="score-descriptor" id="archetypeScoreDesc"></div>
+      </div>
+
+      <!-- Primary Traits -->
+      <div class="traits-row" id="traitsRow"></div>
+
+    </div>
+  </section>
+
+  <!-- ── Movement Profile ──────────────────────────────── -->
+  <section class="profile-section">
+    <div class="container">
+      <span class="section-label">Movement Profile</span>
+      <h2 class="section-title light">How you move. Why it matters.</h2>
+      <div class="profile-grid">
+        <div class="profile-card">
+          <h3>Movement Patterns</h3>
+          <ul class="profile-list" id="profileMovement"></ul>
+        </div>
+        <div class="profile-card">
+          <h3>Your Strengths</h3>
+          <ul class="profile-list" id="profileStrengths"></ul>
+        </div>
+        <div class="profile-card">
+          <h3>Limitations to Note</h3>
+          <ul class="profile-list avoid" id="profileWeaknesses"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Shoe Characteristics ──────────────────────────── -->
+  <section class="chars-section">
+    <div class="container">
+      <span class="section-label">Footwear Profile</span>
+      <h2 class="section-title light">What to look for. What to avoid.</h2>
+      <div class="chars-inner">
+        <div class="chars-col want">
+          <h3>✓ Must-Have Characteristics</h3>
+          <div class="char-tags" id="charTags"></div>
+        </div>
+        <div class="chars-col avoid">
+          <h3>✗ Characteristics to Avoid</h3>
+          <div class="char-tags" id="avoidTags"></div>
+        </div>
+      </div>
+
+      <!-- Modifier Characteristics (shown when modifier active) -->
+      <div id="modifierChars" style="display:none; margin-top:40px; padding-top:40px; border-top:1px solid rgba(255,255,255,.06);">
+        <span class="section-label" id="modifierCharsLabel">Wide Footer Modifier</span>
+        <h3 style="color:var(--white); font-size:1.25rem; margin-bottom:20px;" id="modifierCharsTitle">Additional fit requirements for your modifier</h3>
+        <div class="chars-inner">
+          <div class="chars-col want">
+            <h3>✓ Also Required</h3>
+            <div class="char-tags" id="modCharTags"></div>
+          </div>
+          <div class="chars-col avoid">
+            <h3>✗ Also Avoid</h3>
+            <div class="char-tags" id="modAvoidTags"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Shoe Recommendations ──────────────────────────── -->
+  <section class="reco-section">
+    <div class="container">
+      <div class="text-center">
+        <span class="section-label">Shoe Recommendations</span>
+        <h2 class="section-title light">Matched to your archetype. At your budget.</h2>
+        <p class="section-subtitle light">Every recommendation is selected for your specific movement profile — not because it's popular, but because it fits how you play.</p>
+      </div>
+      <div class="budget-tabs" id="budgetTabs"></div>
+      <div class="shoes-grid" id="shoesGrid"></div>
+    </div>
+  </section>
+
+  <!-- ── Score Breakdown ───────────────────────────────── -->
+  <section class="score-section">
+    <div class="container">
+      <span class="section-label">Full Score Breakdown</span>
+      <h2 class="section-title light">How you scored across all archetypes</h2>
+      <p style="color:rgba(255,255,255,.5); margin-top:8px; font-size:.9rem;">Your dominant archetype scores highest. Secondary scores reveal sub-traits in your game.</p>
+      <div class="score-rows" id="scoreRows"></div>
+    </div>
+  </section>
+
+  <!-- ── Paid Report CTA ───────────────────────────────── -->
+  <section class="paid-cta-section">
+    <div class="paid-cta-card">
+      <div class="paid-badge">⭐ Upgrade Your Report</div>
+      <h2>YOUR PERSONALIZED SHOE MATCH REPORT</h2>
+      <p class="sub">You've got your archetype. Now go deeper. Your Shoe Match Report is a hand-built PDF guide tailored to your exact archetype, modifier, and budget — delivered to your inbox within 24 hours.</p>
+      <ul class="paid-includes">
+        <li>5-page personalized archetype breakdown with elite player comparisons</li>
+        <li>Top 5 shoes ranked specifically for your archetype + modifier combination</li>
+        <li>Detailed "why this shoe" analysis for each recommendation</li>
+        <li>What to ask the shoe store employee (seriously, use this)</li>
+        <li>3 shoes under $80 that outperform most $150+ options for your game</li>
+        <li>The one shoe everyone says is great but you should avoid</li>
+        <li>Fit guide: how to test a shoe matches your archetype before you buy</li>
+      </ul>
+      <div class="price-block">
+        <span class="price-main">$29</span>
+        <span class="price-cross">$49</span>
+        <span class="price-note">Limited launch price</span>
+      </div>
+      <a href="mailto:hello@tractionreport.com?subject=Shoe Match Report Request&body=My archetype: (paste from your results)%0A%0AMy budget: %0A%0AMy modifier (if any): " class="btn btn-primary btn-lg btn-block" style="margin-bottom:12px;">
+        Get My Shoe Match Report — $29 →
+      </a>
+      <p style="font-size:.75rem; color:rgba(255,255,255,.25); text-align:center;">Manual delivery within 24 hours. PayPal or Venmo accepted. 100% satisfaction guaranteed.</p>
+    </div>
+  </section>
+
+  <!-- ── Email Capture ─────────────────────────────────── -->
+  <section class="results-capture">
+    <div id="captureFormWrap">
+      <div class="capture-card">
+        <h2>GET YOUR FREE PLAYBOOK</h2>
+        <p>Sign up to receive the <strong id="captureArchetypeName">Shifty Guard</strong> Playbook — a 5-email series that goes deeper into your archetype, explains why certain shoes work at the mechanical level, and gives you frameworks for evaluating any new shoe that comes out.</p>
+        <ul class="capture-benefits">
+          <li>Deep-dive into your movement archetype's biomechanics</li>
+          <li>How to evaluate any new shoe release for your archetype</li>
+          <li>Budget-specific shopping strategy for your movement profile</li>
+          <li>When a shoe is "good" but wrong for your game — and how to spot it</li>
+          <li>Early access to new assessments and features</li>
+        </ul>
+        <form class="capture-form" id="captureForm">
+          <input type="email" class="capture-input" id="captureEmail" placeholder="Your email address" required autocomplete="email">
+          <button type="submit" class="btn btn-primary btn-block">Get My Free Playbook →</button>
+          <p class="capture-privacy">🔒 No spam. Unsubscribe anytime.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Retake ─────────────────────────────────────────── -->
+  <section class="retake-section">
+    <div class="container text-center">
+      <p style="color:rgba(255,255,255,.45); margin-bottom:20px;">Think your archetype has changed? Game evolved? Retake the assessment anytime — it's free.</p>
+      <a href="assessment.html" class="btn btn-outline">Retake the Assessment</a>
+    </div>
+  </section>
+
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none; padding-top:0;">
+      <p class="footer-copy">© 2024 Traction Report. All rights reserved.</p>
+      <p class="footer-disc">Traction Report uses affiliate links. We earn a small commission at no additional cost to you when you purchase through our links. This does not influence our recommendations.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/results.js"></script>
+</body>
+</html>
