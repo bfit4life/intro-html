@@ -1,0 +1,177 @@
+/* ============================================================
+   TRACTION REPORT — ARCHETYPE CARD (visual front page)
+   One file, reused by every archetype card via a CSS variable
+   set in each card's own <style>: --accent.
+   Card is sized for print: 8.5in x 11in @ 96dpi = 816 x 1056px.
+   Open the HTML file in a browser and "Print > Save as PDF".
+   ============================================================ */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #000;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+}
+
+.card {
+  width: 816px;
+  min-height: 1056px;
+  background: radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--accent) 18%, #000) 0%, #050505 55%);
+  border: 2px solid var(--accent);
+  border-radius: 18px;
+  padding: 40px 44px 32px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 85% 90%, color-mix(in srgb, var(--accent) 25%, transparent) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.kicker {
+  font-size: 11px;
+  letter-spacing: 4px;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--accent) 70%, #fff 30%);
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.title {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.tagline {
+  text-align: center;
+  font-style: italic;
+  font-size: 14px;
+  color: #d4d4d8;
+  margin: 6px 0 28px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 28px;
+}
+
+.photo-wrap {
+  position: relative;
+  height: 520px;
+  border: 1.5px solid color-mix(in srgb, var(--accent) 50%, #333);
+  border-radius: 14px;
+  overflow: hidden;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 22%, #000) 0%, #000 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.photo-placeholder {
+  text-align: center;
+  color: color-mix(in srgb, var(--accent) 60%, #fff 40%);
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 0 20px;
+}
+.photo-placeholder .ball { font-size: 64px; display: block; margin-bottom: 12px; opacity: .8; }
+
+.best-for-box {
+  margin-top: 16px;
+  border: 1.5px solid var(--accent);
+  border-radius: 10px;
+  padding: 14px 16px;
+  text-align: center;
+}
+.best-for-label { font-size: 11px; letter-spacing: 2px; color: color-mix(in srgb, var(--accent) 70%, #fff 30%); margin-bottom: 6px; }
+.best-for-positions { display: flex; gap: 8px; justify-content: center; margin-bottom: 10px; }
+.pos-pill { background: var(--accent); color: #000; font-weight: 800; font-size: 13px; padding: 4px 12px; border-radius: 6px; }
+.nba-name { font-size: 22px; font-weight: 800; letter-spacing: .5px; }
+
+.section { margin-bottom: 22px; }
+.section-title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::after { content: ''; flex: 1; height: 1px; background: color-mix(in srgb, var(--accent) 40%, transparent); }
+
+.overview-list, .need-list { list-style: none; }
+.overview-list li {
+  font-size: 13.5px;
+  color: #e4e4e7;
+  padding: 5px 0 5px 18px;
+  position: relative;
+}
+.overview-list li::before { content: '•'; color: var(--accent); position: absolute; left: 0; font-weight: 800; }
+
+.need-list li {
+  font-size: 13px;
+  color: #e4e4e7;
+  padding: 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.need-icon {
+  width: 22px; height: 22px; min-width: 22px;
+  border: 1.5px solid var(--accent);
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  color: var(--accent);
+}
+
+.playstyle-text {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #e4e4e7;
+}
+
+.strengths-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.strength-label { width: 130px; font-size: 11.5px; color: #d4d4d8; letter-spacing: .5px; text-transform: uppercase; }
+.strength-bar { flex: 1; display: flex; gap: 3px; }
+.strength-block { width: 16px; height: 9px; border-radius: 2px; background: #2a2a2a; }
+.strength-block.filled { background: var(--accent); }
+.strength-score { width: 30px; font-size: 11px; color: #a1a1aa; text-align: right; }
+
+.footer-row {
+  position: absolute;
+  bottom: 28px; left: 44px; right: 44px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.brand { font-size: 12px; letter-spacing: 2px; color: #71717a; font-weight: 700; }
+.tr-badge {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 13px; color: var(--accent);
+  background: #000;
+}
+
+@media print {
+  body { padding: 0; background: #000; }
+  .card { box-shadow: none; }
+}

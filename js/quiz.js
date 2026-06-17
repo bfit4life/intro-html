@@ -11,7 +11,7 @@ const QUESTIONS = [
     text: 'What position do you primarily play?',
     answers: [
       { text: 'Point Guard',           detail: 'Primary ball handler & floor general',          s: { SG: 2, SP: 2, SC: 1 } },
-      { text: 'Shooting Guard',         detail: 'Off-ball scorer and finisher',                  s: { SC: 2, SP: 1, VW: 1 } },
+      { text: 'Shooting Guard',         detail: 'Off-ball scorer and finisher',                  s: { SC: 2, SP: 1, VW: 1, TL: 2 } },
       { text: 'Small Forward / Wing',   detail: 'Versatile perimeter player',                   s: { VW: 3, WS: 1 } },
       { text: 'Power Forward',          detail: 'Physical frontcourt player',                   s: { PF: 3, VW: 1 } },
       { text: 'Center / Paint Big',     detail: 'Rim protector and interior scorer',            s: { PA: 3 } },
@@ -27,7 +27,8 @@ const QUESTIONS = [
       { text: 'Footwork — I get to my spots',          detail: 'Step-backs, pull-ups, off-ball cuts',     s: { SC: 4 } },
       { text: 'Physicality — I go through them',       detail: 'Power dribble, strong drives, post up',   s: { PF: 2, PA: 2 } },
       { text: 'I focus more on defense',               detail: 'Disrupting plays, guarding, rotating',    s: { WS: 4 } },
-      { text: 'Catch-and-shoot / movement without ball', detail: 'Off-screens, spacing, smart passes',   s: { VW: 4 } }
+      { text: 'Catch-and-shoot / movement without ball', detail: 'Off-screens, spacing, smart passes',   s: { VW: 4 } },
+      { text: 'Shooting — I score from all three levels', detail: 'Spot-up threes, pull-ups, finishing at the rim', s: { TL: 4 } }
     ]
   },
   {
@@ -39,7 +40,7 @@ const QUESTIONS = [
       { text: 'Switch everything — I guard 1 thru 4',  detail: 'IQ and versatility over raw size',       s: { VW: 4 } },
       { text: 'Physical post defense',                 detail: 'Body up bigs, protect the paint',        s: { PF: 2, PA: 1 } },
       { text: 'Shot blocker — I anchor the defense',   detail: 'Rim protector, weak-side help',          s: { PA: 4 } },
-      { text: 'Defense is not my primary strength',    detail: 'I contribute more on offense',           s: { SC: 2, SP: 1 } }
+      { text: 'Defense is not my primary strength',    detail: 'I contribute more on offense',           s: { SC: 2, SP: 1, TL: 1 } }
     ]
   },
   {
@@ -47,7 +48,7 @@ const QUESTIONS = [
     text: 'How would you honestly describe your build?',
     answers: [
       { text: 'Lean and fast (under 175 lbs)',         detail: 'Built for quickness over power',         s: { SP: 2, SG: 2 } },
-      { text: 'Athletic and toned (175–205 lbs)',       detail: 'Balance of speed and strength',          s: { SC: 2, VW: 2, SG: 1 } },
+      { text: 'Athletic and toned (175–205 lbs)',       detail: 'Balance of speed and strength',          s: { SC: 2, VW: 2, SG: 1, TL: 1 } },
       { text: 'Strong and physical (205–235 lbs)',      detail: 'Use size as a weapon',                  s: { PF: 2, WS: 1, VW: 1 } },
       { text: 'Big and powerful (235+ lbs)',            detail: 'Dominant in the paint',                  s: { PA: 4, PF: 1 } },
       { text: 'My feet are wide — shoes always feel tight', detail: 'Fit is a constant struggle',        s: { WF: 6 } }
@@ -59,7 +60,7 @@ const QUESTIONS = [
     answers: [
       { text: 'Under 18',   detail: 'Still developing athletically',           s: { SP: 1, SG: 1 } },
       { text: '18–25',      detail: 'Prime athletic years',                    s: { SP: 1 } },
-      { text: '26–34',      detail: 'Experienced and in your prime',           s: { SC: 1, VW: 1 } },
+      { text: '26–34',      detail: 'Experienced and in your prime',           s: { SC: 1, VW: 1, TL: 1 } },
       { text: '35–44',      detail: 'Seasoned vet — IQ over athleticism',      s: { OH: 4, SC: 1 } },
       { text: '45+',        detail: 'Still competing — body needs more love',  s: { OH: 7 } }
     ]
@@ -79,7 +80,7 @@ const QUESTIONS = [
     text: 'What matters MOST to you in a basketball shoe?',
     answers: [
       { text: 'Traction — grip when I cut and stop',    detail: 'No slipping, period',                        s: { SG: 2, WS: 2 } },
-      { text: 'Cushioning — comfort and joint protection', detail: 'My knees and ankles take a beating',      s: { OH: 2, PA: 1 } },
+      { text: 'Cushioning — comfort and joint protection', detail: 'My knees and ankles take a beating',      s: { OH: 2, PA: 1, TL: 1 } },
       { text: 'Lightweight — nothing slowing me down',  detail: 'Speed is everything',                        s: { SP: 2, SG: 1 } },
       { text: 'Ankle support — I need to feel locked in', detail: 'Stability during physical play',           s: { PF: 2, PA: 2, WS: 1 } },
       { text: 'Durability — has to survive long sessions', detail: 'I wear shoes out fast',                  s: { OO: 2 } },
@@ -107,7 +108,8 @@ const QUESTIONS = [
       { text: '"He never rushes — always gets his shot off"',     detail: 'Expert shot creator',          s: { SC: 5 } },
       { text: '"He does whatever the team needs"',                detail: 'Versatile, team-first player', s: { VW: 5 } },
       { text: '"Good luck stopping him in the paint"',            detail: 'Physical interior scorer',     s: { PF: 3, PA: 3 } },
-      { text: '"I don\'t see him score much but he guards everyone"', detail: 'Defense-first contributor',s: { WS: 5 } }
+      { text: '"I don\'t see him score much but he guards everyone"', detail: 'Defense-first contributor',s: { WS: 5 } },
+      { text: '"He can get a bucket from anywhere on the floor"',     detail: 'Elite scorer, three levels',   s: { TL: 5 } }
     ]
   },
   {
@@ -119,7 +121,8 @@ const QUESTIONS = [
       { text: 'I get to my spot and knock down the shot',               detail: 'Assassin in late-clock', s: { SC: 2 } },
       { text: 'I lock up their best player',                            detail: 'Stopper when it counts', s: { WS: 2 } },
       { text: 'I dominate in the post and on the glass',                detail: 'Interior force',         s: { PF: 2, PA: 2 } },
-      { text: 'I facilitate, space, and make the right play',           detail: 'IQ player',              s: { VW: 2 } }
+      { text: 'I facilitate, space, and make the right play',           detail: 'IQ player',              s: { VW: 2 } },
+      { text: 'I take and make the big shot, from anywhere',            detail: 'Go-to scorer',           s: { TL: 4 } }
     ]
   },
   {
@@ -145,11 +148,11 @@ const QUESTIONS = [
 ];
 
 /* ── Archetype Keys ─────────────────────────────────────── */
-// SG=Shifty Guard, SP=Speed Guard, SC=Shot Creator,
+// SG=Shifty Guard, SP=Speed Guard, SC=Shot Creator, TL=3-Level Scorer,
 // VW=Versatile Wing, WS=Wing Stopper, PF=Power Forward,
 // PA=Paint Anchor, OH=Older Hooper, OO=Outdoor Hooper, WF=Wide Footer
 
-const PRIMARY_KEYS   = ['SG','SP','SC','VW','WS','PF','PA'];
+const PRIMARY_KEYS   = ['SG','SP','SC','TL','VW','WS','PF','PA'];
 const OVERRIDE_KEYS  = { OH: 6, OO: 6, WF: 7 }; // threshold to trigger override
 
 /* ── State ──────────────────────────────────────────────── */
@@ -278,10 +281,10 @@ function showEmailGate() {
 
 /* ── Scoring Engine (Primary + Modifier System) ─────────── */
 // Max possible points per archetype (sum of highest available score across all questions)
-const ARCHETYPE_MAX = { SG:20, SP:20, SC:20, VW:22, WS:20, PF:16, PA:16, OH:16, OO:14, WF:18 };
+const ARCHETYPE_MAX = { SG:20, SP:20, SC:20, TL:19, VW:22, WS:20, PF:16, PA:16, OH:16, OO:14, WF:18 };
 
 function calculateArchetype() {
-  const totals = { SG:0, SP:0, SC:0, VW:0, WS:0, PF:0, PA:0, OH:0, OO:0, WF:0 };
+  const totals = { SG:0, SP:0, SC:0, TL:0, VW:0, WS:0, PF:0, PA:0, OH:0, OO:0, WF:0 };
 
   for (const ans of state.answers) {
     for (const [key, pts] of Object.entries(ans.s)) {

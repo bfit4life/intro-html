@@ -102,6 +102,38 @@ const ARCHETYPES = {
     }
   },
 
+  TL: {
+    key: 'TL',
+    name: 'The 3-Level Scorer',
+    emoji: '🎯',
+    category: 'Guards',
+    tagline: 'Space. Shoot. Create.',
+    description: `You can score from anywhere on the floor, and that's what makes you impossible to plan for. Spot-up threes off the catch. Pull-ups in transition. A finish at the rim through contact when the defense closes out too hard. You don't need a system to get going — your shot is the system. Defenses can take away one level of your scoring and you'll just beat them from another. Your shoe needs to support all three: enough balanced cushion for the volume of jumpers you take, enough lateral support for closeout reads, and a secure lockdown so your base never moves mid-shot.`,
+    movement: ['Spot-up catch-and-shoot', 'Off-the-dribble pull-ups', 'Attacking closeouts off movement', 'Finishing through contact at the rim', 'Relocating without the ball'],
+    strengths: ['Shooting off movement and off the catch', 'Scoring at all three levels', 'Shot-making under pressure', 'Floor spacing that bends defenses'],
+    weaknesses: ['May rely on rhythm more than physical dominance', 'Can go cold if shots aren\'t falling early'],
+    wantChars: ['Balanced, moderate cushioning', 'Lateral support for closeout footwork', 'Secure midfoot and heel lockdown', 'Consistent traction for quick stops into a shot', 'True-to-size, locked-in fit'],
+    avoidChars: ['Overly stiff, unresponsive soles', 'Loose heel construction that shifts on a quick stop', 'Hyper-minimal "court feel" shoes with no cushion for volume shooting', 'Narrow fit that limits foot splay on a jump stop'],
+    shoes: {
+      budget: [
+        { name: 'Under Armour Curry Flow 9',  price: '$75',  reason: 'Flow cushioning built by Curry himself — light, responsive, and tuned for shooters.', link: 'https://www.amazon.com/s?k=Under+Armour+Curry+Flow+9' },
+        { name: 'Adidas Dame 9',              price: '$90',  reason: 'Balanced cushioning and secure lockdown at a strong price for a scoring guard.', link: 'https://www.amazon.com/s?k=Adidas+Dame+9+basketball' }
+      ],
+      mid: [
+        { name: 'Under Armour Curry 12 Low',  price: '$130', reason: 'Steph\'s signature low — built specifically for shooters who score from all three levels.', link: 'https://www.amazon.com/s?k=Under+Armour+Curry+12+basketball' },
+        { name: 'New Balance TWO WXY v5',     price: '$120', reason: 'Balanced traction and lockdown with no weaknesses — an excellent all-around scorer\'s shoe.', link: 'https://www.amazon.com/s?k=New+Balance+TWO+WXY+basketball' }
+      ],
+      premium: [
+        { name: 'Under Armour Curry 11',      price: '$160', reason: 'The full signature experience — UA Flow cushioning tuned exactly for catch-and-shoot scorers.', link: 'https://www.amazon.com/s?k=Under+Armour+Curry+11' },
+        { name: 'Nike KD 17',                 price: '$160', reason: 'Durant is a three-level threat in shoe form — balanced, fast, and well-cushioned.', link: 'https://www.amazon.com/s?k=Nike+KD+17' }
+      ],
+      elite: [
+        { name: 'Under Armour Curry Flow 11', price: '$190', reason: 'Top-tier Flow cushioning with zero rubber underfoot for maximum responsiveness on every jumper.', link: 'https://www.amazon.com/s?k=Under+Armour+Curry+Flow+11' },
+        { name: 'Nike Kobe 6 Protro',         price: '$180', reason: 'Elite traction and lockdown in a low-profile shell built for quick-trigger shot makers.', link: 'https://www.amazon.com/s?k=Nike+Kobe+6+Protro' }
+      ]
+    }
+  },
+
   VW: {
     key: 'VW',
     name: 'The Versatile Wing',
@@ -328,7 +360,7 @@ const ARCHETYPES = {
 };
 
 const ARCHETYPE_LABELS = {
-  SG: 'Shifty Guard', SP: 'Speed Guard', SC: 'Shot Creator',
+  SG: 'Shifty Guard', SP: 'Speed Guard', SC: 'Shot Creator', TL: '3-Level Scorer',
   VW: 'Versatile Wing', WS: 'Wing Stopper', PF: 'Power Forward',
   PA: 'Paint Anchor', OH: 'Older Hooper', OO: 'Outdoor Hooper', WF: 'Wide Footer'
 };
